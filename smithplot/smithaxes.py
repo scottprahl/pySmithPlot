@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # last edit: 11.04.2018
-'''
+"""
 Library for plotting fully automatic a Smith Chart with various customizable
 parameters and well selected default values. It also provides the following 
 modifications and features:
@@ -34,7 +34,7 @@ Note: Supplying parameters to :meth:`subplot` may not always work as
 expected, because subplot uses an index for the axes with a key created
 of all given parameters. This does not work always, especially if the
 parameters are array-like types (e.g. numpy.ndarray).
-'''
+"""
 
 try:
     from collections.abc import Iterable
@@ -63,10 +63,10 @@ from .smithhelper import EPSILON, TWO_PI, ang_to_c, z_to_xy
 
 
 class SmithAxes(Axes):
-    '''
+    """
     The :class:`SmithAxes` provides an implementation of :class:`matplotlib.axes.Axes`
     for drawing a full automatic Smith Chart it also provides own implementations for
-     
+
         - :class:`matplotlib.transforms.Transform`
             -> :class:`MoebiusTransform`
             -> :class:`InvertedMoebiusTransform`
@@ -78,9 +78,9 @@ class SmithAxes(Axes):
         - :class:`matplotlib.ticker.Formatter`
             -> :class:`RealFormatter`
             -> :class:`ImagFormatter`
-    '''
+    """
 
-    name = 'smith'
+    name = "smith"
 
     # data types
     S_PARAMETER = "S"
@@ -95,53 +95,59 @@ class SmithAxes(Axes):
     _ax_lim_y = 2 * _inf  # prevents missing labels in special cases
 
     # default parameter, see update_scParams for description
-    scDefaultParams = {"plot.zorder": 4,
-                       "plot.marker.hack": True,
-                       "plot.marker.rotate": True,
-                       "plot.marker.start": "s",
-                       "plot.marker.default": "o",
-                       "plot.marker.end": "^",
-                       "plot.default.interpolation": 5,
-                       "plot.default.datatype": S_PARAMETER,
-                       "grid.zorder": 1,
-                       "grid.locator.precision": 2,
-                       "grid.major.enable": True,
-                       "grid.major.linestyle": '-',
-                       "grid.major.linewidth": 1,
-                       "grid.major.color": "0.2",
-                       "grid.major.xmaxn": 10,
-                       "grid.major.ymaxn": 16,
-                       "grid.major.fancy": True,
-                       "grid.major.fancy.threshold": (100, 50),
-                       "grid.minor.enable": True,
-                       "grid.minor.capstyle": "round",
-                       "grid.minor.dashes": [0.2, 2],
-                       "grid.minor.linewidth": 0.75,
-                       "grid.minor.color": "0.4",
-                       "grid.minor.xauto": 4,
-                       "grid.minor.yauto": 4,
-                       "grid.minor.fancy": True,
-                       "grid.minor.fancy.dividers": [0, 1, 2, 3, 5, 10, 20],
-                       "grid.minor.fancy.threshold": 35,
-                       "axes.xlabel.rotation": 90,
-                       "axes.xlabel.fancybox": {"boxstyle": "round,pad=0.2,rounding_size=0.2",
-                                                "facecolor": 'w',
-                                                "edgecolor": "w",
-                                                "mutation_aspect": 0.75,
-                                                "alpha": 1},
-                       "axes.ylabel.correction": (-1, 0, 0),
-                       "axes.radius": 0.44,
-                       "axes.impedance": 50,
-                       "axes.labelpos": -1-1j,
-                       "axes.normalize": True,
-                       "axes.normalize.label": True,
-                       "symbol.infinity": "∞ ",  # BUG: symbol gets cut off without end-space
-                       "symbol.infinity.correction": 8,
-                       "symbol.ohm": "Ω"}
+    scDefaultParams = {
+        "plot.zorder": 4,
+        "plot.marker.hack": True,
+        "plot.marker.rotate": True,
+        "plot.marker.start": "s",
+        "plot.marker.default": "o",
+        "plot.marker.end": "^",
+        "plot.default.interpolation": 5,
+        "plot.default.datatype": S_PARAMETER,
+        "grid.zorder": 1,
+        "grid.locator.precision": 2,
+        "grid.major.enable": True,
+        "grid.major.linestyle": "-",
+        "grid.major.linewidth": 1,
+        "grid.major.color": "0.2",
+        "grid.major.xmaxn": 10,
+        "grid.major.ymaxn": 16,
+        "grid.major.fancy": True,
+        "grid.major.fancy.threshold": (100, 50),
+        "grid.minor.enable": True,
+        "grid.minor.capstyle": "round",
+        "grid.minor.dashes": [0.2, 2],
+        "grid.minor.linewidth": 0.75,
+        "grid.minor.color": "0.4",
+        "grid.minor.xauto": 4,
+        "grid.minor.yauto": 4,
+        "grid.minor.fancy": True,
+        "grid.minor.fancy.dividers": [0, 1, 2, 3, 5, 10, 20],
+        "grid.minor.fancy.threshold": 35,
+        "axes.xlabel.rotation": 90,
+        "axes.xlabel.fancybox": {
+            "boxstyle": "round,pad=0.2,rounding_size=0.2",
+            "facecolor": "w",
+            "edgecolor": "w",
+            "mutation_aspect": 0.75,
+            "alpha": 1,
+        },
+        "axes.ylabel.correction": (-1, 0, 0),
+        "axes.radius": 0.44,
+        "axes.impedance": 50,
+        "axes.labelpos": -1 - 1j,
+        "axes.normalize": True,
+        "axes.normalize.label": True,
+        "symbol.infinity": "∞ ",  # BUG: symbol gets cut off without end-space
+        "symbol.infinity.correction": 8,
+        "symbol.ohm": "Ω",
+    }
 
     @staticmethod
-    def update_scParams(sc_dict=None, instance=None, filter_dict=False, reset=True, **kwargs):
-        '''
+    def update_scParams(
+        sc_dict=None, instance=None, filter_dict=False, reset=True, **kwargs
+    ):
+        """
         Method for updating the parameters of a SmithAxes instance. If no instance
         is given, the changes are global, but affect only instances created
         afterwards. Parameter can be passed as dictionary or keyword arguments.
@@ -337,7 +343,7 @@ class SmithAxes(Axes):
 
         Note: The keywords are processed after the dictionary and override
         possible double entries.
-        '''
+        """
         scParams = SmithAxes.scDefaultParams if instance is None else instance.scParams
 
         if sc_dict is not None:
@@ -354,7 +360,10 @@ class SmithAxes(Axes):
                 scParams[key_dot] = remaining.pop(key)
 
         if not filter_dict and len(remaining) > 0:
-            raise KeyError("Following keys are invalid SmithAxes parameters: '%s'" % ",".join(remaining.keys()))
+            raise KeyError(
+                "Following keys are invalid SmithAxes parameters: '%s'"
+                % ",".join(remaining.keys())
+            )
 
         if reset and instance is not None:
             instance.cla()
@@ -363,12 +372,12 @@ class SmithAxes(Axes):
             return remaining
 
     def __init__(self, *args, **kwargs):
-        '''
+        """
         Builds a new :class:`SmithAxes` instance. For futher details see:
-        
+
             :meth:`update_scParams`
             :class:`matplotlib.axes.Axes`
-        '''
+        """
         # define new class attributes
         self._majorarcs = None
         self._minorarcs = None
@@ -378,28 +387,36 @@ class SmithAxes(Axes):
         self.scParams = self.scDefaultParams.copy()
 
         # seperate Axes parameter
-        Axes.__init__(self, *args, **SmithAxes.update_scParams(instance=self, filter_dict=True, reset=False, **kwargs))
-        self.set_aspect(1, adjustable='box', anchor='C')
+        Axes.__init__(
+            self,
+            *args,
+            **SmithAxes.update_scParams(
+                instance=self, filter_dict=True, reset=False, **kwargs
+            )
+        )
+        self.set_aspect(1, adjustable="box", anchor="C")
 
         # remove all ticks
-        self.tick_params(axis="both", which="both", bottom=False, top=False, left=False, right=False)
+        self.tick_params(
+            axis="both", which="both", bottom=False, top=False, left=False, right=False
+        )
 
     def _get_key(self, key):
-        '''
-        Get a key from the local parameter dictionary or from global 
+        """
+        Get a key from the local parameter dictionary or from global
         matplotlib rcParams.
-        
+
         Keyword arguments:
-            
+
             *key*:
                 Key to get from scParams or matplotlib.rcParams
                 Accepts: string
-            
+
         Returns:
-        
+
             *value*:
                 Value got from scParams or rcParams with key
-        '''
+        """
         if key in self.scParams:
             return self.scParams[key]
         elif key in mp.rcParams:
@@ -432,117 +449,151 @@ class SmithAxes(Axes):
         self._normalize = self._get_key("axes.normalize")
         self._current_zorder = self._get_key("plot.zorder")
 
-        self.xaxis.set_major_locator(self.RealMaxNLocator(self, self._get_key("grid.major.xmaxn")))
-        self.yaxis.set_major_locator(self.ImagMaxNLocator(self, self._get_key("grid.major.ymaxn")))
+        self.xaxis.set_major_locator(
+            self.RealMaxNLocator(self, self._get_key("grid.major.xmaxn"))
+        )
+        self.yaxis.set_major_locator(
+            self.ImagMaxNLocator(self, self._get_key("grid.major.ymaxn"))
+        )
 
-        self.xaxis.set_minor_locator(self.SmithAutoMinorLocator(self._get_key("grid.minor.xauto")))
-        self.yaxis.set_minor_locator(self.SmithAutoMinorLocator(self._get_key("grid.minor.yauto")))
+        self.xaxis.set_minor_locator(
+            self.SmithAutoMinorLocator(self._get_key("grid.minor.xauto"))
+        )
+        self.yaxis.set_minor_locator(
+            self.SmithAutoMinorLocator(self._get_key("grid.minor.yauto"))
+        )
 
-        self.xaxis.set_ticks_position('none')
-        self.yaxis.set_ticks_position('none')
+        self.xaxis.set_ticks_position("none")
+        self.yaxis.set_ticks_position("none")
 
         Axes.set_xlim(self, 0, self._ax_lim_x)
         Axes.set_ylim(self, -self._ax_lim_y, self._ax_lim_y)
 
         for label in self.get_xticklabels():
             label.set_verticalalignment("center")
-            label.set_horizontalalignment('center')
+            label.set_horizontalalignment("center")
             label.set_rotation_mode("anchor")
             label.set_rotation(self._get_key("axes.xlabel.rotation"))
             label.set_bbox(self._get_key("axes.xlabel.fancybox"))
             self.add_artist(label)  # if not readded, labels are drawn behind grid
 
-        for tick, loc in zip(self.yaxis.get_major_ticks(),
-                             self.yaxis.get_majorticklocs()):
+        for tick, loc in zip(
+            self.yaxis.get_major_ticks(), self.yaxis.get_majorticklocs()
+        ):
             # workaround for fixing to small infinity symbol
             if abs(loc) > self._near_inf:
-                tick.label1.set_size(tick.label1.get_size() +
-                                    self._get_key("symbol.infinity.correction"))
+                tick.label1.set_size(
+                    tick.label1.get_size() + self._get_key("symbol.infinity.correction")
+                )
 
-            tick.label1.set_verticalalignment('center')
+            tick.label1.set_verticalalignment("center")
 
             x = np.real(self._moebius_z(loc * 1j))
             if x < -0.1:
-                tick.label1.set_horizontalalignment('right')
+                tick.label1.set_horizontalalignment("right")
             elif x > 0.1:
-                tick.label1.set_horizontalalignment('left')
+                tick.label1.set_horizontalalignment("left")
             else:
-                tick.label1.set_horizontalalignment('center')
+                tick.label1.set_horizontalalignment("center")
 
         self.yaxis.set_major_formatter(self.ImagFormatter(self))
         self.xaxis.set_major_formatter(self.RealFormatter(self))
 
         if self._get_key("axes.normalize") and self._get_key("axes.normalize.label"):
             x, y = z_to_xy(self._moebius_inv_z(self._get_key("axes.labelpos")))
-            box = self.text(x, y, r"Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm")), ha="left", va="bottom")
+            box = self.text(
+                x,
+                y,
+                r"Z$_\mathrm{0}$ = %d$\,$%s"
+                % (self._impedance, self._get_key("symbol.ohm")),
+                ha="left",
+                va="bottom",
+            )
 
             px = self._get_key("ytick.major.pad")
             py = px + 0.5 * box.get_size()
             box.set_transform(self._yaxis_correction + Affine2D().translate(-px, -py))
 
-        for grid in ['major', "minor"]:
+        for grid in ["major", "minor"]:
             self.grid(b=self._get_key("grid.%s.enable" % grid), which=grid)
 
     def _set_lim_and_transforms(self):
         r = self._get_key("axes.radius")
-        self.transProjection = self.MoebiusTransform(self)  # data space  -> moebius space
-        self.transAffine = Affine2D().scale(r, r).translate(0.5, 0.5)  # moebius space -> axes space
+        self.transProjection = self.MoebiusTransform(
+            self
+        )  # data space  -> moebius space
+        self.transAffine = (
+            Affine2D().scale(r, r).translate(0.5, 0.5)
+        )  # moebius space -> axes space
         self.transDataToAxes = self.transProjection + self.transAffine
         self.transAxes = BboxTransformTo(self.bbox)  # axes space -> drawing space
         self.transMoebius = self.transAffine + self.transAxes
         self.transData = self.transProjection + self.transMoebius
 
-        self._xaxis_pretransform = Affine2D().scale(1, 2 * self._ax_lim_y).translate(0, -self._ax_lim_y)
+        self._xaxis_pretransform = (
+            Affine2D().scale(1, 2 * self._ax_lim_y).translate(0, -self._ax_lim_y)
+        )
         self._xaxis_transform = self._xaxis_pretransform + self.transData
         self._xaxis_text1_transform = Affine2D().scale(1.0, 0.0) + self.transData
 
         self._yaxis_stretch = Affine2D().scale(self._ax_lim_x, 1.0)
-        self._yaxis_correction = self.transData + Affine2D().translate(*self._get_key("axes.ylabel.correction")[:2])
+        self._yaxis_correction = self.transData + Affine2D().translate(
+            *self._get_key("axes.ylabel.correction")[:2]
+        )
         self._yaxis_transform = self._yaxis_stretch + self.transData
         self._yaxis_text1_transform = self._yaxis_stretch + self._yaxis_correction
 
-    def get_xaxis_transform(self, which='grid'):
-        assert which in ['tick1', 'tick2', 'grid']
+    def get_xaxis_transform(self, which="grid"):
+        assert which in ["tick1", "tick2", "grid"]
         return self._xaxis_transform
 
     def get_xaxis_text1_transform(self, pixelPad):
-        return self._xaxis_text1_transform, 'center', 'center'
+        return self._xaxis_text1_transform, "center", "center"
 
-    def get_yaxis_transform(self, which='grid'):
-        assert which in ['tick1', 'tick2', 'grid']
+    def get_yaxis_transform(self, which="grid"):
+        assert which in ["tick1", "tick2", "grid"]
         return self._yaxis_transform
 
     def get_yaxis_text1_transform(self, pixelPad):
-        if hasattr(self, 'yaxis') and len(self.yaxis.majorTicks) > 0:
+        if hasattr(self, "yaxis") and len(self.yaxis.majorTicks) > 0:
             font_size = self.yaxis.majorTicks[0].label1.get_size()
         else:
             font_size = self._get_key("font.size")
 
         offset = self._get_key("axes.ylabel.correction")[2]
-        return self._yaxis_text1_transform + self.PolarTranslate(self, pad=pixelPad + offset, font_size=font_size), 'center', 'center'
+        return (
+            self._yaxis_text1_transform
+            + self.PolarTranslate(self, pad=pixelPad + offset, font_size=font_size),
+            "center",
+            "center",
+        )
 
     def _gen_axes_patch(self):
         return Circle((0.5, 0.5), self._get_key("axes.radius") + 0.015)
 
-    def _gen_axes_spines(self, locations=None, offset=0.0, units='inches'):
-        return {SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))}
+    def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
+        return {
+            SmithAxes.name: Spine.circular_spine(
+                self, (0.5, 0.5), self._get_key("axes.radius")
+            )
+        }
 
     def set_xscale(self, *args, **kwargs):
-        if args[0] != 'linear':
+        if args[0] != "linear":
             raise NotImplementedError()
         Axes.set_xscale(self, *args, **kwargs)
 
     def set_yscale(self, *args, **kwargs):
-        if args[0] != 'linear':
+        if args[0] != "linear":
             raise NotImplementedError()
         Axes.set_yscale(self, *args, **kwargs)
 
     def set_xlim(self, *args, **kwargs):
-        '''xlim is immutable and always set to (0, infinity)'''
+        """xlim is immutable and always set to (0, infinity)"""
         Axes.set_xlim(self, 0, self._ax_lim_x)
 
     def set_ylim(self, *args, **kwargs):
-        '''ylim is immutable and always set to (-infinity, infinity)'''
+        """ylim is immutable and always set to (-infinity, infinity)"""
         Axes.set_ylim(self, -self._ax_lim_y, self._ax_lim_y)
 
     def format_coord(self, re, im):
@@ -566,12 +617,12 @@ class SmithAxes(Axes):
         pass
 
     def _moebius_z(self, *args, normalize=None):
-        '''
-        Basic transformation. 
-        
+        """
+        Basic transformation.
+
         Arguments:
 
-            *z*: 
+            *z*:
                 Complex number or numpy.ndarray with dtype=complex
 
             *x, y*:
@@ -581,24 +632,24 @@ class SmithAxes(Axes):
                 If True, the values are normalized to self._impedance.
                 If None, self._normalize determines behaviour.
                 Accepts: boolean or None
-                
+
         Returns:
 
             *w*:
-                Performs w = (z - k) / (z + k) with k = 'axes.scale' 
+                Performs w = (z - k) / (z + k) with k = 'axes.scale'
                 Type: Complex number or numpy.ndarray with dtype=complex
-        '''
+        """
         normalize = self._normalize if normalize is None else normalize
         norm = 1 if normalize else self._impedance
         return smithhelper.moebius_z(*args, norm=norm)
 
     def _moebius_inv_z(self, *args, normalize=None):
-        '''
-        Basic inverse transformation. 
-        
+        """
+        Basic inverse transformation.
+
         Arguments:
 
-            *z*: 
+            *z*:
                 Complex number or numpy.ndarray with dtype=complex
 
             *x, y*:
@@ -612,37 +663,39 @@ class SmithAxes(Axes):
         Returns:
 
             *w*:
-                Performs w = k * (1 - z) / (1 + z) with k = 'axes.scale' 
+                Performs w = k * (1 - z) / (1 + z) with k = 'axes.scale'
                 Type: Complex number or numpy.ndarray with dtype=complex
-        '''
+        """
         normalize = self._normalize if normalize is None else normalize
         norm = 1 if normalize else self._impedance
         return smithhelper.moebius_inv_z(*args, norm=norm)
 
     def real_interp1d(self, x, steps):
-        '''
-        Interpolates the given vector as real numbers in the way, that they 
+        """
+        Interpolates the given vector as real numbers in the way, that they
         are evenly spaced after a transformation with imaginary part 0.
-        
+
         Keyword Arguments
-        
+
             *x*:
                 Real values to interpolate.
                 Accepts: 1D iterable (e.g. list or numpy.ndarray)
-                
+
             *steps*:
                 Number of steps between two points.
                 Accepts: integer
-        '''
-        return self._moebius_inv_z(linear_interpolation(self._moebius_z(np.array(x)), steps))
+        """
+        return self._moebius_inv_z(
+            linear_interpolation(self._moebius_z(np.array(x)), steps)
+        )
 
     def imag_interp1d(self, y, steps):
-        '''
-        Interpolates the given vector as imaginary numbers in the way, that 
+        """
+        Interpolates the given vector as imaginary numbers in the way, that
         they are evenly spaced after a transformation with real part 0.
-        
+
         Keyword Arguments
-        
+
             *y*:
                 Imaginary values to interpolate.
                 Accepts: 1D iterable (e.g. list or numpy.ndarray)
@@ -650,7 +703,7 @@ class SmithAxes(Axes):
             *steps*:
                 Number of steps between two points.
                 Accepts: integer
-        '''
+        """
         angs = np.angle(self._moebius_z(np.array(y) * 1j)) % TWO_PI
         i_angs = linear_interpolation(angs, steps)
         return np.imag(self._moebius_inv_z(ang_to_c(i_angs)))
@@ -659,56 +712,80 @@ class SmithAxes(Axes):
         this_axes = self
 
         class SmithHandlerLine2D(HandlerLine2D):
-            def create_artists(self, legend, orig_handle,
-                               xdescent, ydescent, width, height, fontsize,
-                               trans):
+            def create_artists(
+                self,
+                legend,
+                orig_handle,
+                xdescent,
+                ydescent,
+                width,
+                height,
+                fontsize,
+                trans,
+            ):
                 result = HandlerLine2D.create_artists(
-                    self, legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
+                    self,
+                    legend,
+                    orig_handle,
+                    xdescent,
+                    ydescent,
+                    width,
+                    height,
+                    fontsize,
+                    trans,
                 )
-        
+
                 legline = result[0]  # Line artist
                 legline_marker = None  # Marker not returned separately
 
                 # Recreate the marker manually
-                if orig_handle.get_marker() is not None and orig_handle.get_marker() != 'None':
-                    legline_marker = Line2D([], [], 
-                                            linestyle='',
-                                            marker=orig_handle.get_marker(),
-                                            markersize=orig_handle.get_markersize(),
-                                            markerfacecolor=orig_handle.get_markerfacecolor(),
-                                            markeredgecolor=orig_handle.get_markeredgecolor(),
-                                            transform=trans)
+                if (
+                    orig_handle.get_marker() is not None
+                    and orig_handle.get_marker() != "None"
+                ):
+                    legline_marker = Line2D(
+                        [],
+                        [],
+                        linestyle="",
+                        marker=orig_handle.get_marker(),
+                        markersize=orig_handle.get_markersize(),
+                        markerfacecolor=orig_handle.get_markerfacecolor(),
+                        markeredgecolor=orig_handle.get_markeredgecolor(),
+                        transform=trans,
+                    )
 
                 if hasattr(orig_handle, "_markerhacked"):
                     this_axes._hack_linedraw(legline_marker, True)
                 return legline, legline_marker
 
-        return Axes.legend(self, *args, handler_map={Line2D: SmithHandlerLine2D()}, **kwargs)
+        return Axes.legend(
+            self, *args, handler_map={Line2D: SmithHandlerLine2D()}, **kwargs
+        )
 
     def plot(self, *args, **kwargs):
-        '''
-        Plot the given data into the Smith Chart. Behavior similar to basic 
+        """
+        Plot the given data into the Smith Chart. Behavior similar to basic
         :meth:`matplotlib.axes.Axes.plot`, but with some extensions:
-        
+
             - Additional support for real and complex data. Complex values must be
             either of type 'complex' or a numpy.ndarray with dtype=complex.
             - If 'zorder' is not provided, the current default value is used.
             - If 'marker' is not providet, the default value is used.
             - Extra keywords are added.
-        
+
         Extra keyword arguments:
-        
+
             *datatype*:
                 Specifies the input data format. Must be either 'S', 'Z' or 'Y'.
                 Accepts: SmithAxes.[S_PARAMETER,Z_PARAMETER,Y_PARAMETER]
                 Default: 'plot.default.datatype'
-                
+
             *markerhack*:
-                If set, activates the manipulation of start and end markern 
+                If set, activates the manipulation of start and end markern
                 of the created line.
                 Accepts: boolean
                 Default: 'plot.marker.hack'
-                
+
             *rotate_marker*:
                 If *markerhack* is active, rotates the endmarker in direction
                 of the corresponding path.
@@ -731,9 +808,9 @@ class SmithAxes(Axes):
                 Default: False
 
 
-                
+
         See :meth:`matplotlib.axes.Axes.plot` for mor details
-        '''
+        """
         # split input into real and imaginary part if complex
         new_args = ()
         for arg in args:
@@ -749,14 +826,17 @@ class SmithAxes(Axes):
                     pass
 
             # if (converted) arg is an ndarray of complex type, split it
-            if isinstance(arg, np.ndarray) and arg.dtype in [complex, np.complex128]: # np.complex -> complex (I hate this, it made me finally sign up to github)
+            if isinstance(arg, np.ndarray) and arg.dtype in [
+                complex,
+                np.complex128,
+            ]:  # np.complex -> complex (I hate this, it made me finally sign up to github)
                 new_args += z_to_xy(arg)
             else:
                 new_args += (arg,)
 
         # ensure newer plots are above older ones
-        if 'zorder' not in kwargs:
-            kwargs['zorder'] = self._current_zorder
+        if "zorder" not in kwargs:
+            kwargs["zorder"] = self._current_zorder
             self._current_zorder += 0.001
 
         # extract or load non-matplotlib keyword arguments from parameters
@@ -768,11 +848,15 @@ class SmithAxes(Axes):
         rotate_marker = kwargs.pop("rotate_marker", self._get_key("plot.marker.rotate"))
 
         if datatype not in self._datatypes:
-            raise ValueError("'datatype' must be either '%s'" % ",".join(self._datatypes))
+            raise ValueError(
+                "'datatype' must be either '%s'" % ",".join(self._datatypes)
+            )
 
         if interpolate is not False:
             if equipoints > 0:
-                raise ValueError("Interpolation is not available with equidistant markers")
+                raise ValueError(
+                    "Interpolation is not available with equidistant markers"
+                )
 
             if interpolate is True:
                 interpolate = self._get_key("plot.default.interpolation")
@@ -798,7 +882,14 @@ class SmithAxes(Axes):
             elif datatype == SmithAxes.Z_PARAMETER:
                 z = cdata
             else:
-                raise ValueError("'datatype' must be '%s', '%s' or '%s'" % (SmithAxes.S_PARAMETER, SmithAxes.Z_PARAMETER, SmithAxes.Y_PARAMETER))
+                raise ValueError(
+                    "'datatype' must be '%s', '%s' or '%s'"
+                    % (
+                        SmithAxes.S_PARAMETER,
+                        SmithAxes.Z_PARAMETER,
+                        SmithAxes.Y_PARAMETER,
+                    )
+                )
 
             if self._normalize and datatype != SmithAxes.S_PARAMETER:
                 z /= self._impedance
@@ -816,7 +907,12 @@ class SmithAxes(Axes):
                         t = np.linspace(0, 1, equipoints)
                     else:
                         t = np.zeros(ilen)
-                        t[0], t[1:] = t0[0], np.concatenate([np.linspace(i0, i1, interpolate + 2)[1:] for i0, i1 in zip(t0[:-1], t0[1:])])
+                        t[0], t[1:] = t0[0], np.concatenate(
+                            [
+                                np.linspace(i0, i1, interpolate + 2)[1:]
+                                for i0, i1 in zip(t0[:-1], t0[1:])
+                            ]
+                        )
 
                     z = self._moebius_inv_z(*fitpack.splev(t, spline))
                     line.set_data(z_to_xy(z))
@@ -826,35 +922,31 @@ class SmithAxes(Axes):
 
         return lines
 
-    def grid(self,
-             b=None,
-             which='major',
-             fancy=None,
-             dividers=None,
-             threshold=None,
-             **kwargs):
-        '''
-        Complete rewritten grid function. Gridlines are replaced with Arcs, 
+    def grid(
+        self, b=None, which="major", fancy=None, dividers=None, threshold=None, **kwargs
+    ):
+        """
+        Complete rewritten grid function. Gridlines are replaced with Arcs,
         which reduces the amount of points to store and increases speed. The
-        grid consist of a minor and major part, which can be drawn either as 
+        grid consist of a minor and major part, which can be drawn either as
         standard with lines from axis to axis, or fancy with dynamic spacing
-        and length adaption. 
-        
+        and length adaption.
+
         Keyword arguments:
-        
+
             *b*:
                 Enables or disables the selected grid.
                 Accepts: boolean
-                
+
             *which*:
                 The grid to be drawn.
                 Accepts: ['major', 'minor', 'both']
-                
+
             *axis*:
                 The axis to be drawn. x=real and y=imaginary
                 Accepts: ['x', 'y', 'both']
                 Note: if fancy is set, only 'both' is valid
-                
+
             *fancy*:
                 If set to 'True', draws the grid on the fancy way.
                 Accepts: boolean
@@ -863,30 +955,32 @@ class SmithAxes(Axes):
                 Adaptive divisions for the minor fancy grid.
                 Accepts: array with integers
                 Note: has no effect on major and non-fancy grid
-                
+
             *threshold*:
                 Threshold for dynamic adaption of spacing and line length. Can
                 be specified for both axis together or each seperatly.
                 Accepts: float or (float, float)
-                
+
             **kwargs*:
                 Keyword arguments passed to the gridline creator.
-                Note: Gridlines are :class:`matplotlib.patches.Patch` and does 
-                not accept all arguments :class:`matplotlib.lines.Line2D` 
+                Note: Gridlines are :class:`matplotlib.patches.Patch` and does
+                not accept all arguments :class:`matplotlib.lines.Line2D`
                 accepts.
-        '''
+        """
         assert which in ["both", "major", "minor"]
         assert fancy in [None, False, True]
 
         def get_kwargs(grid):
             kw = kwargs.copy()
-            kw.setdefault('zorder', self._get_key("grid.zorder"))
+            kw.setdefault("zorder", self._get_key("grid.zorder"))
             kw.setdefault("alpha", self._get_key("grid.alpha"))
 
             for key in ["linestyle", "linewidth", "color"]:
                 if grid == "minor" and key == "linestyle":
                     if "linestyle" not in kw:
-                        kw.setdefault("dash_capstyle", self._get_key("grid.minor.capstyle"))
+                        kw.setdefault(
+                            "dash_capstyle", self._get_key("grid.minor.capstyle")
+                        )
                         kw.setdefault("dashes", self._get_key("grid.minor.dashes"))
                 else:
                     kw.setdefault(key, self._get_key("grid.%s.%s" % (grid, key)))
@@ -896,9 +990,13 @@ class SmithAxes(Axes):
         def check_fancy(yticks):
             # checks if the imaginary axis is symetric
             len_y = (len(yticks) - 1) // 2
-            if not (len(yticks) % 2 == 1 and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()):
+            if not (
+                len(yticks) % 2 == 1
+                and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()
+            ):
                 raise ValueError(
-                    "fancy minor grid is only supported for zero-symetric imaginary grid - e.g. ImagMaxNLocator")
+                    "fancy minor grid is only supported for zero-symetric imaginary grid - e.g. ImagMaxNLocator"
+                )
             return yticks[len_y:]
 
         def split_threshold(threshold):
@@ -918,7 +1016,9 @@ class SmithAxes(Axes):
             arcs = self._majorarcs if grid == "major" else self._minorarcs
             if grid == "minor":
                 param["zorder"] -= 1e-9
-            arcs.append((type, (ps, p0, p1), self._add_gridline(ps, p0, p1, type, **param)))
+            arcs.append(
+                (type, (ps, p0, p1), self._add_gridline(ps, p0, p1, type, **param))
+            )
 
         def draw_nonfancy(grid):
             if grid == "major":
@@ -951,13 +1051,13 @@ class SmithAxes(Axes):
             raise ValueError("Only 'both' is a supported value for 'axis'")
 
         # plot major grid
-        if which in ['both', 'major']:
+        if which in ["both", "major"]:
             for _, _, arc in self._majorarcs:
                 arc.remove()
             self._majorarcs = []
 
             if b:
-                param = get_kwargs('major')
+                param = get_kwargs("major")
                 if fancy_major:
                     xticks = np.sort(self.xaxis.get_majorticklocs())
                     yticks = np.sort(self.yaxis.get_majorticklocs())
@@ -976,8 +1076,11 @@ class SmithAxes(Axes):
                     for xs in xticks:
                         k = 1
                         while k < len(tmp_yticks):
-                            y0, y1 = tmp_yticks[k - 1:k + 1]
-                            if abs(self._moebius_z(xs, y0) - self._moebius_z(xs, y1)) < thr_x:
+                            y0, y1 = tmp_yticks[k - 1 : k + 1]
+                            if (
+                                abs(self._moebius_z(xs, y0) - self._moebius_z(xs, y1))
+                                < thr_x
+                            ):
                                 add_arc(y1, 0, xs, "major", "imag")
                                 add_arc(-y1, 0, xs, "major", "imag")
                                 tmp_yticks = np.delete(tmp_yticks, k)
@@ -985,11 +1088,14 @@ class SmithAxes(Axes):
                                 k += 1
 
                     for i in range(1, len(yticks)):
-                        y0, y1 = yticks[i - 1:i + 1]
+                        y0, y1 = yticks[i - 1 : i + 1]
                         k = 1
                         while k < len(xticks):
-                            x0, x1 = xticks[k - 1:k + 1]
-                            if abs(self._moebius_z(x0, y1) - self._moebius_z(x1, y1)) < thr_y:
+                            x0, x1 = xticks[k - 1 : k + 1]
+                            if (
+                                abs(self._moebius_z(x0, y1) - self._moebius_z(x1, y1))
+                                < thr_y
+                            ):
                                 add_arc(x1, -y0, y0, "major", "real")
                                 xticks = np.delete(xticks, k)
                             else:
@@ -998,7 +1104,7 @@ class SmithAxes(Axes):
                     draw_nonfancy("major")
 
         # plot minor grid
-        if which in ['both', 'minor']:
+        if which in ["both", "minor"]:
             # remove the old grid
             for _, _, arc in self._minorarcs:
                 arc.remove()
@@ -1031,8 +1137,8 @@ class SmithAxes(Axes):
                     # TODO: optimize spacing algorithm
                     for i in range(len_x):
                         for k in range(len_y):
-                            x0, x1 = xticks[i:i + 2]
-                            y0, y1 = yticks[k:k + 2]
+                            x0, x1 = xticks[i : i + 2]
+                            y0, y1 = yticks[k : k + 2]
 
                             xm = self.real_interp1d([x0, x1], 2)[1]
                             ym = self.imag_interp1d([y0, y1], 2)[1]
@@ -1040,13 +1146,25 @@ class SmithAxes(Axes):
                             x_div = y_div = dividers[0]
 
                             for div in dividers[1:]:
-                                if abs(self._moebius_z(x1 - (x1 - x0) / div, ym) - self._moebius_z(x1, ym)) > thr_x:
+                                if (
+                                    abs(
+                                        self._moebius_z(x1 - (x1 - x0) / div, ym)
+                                        - self._moebius_z(x1, ym)
+                                    )
+                                    > thr_x
+                                ):
                                     x_div = div
                                 else:
                                     break
 
                             for div in dividers[1:]:
-                                if abs(self._moebius_z(xm, y1) - self._moebius_z(xm, y1 - (y1 - y0) / div)) > thr_y:
+                                if (
+                                    abs(
+                                        self._moebius_z(xm, y1)
+                                        - self._moebius_z(xm, y1 - (y1 - y0) / div)
+                                    )
+                                    > thr_y
+                                ):
                                     y_div = div
                                 else:
                                     break
@@ -1055,7 +1173,9 @@ class SmithAxes(Axes):
 
                     # 3. Steps: optimize spacing
                     # ensure the x-spacing declines towards infinity
-                    d_mat[:-1, 0, 0] = list(map(np.max, zip(d_mat[:-1, 0, 0], d_mat[1:, 0, 0])))
+                    d_mat[:-1, 0, 0] = list(
+                        map(np.max, zip(d_mat[:-1, 0, 0], d_mat[1:, 0, 0]))
+                    )
 
                     # find the values which are near (0, 0.5) on the plot
                     idx = np.searchsorted(xticks, self._moebius_inv_z(0)) + 1
@@ -1065,20 +1185,20 @@ class SmithAxes(Axes):
                     if idx > idy:
                         for d in range(idy):
                             delta = idx - idy + d
-                            d_mat[delta, :d + 1] = d_mat[:delta, d] = d_mat[delta, 0]
+                            d_mat[delta, : d + 1] = d_mat[:delta, d] = d_mat[delta, 0]
                     else:
                         for d in range(idx):
                             delta = idy - idx + d
-                            d_mat[:d + 1, delta] = d_mat[d, :delta] = d_mat[d, 0]
+                            d_mat[: d + 1, delta] = d_mat[d, :delta] = d_mat[d, 0]
 
                     # 4. Step: gather and optimize the lines
                     x_lines, y_lines = [], []
 
                     for i in range(len_x):
-                        x0, x1 = xticks[i:i + 2]
+                        x0, x1 = xticks[i : i + 2]
 
                         for k in range(len_y):
-                            y0, y1 = yticks[k:k + 2]
+                            y0, y1 = yticks[k : k + 2]
 
                             x_div, y_div = d_mat[i, k]
 
@@ -1102,7 +1222,12 @@ class SmithAxes(Axes):
                                 p0, p1 = p1, p0
 
                             for tq, (qs, q0, q1), _ in self._majorarcs:
-                                if tp == tq and abs(ps - qs) < EPSILON and p1 > q0 and p0 < q1:
+                                if (
+                                    tp == tq
+                                    and abs(ps - qs) < EPSILON
+                                    and p1 > q0
+                                    and p0 < q1
+                                ):
                                     lines[i, :] = np.nan
                                     break
 
@@ -1121,47 +1246,65 @@ class SmithAxes(Axes):
                     draw_nonfancy("minor")
 
     def _hack_linedraw(self, line, rotate_marker=None):
-        '''
+        """
         Modifies the draw method of a :class:`matplotlib.lines.Line2D` object
         to draw different stard and end marker.
-        
+
         Keyword arguments:
-            
+
             *line*:
                 Line to be modified
-                Accepts: Line2D 
-                
+                Accepts: Line2D
+
             *rotate_marker*:
                 If set, the end marker will be rotated in direction of their
-                corresponding path. 
+                corresponding path.
                 Accepts: boolean
-        '''
+        """
         assert isinstance(line, Line2D)
 
         def new_draw(self_line, renderer):
-            def new_draw_markers(self_renderer, gc, marker_path, marker_trans, path, trans, rgbFace=None):
+            def new_draw_markers(
+                self_renderer, gc, marker_path, marker_trans, path, trans, rgbFace=None
+            ):
                 # get the drawn path for determining the rotation angle
-                line_vertices = self_line._get_transformed_path().get_fully_transformed_path().vertices
+                line_vertices = (
+                    self_line._get_transformed_path()
+                    .get_fully_transformed_path()
+                    .vertices
+                )
                 vertices = path.vertices
 
                 if len(vertices) == 1:
                     line_set = [[default_marker, vertices]]
                 else:
                     if rotate_marker:
-                        dx, dy = np.array(line_vertices[-1]) - np.array(line_vertices[-2])
+                        dx, dy = np.array(line_vertices[-1]) - np.array(
+                            line_vertices[-2]
+                        )
                         end_rot = MarkerStyle(end.get_marker())
-                        end_rot._transform += Affine2D().rotate(np.arctan2(dy, dx) - np.pi / 2)
+                        end_rot._transform += Affine2D().rotate(
+                            np.arctan2(dy, dx) - np.pi / 2
+                        )
                     else:
                         end_rot = end
 
                     if len(vertices) == 2:
                         line_set = [[start, vertices[0:1]], [end_rot, vertices[1:2]]]
                     else:
-                        line_set = [[start, vertices[0:1]], [default_marker, vertices[1:-1]], [end_rot, vertices[-1:]]]
+                        line_set = [
+                            [start, vertices[0:1]],
+                            [default_marker, vertices[1:-1]],
+                            [end_rot, vertices[-1:]],
+                        ]
 
                 for marker, points in line_set:
-                    transform = marker.get_transform() + Affine2D().scale(self_line._markersize)
-                    old_draw_markers(gc, marker.get_path(), transform, Path(points), trans, rgbFace)
+                    transform = marker.get_transform() + Affine2D().scale(
+                        self_line._markersize
+                    )
+                    old_draw_markers(
+                        gc, marker.get_path(), transform, Path(points), trans, rgbFace
+                    )
 
             old_draw_markers = renderer.draw_markers
             renderer.draw_markers = MethodType(new_draw_markers, renderer)
@@ -1187,7 +1330,7 @@ class SmithAxes(Axes):
             line._markerhacked = True
 
     def _add_gridline(self, ps, p0, p1, type, **kwargs):
-        '''
+        """
         Add a gridline for a real axis circle.
 
         Keyword arguments:
@@ -1197,7 +1340,7 @@ class SmithAxes(Axes):
                 Accepts: float
 
             *p0*:
-                Start point 
+                Start point
                 Accepts: float
 
             *p1*:
@@ -1206,7 +1349,7 @@ class SmithAxes(Axes):
 
             **kwargs*:
                 Keywords passed to the arc creator
-        '''
+        """
         assert type in ["real", "imag"]
 
         if type == "real":
@@ -1225,9 +1368,10 @@ class SmithAxes(Axes):
         return self.add_artist(line)
 
     class MoebiusTransform(Transform):
-        '''
+        """
         Class for transforming points and paths to Smith Chart data space.
-        '''
+        """
+
         input_dims = 2
         output_dims = 2
         is_separable = False
@@ -1272,7 +1416,14 @@ class SmithAxes(Axes):
                 if reverse:
                     ang0, ang1 = ang1, ang0
 
-                arc = Arc(z_to_xy(zm), d, d, theta1=ang0, theta2=ang1, transform=self._axes.transMoebius)
+                arc = Arc(
+                    z_to_xy(zm),
+                    d,
+                    d,
+                    theta1=ang0,
+                    theta2=ang1,
+                    transform=self._axes.transMoebius,
+                )
                 arc._path = Path.arc(ang0, ang1)  # fix for Matplotlib 2.1+
                 arc_path = arc.get_patch_transform().transform_path(arc.get_path())
 
@@ -1286,7 +1437,9 @@ class SmithAxes(Axes):
                 new_vertices = self.transform_non_affine(vertices)
                 new_codes = codes
             else:
-                raise NotImplementedError("Value for 'path_interpolation' cannot be interpreted.")
+                raise NotImplementedError(
+                    "Value for 'path_interpolation' cannot be interpreted."
+                )
 
             return Path(new_vertices, new_codes)
 
@@ -1294,9 +1447,10 @@ class SmithAxes(Axes):
             return SmithAxes.InvertedMoebiusTransform(self._axes)
 
     class InvertedMoebiusTransform(Transform):
-        '''
+        """
         Inverse transformation for points and paths in Smith Chart data space.
-        '''
+        """
+
         input_dims = 2
         output_dims = 2
         is_separable = False
@@ -1316,22 +1470,23 @@ class SmithAxes(Axes):
             return SmithAxes.MoebiusTransform(self._axes)
 
     class PolarTranslate(Transform):
-        '''
+        """
         Transformation for translating points away from the center by a given
-        padding. 
-        
+        padding.
+
         Keyword arguments:
-            
+
             *axes*:
                 Parent :class:`SmithAxes`
                 Accepts: SmithAxes instance
-                
+
             *pad*:
                 Distance to translate away from center for x and y values.
-                
+
             *font_size*:
                 y values are shiftet 0.5 * font_size further away.
-        '''
+        """
+
         input_dims = 2
         output_dims = 2
         is_separable = False
@@ -1346,7 +1501,9 @@ class SmithAxes(Axes):
             def _translate(_xy):
                 x, y = _xy
                 ang = np.angle(complex(x - x0, y - y0))
-                return x + np.cos(ang) * self.pad, y + np.sin(ang) * (self.pad + 0.5 * self.font_size)
+                return x + np.cos(ang) * self.pad, y + np.sin(ang) * (
+                    self.pad + 0.5 * self.font_size
+                )
 
             x0, y0 = self.axes.transAxes.transform([0.5, 0.5])
             if isinstance(xy[0], Iterable):
@@ -1355,25 +1512,25 @@ class SmithAxes(Axes):
                 return _translate(xy)
 
     class RealMaxNLocator(Locator):
-        ''' 
+        """
         Locator for the real axis of a SmithAxes. Creates a nicely rounded
         spacing with maximum n values. The transformed center value is
         always included.
-        
+
         Keyword arguments:
-            
+
             *axes*:
                 Parent SmithAxes
                 Accepts: SmithAxes instance
-                
+
             *n*:
                 Maximum number of divisions
                 Accepts: integer
-                
+
             *precision*:
                 Maximum number of significant decimals
                 Accepts: integer
-        '''
+        """
 
         def __init__(self, axes, n, precision=None):
             assert isinstance(axes, SmithAxes)
@@ -1477,16 +1634,16 @@ class SmithAxes(Axes):
             return np.imag(-self.axes._moebius_inv_z(ang_to_c(np.pi + np.array(x))))
 
     class SmithAutoMinorLocator(AutoMinorLocator):
-        '''
-        AutoLocator for SmithAxes. Returns linear spaced intermediate ticks 
-        depending on the major tickvalues. 
-        
+        """
+        AutoLocator for SmithAxes. Returns linear spaced intermediate ticks
+        depending on the major tickvalues.
+
         Keyword arguments:
-            
+
             *n*:
                 Number of intermediate ticks
                 Accepts: positive integer
-        '''
+        """
 
         def __init__(self, n=4):
             assert isinstance(n, int) and n > 0
@@ -1497,21 +1654,25 @@ class SmithAxes(Axes):
             if self._ticks is None:
                 locs = self.axis.get_majorticklocs()
                 self._ticks = np.concatenate(
-                    [np.linspace(p0, p1, self.ndivs + 1)[1:-1] for (p0, p1) in zip(locs[:-1], locs[1:])])
+                    [
+                        np.linspace(p0, p1, self.ndivs + 1)[1:-1]
+                        for (p0, p1) in zip(locs[:-1], locs[1:])
+                    ]
+                )
             return self._ticks
 
     class RealFormatter(Formatter):
-        ''' 
-        Formatter for the real axis of a SmithAxes. Prints the numbers as 
+        """
+        Formatter for the real axis of a SmithAxes. Prints the numbers as
         float and removes trailing zeros and commata. Special returns:
-            '' for 0. 
+            '' for 0.
 
         Keyword arguments:
 
             *axes*:
-                Parent axes 
+                Parent axes
                 Accepts: SmithAxes instance
-        '''
+        """
 
         def __init__(self, axes, *args, **kwargs):
             assert isinstance(axes, SmithAxes)
@@ -1522,22 +1683,22 @@ class SmithAxes(Axes):
             if x < EPSILON or x > self._axes._near_inf:
                 return ""
             else:
-                return ('%f' % x).rstrip('0').rstrip('.')
+                return ("%f" % x).rstrip("0").rstrip(".")
 
     class ImagFormatter(RealFormatter):
-        ''' 
-        Formatter for the imaginary axis of a SmithAxes. Prints the numbers 
+        """
+        Formatter for the imaginary axis of a SmithAxes. Prints the numbers
         as  float and removes trailing zeros and commata. Special returns:
-            - '' for minus infinity 
+            - '' for minus infinity
             - 'symbol.infinity' from scParams for plus infinity
             - '0' for value near zero (prevents -0)
-            
+
         Keyword arguments:
 
             *axes*:
-                Parent axes 
+                Parent axes
                 Accepts: SmithAxes instance
-        '''
+        """
 
         def __call__(self, x, pos=None):
             if x < -self._axes._near_inf:
@@ -1547,7 +1708,7 @@ class SmithAxes(Axes):
             elif abs(x) < EPSILON:
                 return "0"
             else:
-                return ("%f" % x).rstrip('0').rstrip('.') + "j"
+                return ("%f" % x).rstrip("0").rstrip(".") + "j"
 
     # update docstrings for all methode not set
     for key, value in locals().copy().items():

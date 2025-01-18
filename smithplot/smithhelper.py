@@ -32,7 +32,9 @@ def xy_to_z(*xy):
         else:
             z = x + 1j * y
     else:
-        raise ValueError("Arguments are not valid - specify either complex number/vector z or real and imaginary number/vector x, y")
+        raise ValueError(
+            "Arguments are not valid - specify either complex number/vector z or real and imaginary number/vector x, y"
+        )
 
     return z
 
