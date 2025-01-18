@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 
 import numpy as np
 from matplotlib import rcParams, pyplot as pp
@@ -8,13 +9,17 @@ from matplotlib import rcParams, pyplot as pp
 rcParams.update({"legend.numpoints": 3})
 
 sys.path.append("..")
-from smithplot import SmithAxes
+from pysmithplot import SmithAxes
 
-# sample data
-data = np.loadtxt("data/s11.csv", delimiter=",", skiprows=1)[::100]
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+data_path11 = os.path.join(script_dir, "data/s11.csv")
+data_path22 = os.path.join(script_dir, "data/s22.csv")
+
+data = np.loadtxt(data_path11, delimiter=",", skiprows=1)[::100]
 val1 = data[:, 1] + data[:, 2] * 1j
 
-data = np.loadtxt("data/s22.csv", delimiter=",", skiprows=1)[::100]
+data = np.loadtxt(data_path22, delimiter=",", skiprows=1)[::100]
 val2 = data[:, 1] + data[:, 2] * 1j
 
 # plot data

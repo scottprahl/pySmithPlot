@@ -41,9 +41,8 @@ rcheck:
 	make test
 
 test:
-	python -m pytest tests/test_nojit.py
-	python -m pytest tests/test_jit.py
-	python -m pytest tests/test_all_examples.py
+	python tests/smith_short_test.py
+	python tests/smith_full_test.py
 
 clean:
 	rm -rf dist

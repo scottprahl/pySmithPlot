@@ -11,18 +11,23 @@ import numpy as np
 from matplotlib import rcParams, pyplot as pp
 
 sys.path.append("..")
-from smithplot.smithaxes import SmithAxes
-from smithplot import smithhelper
+from pysmithplot.smithaxes import SmithAxes
+from pysmithplot import smithhelper
 
 rcParams.update({"legend.numpoints": 3, "axes.axisbelow": True})
 
-# sample data
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+data_path11 = os.path.join(script_dir, "data/s11.csv")
+data_path22 = os.path.join(script_dir, "data/s22.csv")
+
 steps = 40
-data = np.loadtxt("data/s11.csv", delimiter=",", skiprows=1)[::steps]
+data = np.loadtxt(data_path11, delimiter=",", skiprows=1)[::steps]
 sp_data = data[:, 1] + data[:, 2] * 1j
 
-data = np.loadtxt("data/s22.csv", delimiter=",", skiprows=1)[::steps]
+data = np.loadtxt(data_path22, delimiter=",", skiprows=1)[::steps]
 z_data = 50 * (data[:, 1] + data[:, 2] * 1j)
+
 
 # default params
 SmithAxes.update_scParams(
@@ -79,9 +84,7 @@ def tb_grid_styles():
                     )
 
                     major_str = "fancy" if major_fancy else "standard"
-                    minor_str = (
-                        "off" if not minor else "fancy" if minor_fancy else "standard"
-                    )
+                    minor_str = "off" if not minor else "fancy" if minor_fancy else "standard"
 
                     plot_example(tb, "Major: %s - Minor: %s" % (major_str, minor_str))
 

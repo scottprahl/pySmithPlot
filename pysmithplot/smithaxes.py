@@ -144,9 +144,7 @@ class SmithAxes(Axes):
     }
 
     @staticmethod
-    def update_scParams(
-        sc_dict=None, instance=None, filter_dict=False, reset=True, **kwargs
-    ):
+    def update_scParams(sc_dict=None, instance=None, filter_dict=False, reset=True, **kwargs):
         """
         Method for updating the parameters of a SmithAxes instance. If no instance
         is given, the changes are global, but affect only instances created
@@ -361,8 +359,7 @@ class SmithAxes(Axes):
 
         if not filter_dict and len(remaining) > 0:
             raise KeyError(
-                "Following keys are invalid SmithAxes parameters: '%s'"
-                % ",".join(remaining.keys())
+                "Following keys are invalid SmithAxes parameters: '%s'" % ",".join(remaining.keys())
             )
 
         if reset and instance is not None:
@@ -390,9 +387,7 @@ class SmithAxes(Axes):
         Axes.__init__(
             self,
             *args,
-            **SmithAxes.update_scParams(
-                instance=self, filter_dict=True, reset=False, **kwargs
-            )
+            **SmithAxes.update_scParams(instance=self, filter_dict=True, reset=False, **kwargs),
         )
         self.set_aspect(1, adjustable="box", anchor="C")
 
@@ -449,19 +444,11 @@ class SmithAxes(Axes):
         self._normalize = self._get_key("axes.normalize")
         self._current_zorder = self._get_key("plot.zorder")
 
-        self.xaxis.set_major_locator(
-            self.RealMaxNLocator(self, self._get_key("grid.major.xmaxn"))
-        )
-        self.yaxis.set_major_locator(
-            self.ImagMaxNLocator(self, self._get_key("grid.major.ymaxn"))
-        )
+        self.xaxis.set_major_locator(self.RealMaxNLocator(self, self._get_key("grid.major.xmaxn")))
+        self.yaxis.set_major_locator(self.ImagMaxNLocator(self, self._get_key("grid.major.ymaxn")))
 
-        self.xaxis.set_minor_locator(
-            self.SmithAutoMinorLocator(self._get_key("grid.minor.xauto"))
-        )
-        self.yaxis.set_minor_locator(
-            self.SmithAutoMinorLocator(self._get_key("grid.minor.yauto"))
-        )
+        self.xaxis.set_minor_locator(self.SmithAutoMinorLocator(self._get_key("grid.minor.xauto")))
+        self.yaxis.set_minor_locator(self.SmithAutoMinorLocator(self._get_key("grid.minor.yauto")))
 
         self.xaxis.set_ticks_position("none")
         self.yaxis.set_ticks_position("none")
@@ -477,9 +464,7 @@ class SmithAxes(Axes):
             label.set_bbox(self._get_key("axes.xlabel.fancybox"))
             self.add_artist(label)  # if not readded, labels are drawn behind grid
 
-        for tick, loc in zip(
-            self.yaxis.get_major_ticks(), self.yaxis.get_majorticklocs()
-        ):
+        for tick, loc in zip(self.yaxis.get_major_ticks(), self.yaxis.get_majorticklocs()):
             # workaround for fixing to small infinity symbol
             if abs(loc) > self._near_inf:
                 tick.label1.set_size(
@@ -504,8 +489,7 @@ class SmithAxes(Axes):
             box = self.text(
                 x,
                 y,
-                r"Z$_\mathrm{0}$ = %d$\,$%s"
-                % (self._impedance, self._get_key("symbol.ohm")),
+                r"Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm")),
                 ha="left",
                 va="bottom",
             )
@@ -519,12 +503,8 @@ class SmithAxes(Axes):
 
     def _set_lim_and_transforms(self):
         r = self._get_key("axes.radius")
-        self.transProjection = self.MoebiusTransform(
-            self
-        )  # data space  -> moebius space
-        self.transAffine = (
-            Affine2D().scale(r, r).translate(0.5, 0.5)
-        )  # moebius space -> axes space
+        self.transProjection = self.MoebiusTransform(self)  # data space  -> moebius space
+        self.transAffine = Affine2D().scale(r, r).translate(0.5, 0.5)  # moebius space -> axes space
         self.transDataToAxes = self.transProjection + self.transAffine
         self.transAxes = BboxTransformTo(self.bbox)  # axes space -> drawing space
         self.transMoebius = self.transAffine + self.transAxes
@@ -573,9 +553,7 @@ class SmithAxes(Axes):
 
     def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
         return {
-            SmithAxes.name: Spine.circular_spine(
-                self, (0.5, 0.5), self._get_key("axes.radius")
-            )
+            SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))
         }
 
     def set_xscale(self, *args, **kwargs):
@@ -685,9 +663,7 @@ class SmithAxes(Axes):
                 Number of steps between two points.
                 Accepts: integer
         """
-        return self._moebius_inv_z(
-            linear_interpolation(self._moebius_z(np.array(x)), steps)
-        )
+        return self._moebius_inv_z(linear_interpolation(self._moebius_z(np.array(x)), steps))
 
     def imag_interp1d(self, y, steps):
         """
@@ -713,54 +689,31 @@ class SmithAxes(Axes):
 
         class SmithHandlerLine2D(HandlerLine2D):
             def create_artists(
-                self,
-                legend,
-                orig_handle,
-                xdescent,
-                ydescent,
-                width,
-                height,
-                fontsize,
-                trans,
+                self, legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
             ):
-                result = HandlerLine2D.create_artists(
-                    self,
-                    legend,
-                    orig_handle,
-                    xdescent,
-                    ydescent,
-                    width,
-                    height,
-                    fontsize,
-                    trans,
+                # Call the base method to create line and marker
+                result = super().create_artists(
+                    legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
                 )
 
-                legline = result[0]  # Line artist
-                legline_marker = None  # Marker not returned separately
+                # Handle cases for newer Matplotlib versions (list) or older (tuple)
+                if isinstance(result, list):
+                    line = result[0]
+                    marker = None
+                elif isinstance(result, tuple):
+                    line, marker = result
+                else:
+                    raise RuntimeError("Unexpected return type from create_artists.")
 
-                # Recreate the marker manually
-                if (
-                    orig_handle.get_marker() is not None
-                    and orig_handle.get_marker() != "None"
-                ):
-                    legline_marker = Line2D(
-                        [],
-                        [],
-                        linestyle="",
-                        marker=orig_handle.get_marker(),
-                        markersize=orig_handle.get_markersize(),
-                        markerfacecolor=orig_handle.get_markerfacecolor(),
-                        markeredgecolor=orig_handle.get_markeredgecolor(),
-                        transform=trans,
+                # Ensure line and marker are not None
+                if line is None:
+                    line = Line2D([], [], linestyle="-", color="black", transform=trans)
+                if marker is None:
+                    marker = Line2D(
+                        [], [], linestyle="", marker="o", color="black", transform=trans
                     )
 
-                if hasattr(orig_handle, "_markerhacked"):
-                    this_axes._hack_linedraw(legline_marker, True)
-                return legline, legline_marker
-
-        return Axes.legend(
-            self, *args, handler_map={Line2D: SmithHandlerLine2D()}, **kwargs
-        )
+                return line, marker
 
     def plot(self, *args, **kwargs):
         """
@@ -848,15 +801,11 @@ class SmithAxes(Axes):
         rotate_marker = kwargs.pop("rotate_marker", self._get_key("plot.marker.rotate"))
 
         if datatype not in self._datatypes:
-            raise ValueError(
-                "'datatype' must be either '%s'" % ",".join(self._datatypes)
-            )
+            raise ValueError("'datatype' must be either '%s'" % ",".join(self._datatypes))
 
         if interpolate is not False:
             if equipoints > 0:
-                raise ValueError(
-                    "Interpolation is not available with equidistant markers"
-                )
+                raise ValueError("Interpolation is not available with equidistant markers")
 
             if interpolate is True:
                 interpolate = self._get_key("plot.default.interpolation")
@@ -922,9 +871,7 @@ class SmithAxes(Axes):
 
         return lines
 
-    def grid(
-        self, b=None, which="major", fancy=None, dividers=None, threshold=None, **kwargs
-    ):
+    def grid(self, b=None, which="major", fancy=None, dividers=None, threshold=None, **kwargs):
         """
         Complete rewritten grid function. Gridlines are replaced with Arcs,
         which reduces the amount of points to store and increases speed. The
@@ -978,9 +925,7 @@ class SmithAxes(Axes):
             for key in ["linestyle", "linewidth", "color"]:
                 if grid == "minor" and key == "linestyle":
                     if "linestyle" not in kw:
-                        kw.setdefault(
-                            "dash_capstyle", self._get_key("grid.minor.capstyle")
-                        )
+                        kw.setdefault("dash_capstyle", self._get_key("grid.minor.capstyle"))
                         kw.setdefault("dashes", self._get_key("grid.minor.dashes"))
                 else:
                     kw.setdefault(key, self._get_key("grid.%s.%s" % (grid, key)))
@@ -990,10 +935,7 @@ class SmithAxes(Axes):
         def check_fancy(yticks):
             # checks if the imaginary axis is symetric
             len_y = (len(yticks) - 1) // 2
-            if not (
-                len(yticks) % 2 == 1
-                and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()
-            ):
+            if not (len(yticks) % 2 == 1 and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()):
                 raise ValueError(
                     "fancy minor grid is only supported for zero-symetric imaginary grid - e.g. ImagMaxNLocator"
                 )
@@ -1016,9 +958,7 @@ class SmithAxes(Axes):
             arcs = self._majorarcs if grid == "major" else self._minorarcs
             if grid == "minor":
                 param["zorder"] -= 1e-9
-            arcs.append(
-                (type, (ps, p0, p1), self._add_gridline(ps, p0, p1, type, **param))
-            )
+            arcs.append((type, (ps, p0, p1), self._add_gridline(ps, p0, p1, type, **param)))
 
         def draw_nonfancy(grid):
             if grid == "major":
@@ -1077,10 +1017,7 @@ class SmithAxes(Axes):
                         k = 1
                         while k < len(tmp_yticks):
                             y0, y1 = tmp_yticks[k - 1 : k + 1]
-                            if (
-                                abs(self._moebius_z(xs, y0) - self._moebius_z(xs, y1))
-                                < thr_x
-                            ):
+                            if abs(self._moebius_z(xs, y0) - self._moebius_z(xs, y1)) < thr_x:
                                 add_arc(y1, 0, xs, "major", "imag")
                                 add_arc(-y1, 0, xs, "major", "imag")
                                 tmp_yticks = np.delete(tmp_yticks, k)
@@ -1092,10 +1029,7 @@ class SmithAxes(Axes):
                         k = 1
                         while k < len(xticks):
                             x0, x1 = xticks[k - 1 : k + 1]
-                            if (
-                                abs(self._moebius_z(x0, y1) - self._moebius_z(x1, y1))
-                                < thr_y
-                            ):
+                            if abs(self._moebius_z(x0, y1) - self._moebius_z(x1, y1)) < thr_y:
                                 add_arc(x1, -y0, y0, "major", "real")
                                 xticks = np.delete(xticks, k)
                             else:
@@ -1173,9 +1107,7 @@ class SmithAxes(Axes):
 
                     # 3. Steps: optimize spacing
                     # ensure the x-spacing declines towards infinity
-                    d_mat[:-1, 0, 0] = list(
-                        map(np.max, zip(d_mat[:-1, 0, 0], d_mat[1:, 0, 0]))
-                    )
+                    d_mat[:-1, 0, 0] = list(map(np.max, zip(d_mat[:-1, 0, 0], d_mat[1:, 0, 0])))
 
                     # find the values which are near (0, 0.5) on the plot
                     idx = np.searchsorted(xticks, self._moebius_inv_z(0)) + 1
@@ -1222,12 +1154,7 @@ class SmithAxes(Axes):
                                 p0, p1 = p1, p0
 
                             for tq, (qs, q0, q1), _ in self._majorarcs:
-                                if (
-                                    tp == tq
-                                    and abs(ps - qs) < EPSILON
-                                    and p1 > q0
-                                    and p0 < q1
-                                ):
+                                if tp == tq and abs(ps - qs) < EPSILON and p1 > q0 and p0 < q1:
                                     lines[i, :] = np.nan
                                     break
 
@@ -1245,82 +1172,80 @@ class SmithAxes(Axes):
                 else:
                     draw_nonfancy("minor")
 
-    def _hack_linedraw(self, line, rotate_marker=None):
+    def _hack_linedraw(self, line, rotate_marker):
         """
         Modifies the draw method of a :class:`matplotlib.lines.Line2D` object
-        to draw different stard and end marker.
+        to draw different start and end markers.
 
         Keyword arguments:
-
-            *line*:
-                Line to be modified
-                Accepts: Line2D
-
-            *rotate_marker*:
-                If set, the end marker will be rotated in direction of their
-                corresponding path.
-                Accepts: boolean
+            *line*: Line to be modified (Accepts: Line2D)
+            *rotate_marker*: If set, the end marker will be rotated in direction of their
+            corresponding path (Accepts: boolean)
         """
+
+        # Helper function to validate marker styles
+        def to_marker_style(marker):
+            if marker is None:
+                return MarkerStyle("o")  # Default marker
+            if isinstance(marker, MarkerStyle):
+                return marker
+            return MarkerStyle(marker)  # Convert string to MarkerStyle
+
+        # Fetch and validate marker styles
+        start_marker = self._get_key("plot.marker.start")
+        end_marker = self._get_key("plot.marker.end")
+        start = to_marker_style(start_marker)
+        end = to_marker_style(end_marker)
+
+        # Debugging to confirm markers
+        print(f"Validated Start Marker: {start.get_marker()}, End Marker: {end.get_marker()}")
+
         assert isinstance(line, Line2D)
 
         def new_draw(self_line, renderer):
             def new_draw_markers(
                 self_renderer, gc, marker_path, marker_trans, path, trans, rgbFace=None
             ):
-                # get the drawn path for determining the rotation angle
+                # Get the drawn path for determining the rotation angle
                 line_vertices = (
-                    self_line._get_transformed_path()
-                    .get_fully_transformed_path()
-                    .vertices
+                    self_line._get_transformed_path().get_fully_transformed_path().vertices
                 )
                 vertices = path.vertices
 
                 if len(vertices) == 1:
-                    line_set = [[default_marker, vertices]]
+                    line_set = [[to_marker_style(line._marker), vertices]]
                 else:
                     if rotate_marker:
-                        dx, dy = np.array(line_vertices[-1]) - np.array(
-                            line_vertices[-2]
-                        )
-                        end_rot = MarkerStyle(end.get_marker())
-                        end_rot._transform += Affine2D().rotate(
-                            np.arctan2(dy, dx) - np.pi / 2
-                        )
+                        dx, dy = np.array(line_vertices[-1]) - np.array(line_vertices[-2])
+                        end_rot = to_marker_style(end)
+                        end_rot._transform += Affine2D().rotate(np.arctan2(dy, dx) - np.pi / 2)
                     else:
-                        end_rot = end
+                        end_rot = to_marker_style(end)
 
                     if len(vertices) == 2:
                         line_set = [[start, vertices[0:1]], [end_rot, vertices[1:2]]]
                     else:
                         line_set = [
                             [start, vertices[0:1]],
-                            [default_marker, vertices[1:-1]],
+                            [to_marker_style(line._marker), vertices[1:-1]],
                             [end_rot, vertices[-1:]],
                         ]
 
                 for marker, points in line_set:
-                    transform = marker.get_transform() + Affine2D().scale(
-                        self_line._markersize
-                    )
-                    old_draw_markers(
-                        gc, marker.get_path(), transform, Path(points), trans, rgbFace
-                    )
+                    marker = to_marker_style(marker)  # Ensure it's a MarkerStyle
+                    transform = marker.get_transform() + Affine2D().scale(self_line._markersize)
+                    old_draw_markers(gc, marker.get_path(), transform, Path(points), trans, rgbFace)
 
             old_draw_markers = renderer.draw_markers
             renderer.draw_markers = MethodType(new_draw_markers, renderer)
             old_draw(renderer)
             renderer.draw_markers = old_draw_markers
 
-        default_marker = line._marker
-        # check if marker is set and visible
+        # Validate default marker
+        default_marker = to_marker_style(line._marker)
         if default_marker:
-            start = MarkerStyle(self._get_key("plot.marker.start"))
-            if start.get_marker() is None:
-                start = default_marker
-
-            end = MarkerStyle(self._get_key("plot.marker.end"))
-            if end.get_marker() is None:
-                end = default_marker
+            start = to_marker_style(start)
+            end = to_marker_style(end)
 
             if rotate_marker is None:
                 rotate_marker = self._get_key("plot.marker.rotate")
@@ -1437,9 +1362,7 @@ class SmithAxes(Axes):
                 new_vertices = self.transform_non_affine(vertices)
                 new_codes = codes
             else:
-                raise NotImplementedError(
-                    "Value for 'path_interpolation' cannot be interpreted."
-                )
+                raise NotImplementedError("Value for 'path_interpolation' cannot be interpreted.")
 
             return Path(new_vertices, new_codes)
 
