@@ -1715,12 +1715,3 @@ class SmithAxes(Axes):
         if isinstance(value, FunctionType):
             if value.__doc__ is None and hasattr(Axes, key):
                 value.__doc__ = getattr(Axes, key).__doc__
-
-
-__author__ = "Paul Staerke"
-__copyright__ = "Copyright 2018, Paul Staerke"
-__license__ = "BSD"
-__version__ = "0.3"
-__maintainer__ = "Paul Staerke"
-__email__ = "paul.staerke@gmail.com"
-__status__ = "Prototype"
