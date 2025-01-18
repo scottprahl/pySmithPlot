@@ -456,25 +456,25 @@ class SmithAxes(Axes):
                              self.yaxis.get_majorticklocs()):
             # workaround for fixing to small infinity symbol
             if abs(loc) > self._near_inf:
-                tick.label.set_size(tick.label.get_size() +
+                tick.label1.set_size(tick.label1.get_size() +
                                     self._get_key("symbol.infinity.correction"))
 
-            tick.label.set_verticalalignment('center')
+            tick.label1.set_verticalalignment('center')
 
             x = np.real(self._moebius_z(loc * 1j))
             if x < -0.1:
-                tick.label.set_horizontalalignment('right')
+                tick.label1.set_horizontalalignment('right')
             elif x > 0.1:
-                tick.label.set_horizontalalignment('left')
+                tick.label1.set_horizontalalignment('left')
             else:
-                tick.label.set_horizontalalignment('center')
+                tick.label1.set_horizontalalignment('center')
 
         self.yaxis.set_major_formatter(self.ImagFormatter(self))
         self.xaxis.set_major_formatter(self.RealFormatter(self))
 
         if self._get_key("axes.normalize") and self._get_key("axes.normalize.label"):
             x, y = z_to_xy(self._moebius_inv_z(self._get_key("axes.labelpos")))
-            box = self.text(x, y, "Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm")), ha="left", va="bottom")
+            box = self.text(x, y, r"Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm")), ha="left", va="bottom")
 
             px = self._get_key("ytick.major.pad")
             py = px + 0.5 * box.get_size()
@@ -514,7 +514,7 @@ class SmithAxes(Axes):
 
     def get_yaxis_text1_transform(self, pixelPad):
         if hasattr(self, 'yaxis') and len(self.yaxis.majorTicks) > 0:
-            font_size = self.yaxis.majorTicks[0].label.get_size()
+            font_size = self.yaxis.majorTicks[0].label1.get_size()
         else:
             font_size = self._get_key("font.size")
 
@@ -662,8 +662,22 @@ class SmithAxes(Axes):
             def create_artists(self, legend, orig_handle,
                                xdescent, ydescent, width, height, fontsize,
                                trans):
-                legline, legline_marker = HandlerLine2D.create_artists(self, legend, orig_handle, xdescent, ydescent,
-                                                                       width, height, fontsize, trans)
+                result = HandlerLine2D.create_artists(
+                    self, legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
+                )
+        
+                legline = result[0]  # Line artist
+                legline_marker = None  # Marker not returned separately
+
+                # Recreate the marker manually
+                if orig_handle.get_marker() is not None and orig_handle.get_marker() != 'None':
+                    legline_marker = Line2D([], [], 
+                                            linestyle='',
+                                            marker=orig_handle.get_marker(),
+                                            markersize=orig_handle.get_markersize(),
+                                            markerfacecolor=orig_handle.get_markerfacecolor(),
+                                            markeredgecolor=orig_handle.get_markeredgecolor(),
+                                            transform=trans)
 
                 if hasattr(orig_handle, "_markerhacked"):
                     this_axes._hack_linedraw(legline_marker, True)
@@ -1012,7 +1026,7 @@ class SmithAxes(Axes):
                     len_x, len_y = len(xticks) - 1, len(yticks) - 1
 
                     # 2. Step: calculate optimal gridspacing for each quadrant
-                    d_mat = np.ones((len_x, len_y, 2), dtype=np.int)
+                    d_mat = np.ones((len_x, len_y, 2), dtype=int)
 
                     # TODO: optimize spacing algorithm
                     for i in range(len_x):
