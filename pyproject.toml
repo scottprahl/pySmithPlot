@@ -1,16 +1,60 @@
+[project]
+name = "pysmithplot"
+version = "0.3.0"
+authors = [{ name = "Paul Staerke", email = "paul.staerke@gmail.com" }]
+description = "An extension for Matplotlib providing a projection class to generate high quality Smith Chart plots."
+readme = "README.md"
+license = { text = "BSD" }
+dependencies = ["matplotlib >= 3.7.0", "numpy", "scipy"]
+requires-python = ">=3.8"
+keywords = ["Smith Chart", "impedance", "reflection"]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/scottprahl/pySmithPlot"
+"Bug Tracker" = "https://github.com/scottprahl/pySmithPlot/issues"
+
 [build-system]
- requires = ["setuptools>=61.0"]
- build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
- [project]
- name            = "pysmithplot"
- version         = "0.2.0"
- authors         = [{ name="Paul Staerke", email="paul.staerke@gmail.com" }, ]
- description     = "An extension for Matplotlib providing a projection class to generate high quality Smith Chart plots."
- readme          = 'README.md'
- license         = {text = 'BSD'}
- dependencies    = ["matplotlib >= 1.2.0", "numpy", "scipy"]
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
 
- [project.urls]
- "Homepage" = "https://github.com/vMeijin/pySmithPlot"
- "Bug Tracker" = "https://github.com/vMeijin/pySmithPlot/issues"
+[tool.pytest.ini_options]
+markers = ["notebooks: tests related to Jupyter notebooks"]
+
+[tool.flake8]
+max-line-length = 100
+ignore = ["D200", "D212", "N802", "N803", "N806", "E501", "W503"]
+per-file-ignores = [
+    "__init__.py:F401,F403",
+    "setup.py:D100",
+    "tests/smith_full_test.py:D100,D101,D102,D103,F405",
+    "tests/smith_short_test.py:D100,D101,D102",
+]
+exclude = [".git", "__pycache__", "docs"]
+docstring-convention = "google"
+
+[tool.ruff]
+line-length = 100
+exclude = ["docs"]
+select = ["D", "E", "F", "W"]
+ignore = ["D200", "D212", "F403"]
+pydocstyle.convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/smith_full_test.py" = ["D100", "D101", "D102", "D103", "F405"]
+"tests/smith_short_test.py" = ["D100", "D101", "D102", "D103"]
