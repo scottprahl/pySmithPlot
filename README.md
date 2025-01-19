@@ -1,32 +1,7 @@
 pySmithPlot
 ===========
 
-## New Release of Version 0.2
-
-After 2 years of getting dusty **pySmithPlot** now got some new features and bug fixes. Here is a short changelog:
-
-- **Support for Python 3**
-- improved grid generation algorithm
-- plot() now also handles also single numbers and purely real data
-- plot() can now interpolate lines between points or generate an equidistant spacing
-- changed handling of input data and renormalization; now the actual datatype (S,Z,Y-Parameter) can be specified when calling plot()
-- changed behaviour for normalization and placement of the label
-- added some parameter checks 
-- removed default `matplotlib` settings
-- renamed some parameters to improve consistency 
-- fixed issues with Unicode symbols
-- fixed issues with grid generation
-- fixed issues with axis label display and placement
-
-There are still some plans for the future and they hopefully don't take another two years:
-
-- [ ] support for Admittance Charts
-- [ ] support for `contour()` plots
-- [ ] zoom and 'cut out' function
-- [ ] special handling of other `matplotlib.patch` objects like arrows
-- [ ] ...
-
-## Features
+This is a fork of **pySmithPlot** that works with matplotlib versions greater than 3.4.
 
 **pySmithPlot** is a matplotlib extension providing a projection class for creating high quality Smith Charts with Python. The generated plots blend seamless into matplotlib's style and support almost the full range of customization options. 
 
