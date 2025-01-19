@@ -8,7 +8,8 @@ from multiprocessing.pool import Pool
 from types import FunctionType
 
 import numpy as np
-from matplotlib import rcParams, pyplot as pp
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
 
 sys.path.append("..")
 from pysmithplot.smithaxes import SmithAxes
@@ -20,6 +21,7 @@ rcParams.update({"legend.numpoints": 3, "axes.axisbelow": True})
 script_dir = os.path.dirname(os.path.abspath(__file__))
 data_path11 = os.path.join(script_dir, "data/s11.csv")
 data_path22 = os.path.join(script_dir, "data/s22.csv")
+chart_dir = os.path.join(script_dir, "charts")
 
 steps = 40
 data = np.loadtxt(data_path11, delimiter=",", skiprows=1)[::steps]
@@ -47,24 +49,24 @@ ExportFormats = ["pdf", "png"]
 def plot_example(testbench, title, scale=50, **kwargs):
     print("Testbench '%s' : %s" % (testbench, title.replace("\n", "")))
     kwargs.setdefault("markevery", 1)
-    pp.plot(smithhelper.moebius_inv_z(sp_data, norm=50), datatype="Z", **kwargs)
-    pp.plot(z_data, datatype="Z", **kwargs)
-    pp.plot(100, datatype="Z", **kwargs)
-    pp.plot(25 + 25j, datatype="Z", **kwargs)
-    pp.title(title)
+    plt.plot(smithhelper.moebius_inv_z(sp_data, norm=50), datatype="Z", **kwargs)
+    plt.plot(z_data, datatype="Z", **kwargs)
+    plt.plot(100, datatype="Z", **kwargs)
+    plt.plot(25 + 25j, datatype="Z", **kwargs)
+    plt.title(title)
 
 
 def savefig(testbench):
     for ext in ExportFormats:
-        pp.savefig(
-            "%s/sample_%s.%s" % (build_path, testbench.lower().replace(" ", "_"), ext),
+        plt.savefig(
+            "%s/sample_%s.%s" % (chart_dir, testbench.lower().replace(" ", "_"), ext),
             format=ext,
         )
 
 
 def tb_grid_styles():
     tb = "Grid Styles"
-    fig = pp.figure(figsize=(3 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(3 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
     i = 0
@@ -73,7 +75,7 @@ def tb_grid_styles():
             for minor_fancy in FT:
                 if minor or not minor_fancy:
                     i += 1
-                    pp.subplot(
+                    plt.subplot(
                         2,
                         3,
                         i,
@@ -93,18 +95,18 @@ def tb_grid_styles():
 
 def tb_fancy_grids():
     tb = "Fancy Grid"
-    fig = pp.figure(figsize=(3 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(3 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
     i = 0
     for threshold in [(50, 50), (100, 50), (125, 100)]:
         i += 1
-        pp.subplot(2, 3, i, projection="smith", grid_major_fancy_threshold=threshold)
+        plt.subplot(2, 3, i, projection="smith", grid_major_fancy_threshold=threshold)
         plot_example(tb, "Major Threshold=(%d, %d)" % threshold)
 
     for threshold in [15, 30, 60]:
         i += 1
-        pp.subplot(
+        plt.subplot(
             2,
             3,
             i,
@@ -120,18 +122,18 @@ def tb_fancy_grids():
 
 def tb_grid_locators():
     tb = "Grid Locators"
-    fig = pp.figure(figsize=(4 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(4 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
     i = 0
     for num in [5, 8, 14, 20]:
         i += 1
-        pp.subplot(2, 4, i, projection="smith", grid_major_xmaxn=num)
+        plt.subplot(2, 4, i, projection="smith", grid_major_xmaxn=num)
         plot_example(tb, "Max real steps: %d" % num)
 
     for num in [6, 14, 25, 50]:
         i += 1
-        pp.subplot(2, 4, i, projection="smith", grid_major_ymaxn=num)
+        plt.subplot(2, 4, i, projection="smith", grid_major_ymaxn=num)
         plot_example(tb, "Max imaginary steps: %d" % num)
 
     savefig(tb)
@@ -139,14 +141,14 @@ def tb_grid_locators():
 
 def tb_normalize():
     tb = "Normalize"
-    fig = pp.figure(figsize=(3 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(3 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
     i = 0
     for normalize in FT:
         for impedance in [10, 50, 200]:
             i += 1
-            pp.subplot(
+            plt.subplot(
                 2,
                 3,
                 i,
@@ -176,7 +178,7 @@ def tb_markers():
         ]
     )
 
-    fig = pp.figure(figsize=(4 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(4 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
     i = 0
@@ -189,7 +191,7 @@ def tb_markers():
         [True, None, "^", False],
     ]:
         i += 1
-        ax = pp.subplot(
+        ax = plt.subplot(
             2,
             3,
             i,
@@ -225,7 +227,7 @@ def tb_markers():
 
 def tb_interpolation():
     tb = "Interpolation"
-    fig = pp.figure(figsize=(3 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(3 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
     i = 0
@@ -236,7 +238,7 @@ def tb_interpolation():
         [False, 50],
     ]:
         i += 1
-        pp.subplot(2, 2, i, projection="smith")
+        plt.subplot(2, 2, i, projection="smith")
         plot_example(
             tb,
             "Interpolation: %s — Equipoints: %s"
@@ -253,15 +255,15 @@ def tb_interpolation():
 
 def tb_misc():
     tb = "Miscellaneous"
-    fig = pp.figure(figsize=(3 * figsize, 2 * figsize))
+    fig = plt.figure(figsize=(3 * figsize, 2 * figsize))
     fig.set_tight_layout(True)
 
-    pp.subplot(2, 3, 1, projection="smith", plot_marker_hack=True)
+    plt.subplot(2, 3, 1, projection="smith", plot_marker_hack=True)
     plot_example(tb, "Legend")
-    pp.legend(["S11", "S22", "Polyline", "Z \u2192 0.125l/\u03BB"])
+    plt.legend(["S11", "S22", "Polyline", "Z \u2192 0.125l/\u03BB"])
 
     divs = [1, 3, 7]
-    pp.subplot(
+    plt.subplot(
         2,
         3,
         2,
@@ -272,10 +274,10 @@ def tb_misc():
     )
     plot_example(tb, "Minor fancy dividers=%s" % divs)
 
-    pp.subplot(2, 3, 3, projection="smith", axes_radius=0.3)
+    plt.subplot(2, 3, 3, projection="smith", axes_radius=0.3)
     plot_example(tb, "Axes radius: 0.25")
 
-    pp.subplot(
+    plt.subplot(
         2,
         3,
         4,
@@ -286,24 +288,23 @@ def tb_misc():
     )
     plot_example(tb, "Infinity symbol: 'Inf' — Ohm symbol: Ohm")
 
-    pp.subplot(2, 3, 5, projection="smith", grid_locator_precision=4)
+    plt.subplot(2, 3, 5, projection="smith", grid_locator_precision=4)
     plot_example(tb, "Grid Locator Precision: 4")
 
-    pp.subplot(2, 3, 6, projection="smith", axes_xlabel_rotation=0)
+    plt.subplot(2, 3, 6, projection="smith", axes_xlabel_rotation=0)
     plot_example(tb, "Axes X Label Rotation: 0")
 
     savefig(tb)
 
 
 build_all = True
-build_path = "./build"
 
 if __name__ == "__main__":
     # clear and create path
-    if os.path.exists(build_path):
-        shutil.rmtree(build_path)
+    if os.path.exists(chart_dir):
+        shutil.rmtree(chart_dir)
         time.sleep(0.5)
-    os.makedirs(build_path)
+    os.makedirs(chart_dir)
 
     if build_all:
         print("Start parallel testbenches...")
@@ -324,6 +325,6 @@ if __name__ == "__main__":
         tb_markers()
         # tb_interpolation()
         # tb_misc()
-        pp.show()
+        plt.show()
 
     print("build finished")

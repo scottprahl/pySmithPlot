@@ -1198,7 +1198,7 @@ class SmithAxes(Axes):
         end = to_marker_style(end_marker)
 
         # Debugging to confirm markers
-        print(f"Validated Start Marker: {start.get_marker()}, End Marker: {end.get_marker()}")
+#        print(f"Validated Start Marker: {start.get_marker()}, End Marker: {end.get_marker()}")
 
         assert isinstance(line, Line2D)
 
