@@ -41,9 +41,11 @@ rcheck:
 	make test
 
 test:
-	python tests/smith_short_test.py
-	python tests/smith_full_test.py
-	python tests/simple.py
+	pytest -v tests/test_xy_to_z.py
+	pytest -v tests/test_schang.py
+	pytest -v tests/test_simple.py
+	pytest -v tests/test_vmeijin_short.py
+	pytest -v tests/test_vmeijin_full.py
 
 clean:
 	rm -rf dist
@@ -56,6 +58,7 @@ clean:
 	rm -rf build
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
+	rm -rf tests/charts/*
 
 realclean:
 	make clean
