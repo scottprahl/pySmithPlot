@@ -1,17 +1,23 @@
-# -*- coding: utf-8 -*-
-# last edit: 11.04.2018
-
-try:
-    from collections.abc import Iterable
-except ImportError:
-    from collections import Iterable
-
+from collections.abc import Iterable
 import numpy as np
 
 INF = 1e9
 EPSILON = 1e-7
 TWO_PI = 2 * np.pi
 
+def cs(z, N=5):
+    """Convert complex number to string for printing."""
+    if z.imag < 0:
+        form = "(%% .%df - %%.%dfj)" % (N, N)
+    else:
+        form = "(%% .%df + %%.%dfj)" % (N, N)
+    return form % (z.real, abs(z.imag))
+
+
+def to_float(value):
+    if isinstance(value, (int, np.integer, np.unsignedinteger)):
+        return float(value)
+    return value
 
 def xy_to_z(*xy):
     """
@@ -39,18 +45,27 @@ def xy_to_z(*xy):
         if isinstance(z, Iterable):
             z = np.array(z)
             if len(z.shape) == 2:
-                z = z[0] + 1j * z[1]
+                if z.shape[0] == 2:  # Ensure the first dimension has size 2
+                    z0 = z[0]  # handle case when line.get_data() returns [['0.0'],['']]
+                    z0 = np.where(z0 == '', '0.0', z0.astype(object)).astype(float)
+                    z1 = z[1]
+                    z1= np.where(z1 == '', '0.0', z1.astype(object)).astype(float)
+                    z = z0 + 1j * z1
+                else:
+                    raise ValueError("Input array must have shape (2, N) for 2D arrays.")
             elif len(z.shape) > 2:
-                raise ValueError("Something went wrong!")
+                raise ValueError("Input array has too many dimensions.")
     elif len(xy) == 2:
         x, y = xy
         if isinstance(x, Iterable):
-            if isinstance(y, Iterable) and len(x) == len(y):
-                z = np.array(x) + 1j * np.array(y)
+            x = np.array(x)
+            y = np.array(y)
+            if len(x) == len(y):
+                z = x + 1j * y
             else:
-                raise ValueError("x and y vectors dont match in type and/or size")
+                raise ValueError("x and y vectors don't match in type and/or size.")
         else:
-            z = x + 1j * y
+            z = float(x) + 1j * float(y)  # Cast scalars to float
     else:
         raise ValueError(
             "Arguments are not valid - specify either complex number/vector z or real and imaginary number/vector x, y"
