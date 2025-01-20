@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
-from pysmithplot import SmithAxes
+from pysmithchart import SmithAxes
 
 # Utility function
 def cs(z, N=5):

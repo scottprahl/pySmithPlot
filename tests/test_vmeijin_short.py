@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from pysmithplot import SmithAxes
+from pysmithchart import SmithAxes
 
 # have matplotlib legend include three markers instead of one
 rcParams.update({"legend.numpoints": 3})

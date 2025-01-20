@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from collections.abc import Iterable
-from pysmithplot.smithhelper import xy_to_z
+from pysmithchart.smithhelper import xy_to_z
 
 def test_single_complex_number():
     """Test a single complex number input."""

@@ -4,8 +4,8 @@ import pytest
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from pysmithplot.smithaxes import SmithAxes
-from pysmithplot import smithhelper
+from pysmithchart.smithaxes import SmithAxes
+from pysmithchart import smithhelper
 
 # Configure Matplotlib settings
 rcParams.update({"legend.numpoints": 3, "axes.axisbelow": True})

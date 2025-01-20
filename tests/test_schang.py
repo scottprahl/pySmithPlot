@@ -17,7 +17,7 @@ import os
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
-from pysmithplot import SmithAxes
+from pysmithchart import SmithAxes
 
 
 @pytest.fixture

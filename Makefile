@@ -21,8 +21,8 @@ rstcheck:
 	-rstcheck docs/index.rst
 
 lint:
-	-pylint pysmithplot/smithaxes.py
-	-pylint pysmithplot/smithhelper.py
+	-pylint pysmithchart/smithaxes.py
+	-pylint pysmithchart/smithhelper.py
 	-pylint tests/smith_full_test.py
 	-pylint tests/smith_short_test.py
 
@@ -50,8 +50,8 @@ test:
 clean:
 	rm -rf dist
 	rm -rf .DS_Store
-	rm -rf pysmithplot.egg-info
-	rm -rf pysmithplot/__pycache__
+	rm -rf pysmithchart.egg-info
+	rm -rf pysmithchart/__pycache__
 	rm -rf tests/__pycache__
 	rm -rf tests/.ipynb_checkpoints
 	rm -rf tests/.DS_Store

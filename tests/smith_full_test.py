@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
 sys.path.append("..")
-from pysmithplot.smithaxes import SmithAxes
-from pysmithplot import smithhelper
+from pysmithchart.smithaxes import SmithAxes
+from pysmithchart import smithhelper
 
 rcParams.update({"legend.numpoints": 3, "axes.axisbelow": True})
 

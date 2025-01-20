@@ -1,5 +1,5 @@
 [project]
-name = "pysmithplot"
+name = "pysmithchart"
 version = "0.3.0"
 authors = [{ name = "Paul Staerke", email = "paul.staerke@gmail.com" }]
 description = "A projection class for Matplotlib to generate Smith Charts."
@@ -23,8 +23,8 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/scottprahl/pySmithPlot"
-"Bug Tracker" = "https://github.com/scottprahl/pySmithPlot/issues"
+"Homepage" = "https://github.com/scottprahl/pysmithchart"
+"Bug Tracker" = "https://github.com/scottprahl/pysmithchart/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]
