@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # last edit: 11.04.2018
 """
-Library for plotting fully automatic a Smith Chart with various customizable
-parameters and well selected default values. It also provides the following 
+Library for plotting a fully automatic Smith Chart with various customizable
+parameters and well-selected default values. It also provides the following
 modifications and features:
 
-    - circle shaped drawing area with labels placed around 
-    - :meth:`plot` accepts single real and complex numbers and numpy.ndarray's
+    - circle shaped drawing area with labels placed around
+    - :meth:`plot` accepts single real/complex numbers or numpy.ndarray
     - plotted lines can be interpolated
     - start/end markers of lines can be modified and rotate tangential
     - gridlines are 3-point arcs to improve space efficiency of exported plots
     - 'fancy' option for adaptive grid generation
     - own tick locators for nice axis labels
 
-For making a Smith Chart plot it is sufficient to import :mod:`smithplot` and
-create a new subplot with projection set to 'smith'. Parameters can be set 
+For making a Smith Chart plot, it is sufficient to import :mod:`smithplot` and
+create a new subplot with projection set to 'smith'. Parameters can be set
 either with keyword arguments or :meth:`update_Params`.
 
 Example:
@@ -23,13 +23,13 @@ Example:
     import smithplot
     from smithplot import SmithAxes
     from matplotlib import pyplot as pp
-    ax = pp.subplot('111', projection='smith')
+    ax = pp.subplot(1, 1, 1, projection='smith')
     SmithAxes.update_scParams(ax, reset=True, grid_major_enable=False)
     ## or in short form direct
-    #ax = pp.subplot('111', projection='smith', grid_major_enable=False)
+    #ax = pp.subplot(1, 1, 1, projection='smith', grid_major_enable=False)
     pp.plot([25, 50 + 50j, 100 - 50j], datatype=SmithAxes.Z_PARAMETER)
     pp.show()
-    
+
 Note: Supplying parameters to :meth:`subplot` may not always work as
 expected, because subplot uses an index for the axes with a key created
 of all given parameters. This does not work always, especially if the
@@ -56,8 +56,7 @@ from matplotlib.path import Path
 from matplotlib.spines import Spine
 from matplotlib.ticker import Formatter, AutoMinorLocator, Locator
 from matplotlib.transforms import Affine2D, BboxTransformTo, Transform
-from scipy.interpolate import fitpack
-
+from scipy.interpolate import splprep, splev
 from . import smithhelper
 from .smithhelper import EPSILON, TWO_PI, ang_to_c, z_to_xy
 
@@ -110,6 +109,8 @@ class SmithAxes(Axes):
         "grid.major.linestyle": "-",
         "grid.major.linewidth": 1,
         "grid.major.color": "0.2",
+        'grid.major.color.x': "0.2",
+        'grid.major.color.y': "0.2",
         "grid.major.xmaxn": 10,
         "grid.major.ymaxn": 16,
         "grid.major.fancy": True,
@@ -119,6 +120,8 @@ class SmithAxes(Axes):
         "grid.minor.dashes": [0.2, 2],
         "grid.minor.linewidth": 0.75,
         "grid.minor.color": "0.4",
+        'grid.minor.color.x': "0.4",
+        'grid.minor.color.y': "0.4",
         "grid.minor.xauto": 4,
         "grid.minor.yauto": 4,
         "grid.minor.fancy": True,
@@ -149,11 +152,11 @@ class SmithAxes(Axes):
         Method for updating the parameters of a SmithAxes instance. If no instance
         is given, the changes are global, but affect only instances created
         afterwards. Parameter can be passed as dictionary or keyword arguments.
-        If passed as keyword, the seperator '.' must be  replaced with '_'.
+        If passed as keyword, the separator '.' must be  replaced with '_'.
 
         Note: Parameter changes are not always immediate (e.g. changes to the
         grid). It is not recommended to modify parameter after adding anything to
-        the plot. For a reset call :meth:`cla`.
+        the plot. For a reset call :meth:`clear`.
 
         Example:
             update_scParams({grid.major: True})
@@ -226,6 +229,14 @@ class SmithAxes(Axes):
                 Major gridline color.
                 Accepts: matplotlib color
 
+            grid.major.color.x: '0.2'
+                Major real gridline color
+                Accepts: matplotlib color
+
+            grid.major.color.y: '0.2'
+                Major imag gridline color
+                Accepts: matplotlib color
+
             grid.major.xmaxn: 10
                 Maximum number of spacing steps for the real axis.
                 Accepts: integer
@@ -262,6 +273,14 @@ class SmithAxes(Axes):
 
             grid.minor.color: 0.4
                 Minor gridline color.
+                Accepts: matplotlib color
+
+            grid.minor.color.x: '0.2'
+                Minor real gridline color
+                Accepts: matplotlib color
+
+            grid.minor.color.y: '0.2'
+                Minor imag gridline color
                 Accepts: matplotlib color
 
             grid.minor.xauto: 4
@@ -348,6 +367,13 @@ class SmithAxes(Axes):
             for key, value in sc_dict.items():
                 if key in scParams:
                     scParams[key] = value
+                    if key == 'grid.major.color':
+                        scParams['grid.major.color.x'] = value
+                        scParams['grid.major.color.y'] = value
+
+                    if key == 'grid.minor.color':
+                        scParams['grid.minor.color.x'] = value
+                        scParams['grid.minor.color.y'] = value
                 else:
                     raise KeyError("key '%s' is not in scParams" % key)
 
@@ -355,7 +381,15 @@ class SmithAxes(Axes):
         for key in kwargs:
             key_dot = key.replace("_", ".")
             if key_dot in scParams:
-                scParams[key_dot] = remaining.pop(key)
+                value = remaining.pop(key)  # Extract value from kwargs
+                scParams[key_dot] = value
+                if key_dot == 'grid.major.color':
+                    scParams['grid.major.color.x'] = value
+                    scParams['grid.major.color.y'] = value
+
+                if key_dot == 'grid.minor.color':
+                    scParams['grid.minor.color.x'] = value
+                    scParams['grid.minor.color.y'] = value
 
         if not filter_dict and len(remaining) > 0:
             raise KeyError(
@@ -363,7 +397,7 @@ class SmithAxes(Axes):
             )
 
         if reset and instance is not None:
-            instance.cla()
+            instance.clear()
 
         if filter_dict:
             return remaining
@@ -424,7 +458,35 @@ class SmithAxes(Axes):
         self.yaxis = mp.axis.YAxis(self)
         self._update_transScale()
 
-    def cla(self):
+    def clear(self):
+        """
+        Clear the current Smith Chart axes and reset them to their initial state.
+
+        This method overrides the base `clear` (clear axes) method from `matplotlib.axes.Axes`
+        to perform additional setup and customization specific to the Smith Chart. It clears
+        custom properties like arcs, gridlines, and axis formatting, while also restoring
+        default configurations.
+
+        Key Functionality:
+            - Resets internal storage for major and minor arcs (`_majorarcs` and `_minorarcs`).
+            - Temporarily disables the grid functionality during the base class's `clear` call
+              to prevent unintended behavior.
+            - Reinitializes important Smith Chart-specific properties, such as normalization
+              settings, impedance, and z-order tracking.
+            - Configures axis locators and formatters for real and imaginary components.
+            - Updates axis tick alignment, label styles, and normalization box positioning.
+            - Redraws the gridlines (major and minor) based on the current settings.
+
+        Notes:
+            - This method ensures that the Smith Chart maintains its specific configuration
+              after clearing, unlike a standard `matplotlib` axes.
+            - Labels and gridlines are re-added to maintain proper layering and alignment.
+
+        Side Effects:
+            - Resets `_majorarcs` and `_minorarcs` to empty lists.
+            - Updates the axis locators, formatters, and gridlines.
+            - Configures custom label alignment and appearance.
+        """
         self._majorarcs = []
         self._minorarcs = []
 
@@ -436,7 +498,7 @@ class SmithAxes(Axes):
 
         self.grid = dummy
         # Don't forget to call the base class
-        Axes.cla(self)
+        Axes.clear(self)
         self.grid = tgrid
 
         self._normbox = None
@@ -465,7 +527,7 @@ class SmithAxes(Axes):
             self.add_artist(label)  # if not readded, labels are drawn behind grid
 
         for tick, loc in zip(self.yaxis.get_major_ticks(), self.yaxis.get_majorticklocs()):
-            # workaround for fixing to small infinity symbol
+            # workaround for fixing too small infinity symbol
             if abs(loc) > self._near_inf:
                 tick.label1.set_size(
                     tick.label1.get_size() + self._get_key("symbol.infinity.correction")
@@ -723,7 +785,7 @@ class SmithAxes(Axes):
             - Additional support for real and complex data. Complex values must be
             either of type 'complex' or a numpy.ndarray with dtype=complex.
             - If 'zorder' is not provided, the current default value is used.
-            - If 'marker' is not providet, the default value is used.
+            - If 'marker' is not provided, the default value is used.
             - Extra keywords are added.
 
         Extra keyword arguments:
@@ -762,7 +824,7 @@ class SmithAxes(Axes):
 
 
 
-        See :meth:`matplotlib.axes.Axes.plot` for mor details
+        See :meth:`matplotlib.axes.Axes.plot` for more details
         """
         # split input into real and imaginary part if complex
         new_args = ()
@@ -782,10 +844,10 @@ class SmithAxes(Axes):
             if isinstance(arg, np.ndarray) and arg.dtype in [
                 complex,
                 np.complex128,
-            ]:  # np.complex -> complex (I hate this, it made me finally sign up to github)
+            ]:
                 new_args += z_to_xy(arg)
-            else:
-                new_args += (arg,)
+            else:  # handle arrays of only real values
+                new_args += (arg, np.zeros_like(arg))
 
         # ensure newer plots are above older ones
         if "zorder" not in kwargs:
@@ -848,7 +910,7 @@ class SmithAxes(Axes):
             if interpolate or equipoints:
                 z = self._moebius_z(*line.get_data())
                 if len(z) > 1:
-                    spline, t0 = fitpack.splprep(z_to_xy(z), s=0)
+                    spline, t0 = splprep(z_to_xy(z), s=0)
                     ilen = (interpolate + 1) * (len(t0) - 1) + 1
                     if equipoints == 1:
                         t = np.linspace(0, 1, ilen)
@@ -863,7 +925,7 @@ class SmithAxes(Axes):
                             ]
                         )
 
-                    z = self._moebius_inv_z(*fitpack.splev(t, spline))
+                    z = self._moebius_inv_z(*splev(t, spline))
                     line.set_data(z_to_xy(z))
 
             if markerhack:
@@ -933,11 +995,11 @@ class SmithAxes(Axes):
             return kw
 
         def check_fancy(yticks):
-            # checks if the imaginary axis is symetric
+            # checks if the imaginary axis is symmetric
             len_y = (len(yticks) - 1) // 2
             if not (len(yticks) % 2 == 1 and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()):
                 raise ValueError(
-                    "fancy minor grid is only supported for zero-symetric imaginary grid - e.g. ImagMaxNLocator"
+                    "fancy minor grid is only supported for zero-symmetric imaginary grid - e.g. ImagMaxNLocator"
                 )
             return yticks[len_y:]
 
@@ -952,11 +1014,41 @@ class SmithAxes(Axes):
             return thr_x / 1000, thr_y / 1000
 
         def add_arc(ps, p0, p1, grid, type):
+            """
+            Add an arc to the Smith Chart.
+
+            Parameters:
+                ps (tuple): Starting point of the arc in parameterized space.
+                p0 (tuple): One endpoint of the arc.
+                p1 (tuple): The other endpoint of the arc.
+                grid (str): Specifies whether the arc is part of the "major" or "minor" grid.
+                            Must be one of ["major", "minor"].
+                type (str): Specifies the type of the arc, either "real" or "imag" for real or imaginary components.
+
+            Side Effects:
+                Appends the created arc to the appropriate list:
+                - `_majorarcs` if `grid` is "major".
+                - `_minorarcs` if `grid` is "minor".
+
+            Notes:
+                The `param` variable, which holds the styling parameters for the gridline
+                (e.g., z-order, color, etc.), is defined in the enclosing scope.
+            """
             assert grid in ["major", "minor"]
             assert type in ["real", "imag"]
             assert p0 != p1
-            arcs = self._majorarcs if grid == "major" else self._minorarcs
-            if grid == "minor":
+            if grid == 'major':
+                arcs = self._majorarcs
+                if type == "real":
+                    param["color"] = self._get_key("grid.major.color.x")
+                else:
+                    param["color"] = self._get_key("grid.major.color.y")
+            else:
+                arcs = self._minorarcs
+                if type == "real":
+                    param["color"] = self._get_key("grid.minor.color.x")
+                else:
+                    param["color"] = self._get_key("grid.minor.color.y")
                 param["zorder"] -= 1e-9
             arcs.append((type, (ps, p0, p1), self._add_gridline(ps, p0, p1, type, **param)))
 
@@ -1197,9 +1289,6 @@ class SmithAxes(Axes):
         start = to_marker_style(start_marker)
         end = to_marker_style(end_marker)
 
-        # Debugging to confirm markers
-#        print(f"Validated Start Marker: {start.get_marker()}, End Marker: {end.get_marker()}")
-
         assert isinstance(line, Line2D)
 
         def new_draw(self_line, renderer):
@@ -1279,14 +1368,11 @@ class SmithAxes(Axes):
 
         if type == "real":
             assert ps >= 0
-
             line = Line2D(2 * [ps], [p0, p1], **kwargs)
             line.get_path()._interpolation_steps = "x_gridline"
         else:
             assert 0 <= p0 < p1
-
             line = Line2D([p0, p1], 2 * [ps], **kwargs)
-
             if abs(ps) > EPSILON:
                 line.get_path()._interpolation_steps = "y_gridline"
 
