@@ -2,7 +2,7 @@
 name = "pysmithplot"
 version = "0.3.0"
 authors = [{ name = "Paul Staerke", email = "paul.staerke@gmail.com" }]
-description = "An extension for Matplotlib providing a projection class to generate high quality Smith Chart plots."
+description = "A projection class for Matplotlib to generate Smith Charts."
 readme = "README.md"
 license = { text = "BSD" }
 dependencies = ["matplotlib >= 3.7.0", "numpy", "scipy"]
@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12"
+    "Programming Language :: Python :: 3.13"
 ]
 
 [project.urls]
