@@ -124,6 +124,7 @@ def moebius_inv_z(*args, norm):
         The inverse Möbius-transformed complex number or array of complex numbers.
     """
     z = xy_to_z(*args)
+    z = np.where(z==1, 1-EPSILON, z)  # avoid division by 0
     return norm * (1 + z) / (1 - z)
 
 

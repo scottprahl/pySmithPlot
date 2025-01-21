@@ -53,7 +53,7 @@ def plot_example(title, sp_data, z_data, **kwargs):
 
 def save_figure(chart_dir, test_name):
     """Helper function to save figures in multiple formats."""
-    for ext in ["pdf", "png"]:
+    for ext in ["pdf"]:
         plt.savefig(
             os.path.join(chart_dir, f"{test_name.lower().replace(' ', '_')}.{ext}"),
             format=ext,

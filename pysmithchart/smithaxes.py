@@ -751,31 +751,35 @@ class SmithAxes(Axes):
 
         class SmithHandlerLine2D(HandlerLine2D):
             def create_artists(
-                self, legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
+                self, legend, orig_handle,
+                xdescent, ydescent, width, height, fontsize,
+                trans,
             ):
-                # Call the base method to create line and marker
-                result = super().create_artists(
-                    legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
+                legline = HandlerLine2D.create_artists(
+                    self, legend, orig_handle, xdescent, ydescent,
+                    width, height, fontsize, trans,
                 )
 
-                # Handle cases for newer Matplotlib versions (list) or older (tuple)
-                if isinstance(result, list):
-                    line = result[0]
-                    marker = None
-                elif isinstance(result, tuple):
-                    line, marker = result
-                else:
-                    raise RuntimeError("Unexpected return type from create_artists.")
+                if hasattr(orig_handle, "_markerhacked"):
+                    this_axes._hack_linedraw(legline[0], True)
+                return legline
 
-                # Ensure line and marker are not None
-                if line is None:
-                    line = Line2D([], [], linestyle="-", color="black", transform=trans)
-                if marker is None:
-                    marker = Line2D(
-                        [], [], linestyle="", marker="o", color="black", transform=trans
-                    )
-
-                return line, marker
+        # Filter out duplicate legend entries while keeping the first occurrence
+        handles, labels = self.get_legend_handles_labels()
+        seen_labels = set()
+        unique_handles = []
+        unique_labels = []
+    
+        for handle, label in zip(handles, labels):
+            if label not in seen_labels:
+                seen_labels.add(label)
+                unique_handles.append(handle)
+                unique_labels.append(label)
+    
+        # Pass unique handles and labels to the legend
+        return Axes.legend(
+            self, unique_handles, unique_labels, handler_map={Line2D: SmithHandlerLine2D()}, **kwargs
+        )
 
     def plot(self, *args, **kwargs):
         """
@@ -846,8 +850,8 @@ class SmithAxes(Axes):
                 np.complex128,
             ]:
                 new_args += z_to_xy(arg)
-            else:  # handle arrays of only real values
-                new_args += (arg, np.zeros_like(arg))
+            else:
+                new_args += (arg, )
 
         # ensure newer plots are above older ones
         if "zorder" not in kwargs:

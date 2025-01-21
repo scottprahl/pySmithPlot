@@ -1,3 +1,4 @@
+import sys
 import os
 import numpy as np
 import pytest
@@ -23,26 +24,21 @@ def setup_chart_dir(tmp_path):
     return chart_dir
 
 
-def test_stub_design(setup_chart_dir):
-    """Test for plotting stub design with SWR and constant resistance circles."""
+def test_transformer_circle(setup_chart_dir):
+    """Test for plotting transformer circle on the Smith chart."""
     Z0 = 50
-    ZL = 100 + 50j
+    ZL = 30 + 30j
 
-    lam = np.linspace(0, 0.5, 101)
     Gamma = (ZL - Z0) / (ZL + Z0)
-    Gamma_prime = Gamma * np.exp(-2j * 2 * np.pi * lam)
+    Gamma_prime = Gamma * np.exp(-2j * 2 * np.pi / 8)
     z = (1 + Gamma_prime) / (1 - Gamma_prime)
     Zd = z * Z0
 
-    ZR = 50 + np.linspace(-1e4, 1e4, 1000) * 1j
-
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
-    plt.plot([ZL], "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
-    plt.plot(Zd, "r", marker="", datatype=SmithAxes.Z_PARAMETER)
-    plt.text(Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none"))
-    plt.plot(ZR, "g", marker=None, datatype=SmithAxes.Z_PARAMETER)
-    image_path = os.path.join(setup_chart_dir, "stub.pdf")
+    plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(Zd, "r", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
+    image_path = os.path.join(setup_chart_dir, "lambda_over_eight.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
@@ -108,25 +104,6 @@ def test_vswr_circle(setup_chart_dir):
     plt.close()
 
 
-def test_transformer_circle(setup_chart_dir):
-    """Test for plotting transformer circle on the Smith chart."""
-    Z0 = 50
-    ZL = 30 + 30j
-
-    Gamma = (ZL - Z0) / (ZL + Z0)
-    Gamma_prime = Gamma * np.exp(-2j * 2 * np.pi / 8)
-    z = (1 + Gamma_prime) / (1 - Gamma_prime)
-    Zd = z * Z0
-
-    plt.figure(figsize=(8, 8))
-    plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
-    plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
-    plt.plot(Zd, "r", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
-    image_path = os.path.join(setup_chart_dir, "lambda_over_eight.pdf")
-    plt.savefig(image_path, format="pdf")
-    plt.close()
-
-
 def test_frequency_range(setup_chart_dir):
     """Test for plotting RLC frequency range on the Smith chart."""
     R = 50
@@ -147,3 +124,28 @@ def test_frequency_range(setup_chart_dir):
     image_path = os.path.join(setup_chart_dir, "RLC_frequency.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
+
+
+def test_stub_design(setup_chart_dir):
+    """Test for plotting stub design with SWR and constant resistance circles."""
+    Z0 = 50
+    ZL = 100 + 50j
+
+    lam = np.linspace(0, 0.5, 101)
+    Gamma = (ZL - Z0) / (ZL + Z0)
+    Gamma_prime = Gamma * np.exp(-2j * 2 * np.pi * lam)
+    z = (1 + Gamma_prime) / (1 - Gamma_prime)
+    Zd = z * Z0
+
+    ZR = 50 + np.linspace(-1e4, 1e4, 1000) * 1j
+
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
+    plt.plot([ZL], "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(Zd, "r", marker="", datatype=SmithAxes.Z_PARAMETER)
+    plt.text(Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none"))
+    plt.plot(ZR, "g", marker=None, datatype=SmithAxes.Z_PARAMETER)
+    image_path = os.path.join(setup_chart_dir, "stub.pdf")
+    plt.savefig(image_path, format="pdf")
+    plt.close()
+

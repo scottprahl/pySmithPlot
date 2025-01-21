@@ -64,8 +64,8 @@ def test_smith_chart_plot(setup_test_environment):
     plt.title("Matplotlib Smith Chart Projection")
 
     # Save plot
-    export_path = os.path.join(chart_dir, "export.pdf")
-    plt.savefig(export_path, format="pdf", bbox_inches="tight")
+    export_path = os.path.join(chart_dir, "vmeijin_short.pdf")
+    plt.savefig(export_path, format="pdf")
     plt.close()
 
     # Verify output
