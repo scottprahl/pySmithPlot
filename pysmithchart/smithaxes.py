@@ -109,8 +109,8 @@ class SmithAxes(Axes):
         "grid.major.linestyle": "-",
         "grid.major.linewidth": 1,
         "grid.major.color": "0.2",
-        'grid.major.color.x': "0.2",
-        'grid.major.color.y': "0.2",
+        "grid.major.color.x": "0.2",
+        "grid.major.color.y": "0.2",
         "grid.major.xmaxn": 10,
         "grid.major.ymaxn": 16,
         "grid.major.fancy": True,
@@ -120,8 +120,8 @@ class SmithAxes(Axes):
         "grid.minor.dashes": [0.2, 2],
         "grid.minor.linewidth": 0.75,
         "grid.minor.color": "0.4",
-        'grid.minor.color.x': "0.4",
-        'grid.minor.color.y': "0.4",
+        "grid.minor.color.x": "0.4",
+        "grid.minor.color.y": "0.4",
         "grid.minor.xauto": 4,
         "grid.minor.yauto": 4,
         "grid.minor.fancy": True,
@@ -367,13 +367,13 @@ class SmithAxes(Axes):
             for key, value in sc_dict.items():
                 if key in scParams:
                     scParams[key] = value
-                    if key == 'grid.major.color':
-                        scParams['grid.major.color.x'] = value
-                        scParams['grid.major.color.y'] = value
+                    if key == "grid.major.color":
+                        scParams["grid.major.color.x"] = value
+                        scParams["grid.major.color.y"] = value
 
-                    if key == 'grid.minor.color':
-                        scParams['grid.minor.color.x'] = value
-                        scParams['grid.minor.color.y'] = value
+                    if key == "grid.minor.color":
+                        scParams["grid.minor.color.x"] = value
+                        scParams["grid.minor.color.y"] = value
                 else:
                     raise KeyError("key '%s' is not in scParams" % key)
 
@@ -383,13 +383,13 @@ class SmithAxes(Axes):
             if key_dot in scParams:
                 value = remaining.pop(key)  # Extract value from kwargs
                 scParams[key_dot] = value
-                if key_dot == 'grid.major.color':
-                    scParams['grid.major.color.x'] = value
-                    scParams['grid.major.color.y'] = value
+                if key_dot == "grid.major.color":
+                    scParams["grid.major.color.x"] = value
+                    scParams["grid.major.color.y"] = value
 
-                if key_dot == 'grid.minor.color':
-                    scParams['grid.minor.color.x'] = value
-                    scParams['grid.minor.color.y'] = value
+                if key_dot == "grid.minor.color":
+                    scParams["grid.minor.color.x"] = value
+                    scParams["grid.minor.color.y"] = value
 
         if not filter_dict and len(remaining) > 0:
             raise KeyError(
@@ -426,9 +426,7 @@ class SmithAxes(Axes):
         self.set_aspect(1, adjustable="box", anchor="C")
 
         # remove all ticks
-        self.tick_params(
-            axis="both", which="both", bottom=False, top=False, left=False, right=False
-        )
+        self.tick_params(axis="both", which="both", bottom=False, top=False, left=False, right=False)
 
     def _get_key(self, key):
         """
@@ -529,9 +527,7 @@ class SmithAxes(Axes):
         for tick, loc in zip(self.yaxis.get_major_ticks(), self.yaxis.get_majorticklocs()):
             # workaround for fixing too small infinity symbol
             if abs(loc) > self._near_inf:
-                tick.label1.set_size(
-                    tick.label1.get_size() + self._get_key("symbol.infinity.correction")
-                )
+                tick.label1.set_size(tick.label1.get_size() + self._get_key("symbol.infinity.correction"))
 
             tick.label1.set_verticalalignment("center")
 
@@ -572,9 +568,7 @@ class SmithAxes(Axes):
         self.transMoebius = self.transAffine + self.transAxes
         self.transData = self.transProjection + self.transMoebius
 
-        self._xaxis_pretransform = (
-            Affine2D().scale(1, 2 * self._ax_lim_y).translate(0, -self._ax_lim_y)
-        )
+        self._xaxis_pretransform = Affine2D().scale(1, 2 * self._ax_lim_y).translate(0, -self._ax_lim_y)
         self._xaxis_transform = self._xaxis_pretransform + self.transData
         self._xaxis_text1_transform = Affine2D().scale(1.0, 0.0) + self.transData
 
@@ -614,9 +608,7 @@ class SmithAxes(Axes):
         return Circle((0.5, 0.5), self._get_key("axes.radius") + 0.015)
 
     def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
-        return {
-            SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))
-        }
+        return {SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))}
 
     def set_xscale(self, *args, **kwargs):
         if args[0] != "linear":
@@ -751,13 +743,26 @@ class SmithAxes(Axes):
 
         class SmithHandlerLine2D(HandlerLine2D):
             def create_artists(
-                self, legend, orig_handle,
-                xdescent, ydescent, width, height, fontsize,
+                self,
+                legend,
+                orig_handle,
+                xdescent,
+                ydescent,
+                width,
+                height,
+                fontsize,
                 trans,
             ):
                 legline = HandlerLine2D.create_artists(
-                    self, legend, orig_handle, xdescent, ydescent,
-                    width, height, fontsize, trans,
+                    self,
+                    legend,
+                    orig_handle,
+                    xdescent,
+                    ydescent,
+                    width,
+                    height,
+                    fontsize,
+                    trans,
                 )
 
                 if hasattr(orig_handle, "_markerhacked"):
@@ -769,13 +774,13 @@ class SmithAxes(Axes):
         seen_labels = set()
         unique_handles = []
         unique_labels = []
-    
+
         for handle, label in zip(handles, labels):
             if label not in seen_labels:
                 seen_labels.add(label)
                 unique_handles.append(handle)
                 unique_labels.append(label)
-    
+
         # Pass unique handles and labels to the legend
         return Axes.legend(
             self, unique_handles, unique_labels, handler_map={Line2D: SmithHandlerLine2D()}, **kwargs
@@ -851,7 +856,7 @@ class SmithAxes(Axes):
             ]:
                 new_args += z_to_xy(arg)
             else:
-                new_args += (arg, )
+                new_args += (arg,)
 
         # ensure newer plots are above older ones
         if "zorder" not in kwargs:
@@ -923,10 +928,7 @@ class SmithAxes(Axes):
                     else:
                         t = np.zeros(ilen)
                         t[0], t[1:] = t0[0], np.concatenate(
-                            [
-                                np.linspace(i0, i1, interpolate + 2)[1:]
-                                for i0, i1 in zip(t0[:-1], t0[1:])
-                            ]
+                            [np.linspace(i0, i1, interpolate + 2)[1:] for i0, i1 in zip(t0[:-1], t0[1:])]
                         )
 
                     z = self._moebius_inv_z(*splev(t, spline))
@@ -1041,7 +1043,7 @@ class SmithAxes(Axes):
             assert grid in ["major", "minor"]
             assert type in ["real", "imag"]
             assert p0 != p1
-            if grid == 'major':
+            if grid == "major":
                 arcs = self._majorarcs
                 if type == "real":
                     param["color"] = self._get_key("grid.major.color.x")
@@ -1177,10 +1179,7 @@ class SmithAxes(Axes):
 
                             for div in dividers[1:]:
                                 if (
-                                    abs(
-                                        self._moebius_z(x1 - (x1 - x0) / div, ym)
-                                        - self._moebius_z(x1, ym)
-                                    )
+                                    abs(self._moebius_z(x1 - (x1 - x0) / div, ym) - self._moebius_z(x1, ym))
                                     > thr_x
                                 ):
                                     x_div = div
@@ -1189,10 +1188,7 @@ class SmithAxes(Axes):
 
                             for div in dividers[1:]:
                                 if (
-                                    abs(
-                                        self._moebius_z(xm, y1)
-                                        - self._moebius_z(xm, y1 - (y1 - y0) / div)
-                                    )
+                                    abs(self._moebius_z(xm, y1) - self._moebius_z(xm, y1 - (y1 - y0) / div))
                                     > thr_y
                                 ):
                                     y_div = div
@@ -1296,13 +1292,9 @@ class SmithAxes(Axes):
         assert isinstance(line, Line2D)
 
         def new_draw(self_line, renderer):
-            def new_draw_markers(
-                self_renderer, gc, marker_path, marker_trans, path, trans, rgbFace=None
-            ):
+            def new_draw_markers(self_renderer, gc, marker_path, marker_trans, path, trans, rgbFace=None):
                 # Get the drawn path for determining the rotation angle
-                line_vertices = (
-                    self_line._get_transformed_path().get_fully_transformed_path().vertices
-                )
+                line_vertices = self_line._get_transformed_path().get_fully_transformed_path().vertices
                 vertices = path.vertices
 
                 if len(vertices) == 1:
@@ -1497,7 +1489,7 @@ class SmithAxes(Axes):
                 Distance to translate away from center for x and y values.
 
             *font_size*:
-                y values are shiftet 0.5 * font_size further away.
+                y values are shifted 0.5 * font_size further away.
         """
 
         input_dims = 2
@@ -1514,9 +1506,7 @@ class SmithAxes(Axes):
             def _translate(_xy):
                 x, y = _xy
                 ang = np.angle(complex(x - x0, y - y0))
-                return x + np.cos(ang) * self.pad, y + np.sin(ang) * (
-                    self.pad + 0.5 * self.font_size
-                )
+                return x + np.cos(ang) * self.pad, y + np.sin(ang) * (self.pad + 0.5 * self.font_size)
 
             x0, y0 = self.axes.transAxes.transform([0.5, 0.5])
             if isinstance(xy[0], Iterable):
@@ -1667,10 +1657,7 @@ class SmithAxes(Axes):
             if self._ticks is None:
                 locs = self.axis.get_majorticklocs()
                 self._ticks = np.concatenate(
-                    [
-                        np.linspace(p0, p1, self.ndivs + 1)[1:-1]
-                        for (p0, p1) in zip(locs[:-1], locs[1:])
-                    ]
+                    [np.linspace(p0, p1, self.ndivs + 1)[1:-1] for (p0, p1) in zip(locs[:-1], locs[1:])]
                 )
             return self._ticks
 
