@@ -31,14 +31,14 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.black]
-line-length = 100
+line-length = 110
 target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
 
 [tool.pytest.ini_options]
 markers = ["notebooks: tests related to Jupyter notebooks"]
 
 [tool.flake8]
-max-line-length = 100
+max-line-length = 110
 ignore = ["D200", "D212", "N802", "N803", "N806", "E501", "W503"]
 per-file-ignores = [
     "__init__.py:F401,F403",
