@@ -58,12 +58,12 @@ def test_two_arguments_mismatched_lengths():
 
 def test_invalid_number_of_arguments():
     """Test invalid number of arguments."""
-    with pytest.raises(ValueError, match="Arguments are not valid"):
+    with pytest.raises(ValueError, match="Arguments are not a valid complex scalar or array."):
         xy_to_z(1, 2, 3)
 
 def test_empty_input():
     """Test empty input."""
-    with pytest.raises(ValueError, match="Arguments are not valid"):
+    with pytest.raises(ValueError, match="Arguments are not a valid complex scalar or array."):
         xy_to_z()
 
 def test_single_empty_iterable():
