@@ -34,8 +34,9 @@ build-backend = "setuptools.build_meta"
 line-length = 110
 target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
 
-[tool.pytest.ini_options]
-markers = ["notebooks: tests related to Jupyter notebooks"]
+[tool.pylint]
+disable = ["C0103", "C0209", "R0913", "R0914", "R0912", "R0915"]  
+max-line-length = 110
 
 [tool.flake8]
 max-line-length = 110
