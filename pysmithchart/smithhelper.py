@@ -28,6 +28,7 @@ Functions:
     vswr_rotation(x, y, ...):
         Rotates a point on the Smith chart to a specified destination or orientation.
 """
+
 from collections.abc import Iterable
 import numpy as np
 
@@ -50,17 +51,17 @@ def xy_to_z(*xy):
     Converts input arguments to a complex scalar or an array of complex numbers.
 
     Args:
-        *xy (tuple): 
+        *xy (tuple):
             - If a single argument is passed:
-                - If the argument is a complex number or an array-like of complex numbers, 
+                - If the argument is a complex number or an array-like of complex numbers,
                   it is returned as-is.
-                - If the argument is an iterable with two rows (e.g., shape `(2, N)`), it 
+                - If the argument is an iterable with two rows (e.g., shape `(2, N)`), it
                   is interpreted as real and imaginary parts, and a complex array is returned.
                 - If the argument has more than two dimensions, a `ValueError` is raised.
             - If two arguments are passed:
-                - The first argument represents the real part (`x`), and the second 
+                - The first argument represents the real part (`x`), and the second
                   represents the imaginary part (`y`).
-                - Both arguments must be scalars or iterable objects of the same size. 
+                - Both arguments must be scalars or iterable objects of the same size.
                   If they are iterable, they are combined to form a complex array.
                 - If the sizes of `x` and `y` do not match, a `ValueError` is raised.
 
@@ -109,9 +110,9 @@ def moebius_z(*args, norm):
     Computes the Möbius transformation, typically used in Smith chart computations.
 
     Args:
-        *args (tuple): Input arguments passed to the `xy_to_z` function. 
+        *args (tuple): Input arguments passed to the `xy_to_z` function.
             - A single complex number or an iterable representing complex values.
-            - Two arguments representing the real and imaginary parts of a complex number 
+            - Two arguments representing the real and imaginary parts of a complex number
               or array of complex numbers.
             Refer to `xy_to_z` for detailed input handling.
         norm (float): Normalization used in the Möbius transformation, typically 50Ω.
@@ -128,9 +129,9 @@ def moebius_inv_z(*args, norm):
     Computes the inverse Möbius transformation, typically used in Smith chart computations.
 
     Args:
-        *args (tuple): Input arguments passed to the `xy_to_z` function. 
+        *args (tuple): Input arguments passed to the `xy_to_z` function.
             - A single complex number or an iterable representing complex values.
-            - Two arguments representing the real and imaginary parts of a complex number 
+            - Two arguments representing the real and imaginary parts of a complex number
               or array of complex numbers.
             Refer to `xy_to_z` for detailed input handling.
         norm (float): Normalization used in the inverse Möbius transformation, typically 50Ω.
@@ -169,11 +170,11 @@ def vswr_rotation(
     """
     Rotates a point `(x, y)` on the Smith chart to a specified destination or orientation.
 
-    This function computes the rotation needed to move a point `p = (x, y)` to a specified destination on 
-    the Smith chart. The destination can be defined by matching the real part, the imaginary part, 
+    This function computes the rotation needed to move a point `p = (x, y)` to a specified destination on
+    the Smith chart. The destination can be defined by matching the real part, the imaginary part,
     or a specified rotation angle. If no destination is defined, the function computes a full rotation.
 
-    Multiple solutions may exist, and you can specify which solution to use. If no solution exists, 
+    Multiple solutions may exist, and you can specify which solution to use. If no solution exists,
     a `ValueError` is raised.
 
     Args:
@@ -205,7 +206,7 @@ def vswr_rotation(
         tuple: A tuple `(z0, z1, lambda_rotation)` containing:
             - `z0 (complex)`: The input point converted to a complex number, `z0 = x + y * 1j`.
             - `z1 (complex)`: The destination point as a complex number after rotation.
-            - `lambda_rotation (float)`: The rotation angle in terms of wavelengths 
+            - `lambda_rotation (float)`: The rotation angle in terms of wavelengths
                (e.g., 0.5 for 180 degrees).
 
     Notes:
