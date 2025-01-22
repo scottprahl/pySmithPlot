@@ -1,3 +1,33 @@
+"""
+Module: smithhelper
+
+This module provides utility functions for computations related to Smith charts.
+
+Constants:
+    INF (float): A large value used to approximate infinity in calculations (default: 1e9).
+    EPSILON (float): A small value to prevent division by zero in transformations (default: 1e-7).
+    TWO_PI (float): The value of 2 * pi for convenience in angular calculations.
+
+Functions:
+    cs(z, N=5):
+        Converts a complex number to a formatted string for printing.
+    xy_to_z(*xy):
+        Converts real and imaginary components or a complex number to a complex scalar or array.
+    z_to_xy(z):
+        Splits a complex number into its real and imaginary components.
+    moebius_inv_z(*args, norm):
+        Computes the inverse Möbius transformation, typically used in Smith chart computations.
+    ang_to_c(ang, radius=1):
+        Converts an angle to a complex number on a circle with the specified radius.
+    lambda_to_rad(lmb):
+        Converts a wavelength fraction to radians.
+    rad_to_lambda(rad):
+        Converts an angle in radians to a wavelength fraction.
+    split_complex(z):
+        Splits a complex number into its real and imaginary components.
+    vswr_rotation(x, y, ...):
+        Rotates a point on the Smith chart to a specified destination or orientation.
+"""
 from collections.abc import Iterable
 import numpy as np
 
@@ -15,32 +45,27 @@ def cs(z, N=5):
     return form % (z.real, abs(z.imag))
 
 
-def to_float(value):
-    if isinstance(value, (int, np.integer, np.unsignedinteger)):
-        return float(value)
-    return value
-
-
 def xy_to_z(*xy):
     """
-    Converts input arguments representing either complex numbers or separate real and imaginary components into a complex number or array of complex numbers.
+    Converts input arguments to a complex scalar or an array of complex numbers.
 
-    Parameters
-    ----------
-    *xy : tuple
-        - If a single argument is passed:
-            - If the argument is a complex number or an array-like of complex numbers, it is returned as-is.
-            - If the argument is an iterable with two rows (e.g., shape `(2, N)`), it is interpreted as real and imaginary parts, and a complex array is returned.
-            - If the argument has more than two dimensions, a `ValueError` is raised.
-        - If two arguments are passed:
-            - The first argument represents the real part (`x`), and the second represents the imaginary part (`y`).
-            - Both arguments must be scalars or iterable objects of the same size. If they are iterable, they are combined to form a complex array.
-            - If the sizes of `x` and `y` do not match, a `ValueError` is raised.
+    Args:
+        *xy (tuple): 
+            - If a single argument is passed:
+                - If the argument is a complex number or an array-like of complex numbers, 
+                  it is returned as-is.
+                - If the argument is an iterable with two rows (e.g., shape `(2, N)`), it 
+                  is interpreted as real and imaginary parts, and a complex array is returned.
+                - If the argument has more than two dimensions, a `ValueError` is raised.
+            - If two arguments are passed:
+                - The first argument represents the real part (`x`), and the second 
+                  represents the imaginary part (`y`).
+                - Both arguments must be scalars or iterable objects of the same size. 
+                  If they are iterable, they are combined to form a complex array.
+                - If the sizes of `x` and `y` do not match, a `ValueError` is raised.
 
-    Returns
-    -------
-    z : complex or numpy.ndarray
-        The complex number or array of complex numbers created from the input.
+    Returns:
+        complex or numpy.ndarray: The complex scalar or array of complex numbers.
     """
     if len(xy) == 1:
         z = xy[0]
@@ -69,9 +94,7 @@ def xy_to_z(*xy):
         else:
             z = float(x) + 1j * float(y)  # Cast scalars to float
     else:
-        raise ValueError(
-            "Arguments are not valid - specify either complex number/vector z or real and imaginary number/vector x, y"
-        )
+        raise ValueError("Arguments are not a valid complex scalar or array.")
 
     return z
 
@@ -83,22 +106,17 @@ def z_to_xy(z):
 
 def moebius_z(*args, norm):
     """
-    Computes the Möbius transformation of the input, typically used in Smith chart computations.
+    Computes the Möbius transformation, typically used in Smith chart computations.
 
-    Parameters
-    ----------
-    *args : tuple
-        Input arguments passed to the `xy_to_z` function:
-        - A single complex number or an iterable representing complex values.
-        - Two arguments representing the real and imaginary parts of a complex number or array of complex numbers.
-        Refer to `xy_to_z` for detailed input handling.
+    Args:
+        *args (tuple): Input arguments passed to the `xy_to_z` function. 
+            - A single complex number or an iterable representing complex values.
+            - Two arguments representing the real and imaginary parts of a complex number 
+              or array of complex numbers.
+            Refer to `xy_to_z` for detailed input handling.
+        norm (float): Normalization used in the Möbius transformation, typically 50Ω.
 
-    norm : float
-        The normalization constant used in the Möbius transformation.  Typically 50Ω
-
-    Returns
-    -------
-    transformed_z : complex or numpy.ndarray
+    Returns:
         The Möbius-transformed complex number or array of complex numbers.
     """
     z = xy_to_z(*args)
@@ -107,22 +125,17 @@ def moebius_z(*args, norm):
 
 def moebius_inv_z(*args, norm):
     """
-    Computes the inverse Möbius transformation of the input, typically used in Smith chart computations.
+    Computes the inverse Möbius transformation, typically used in Smith chart computations.
 
-    Parameters
-    ----------
-    *args : tuple
-        Input arguments passed to the `xy_to_z` function:
-        - A single complex number or an iterable representing complex values.
-        - Two arguments representing the real and imaginary parts of a complex number or array of complex numbers.
-        Refer to `xy_to_z` for detailed input handling.
+    Args:
+        *args (tuple): Input arguments passed to the `xy_to_z` function. 
+            - A single complex number or an iterable representing complex values.
+            - Two arguments representing the real and imaginary parts of a complex number 
+              or array of complex numbers.
+            Refer to `xy_to_z` for detailed input handling.
+        norm (float): Normalization used in the inverse Möbius transformation, typically 50Ω.
 
-    norm : float
-        The normalization constant used in the inverse Möbius transformation.  Typically 50Ω
-
-    Returns
-    -------
-    inverse_transformed_z : complex or numpy.ndarray
+    Returns:
         The inverse Möbius-transformed complex number or array of complex numbers.
     """
     z = xy_to_z(*args)
@@ -131,18 +144,22 @@ def moebius_inv_z(*args, norm):
 
 
 def ang_to_c(ang, radius=1):
+    """Converts an angle to a complex number on a circle with the given radius."""
     return radius * (np.cos(ang) + np.sin(ang) * 1j)
 
 
 def lambda_to_rad(lmb):
+    """Converts a wavelength fraction to radians."""
     return lmb * 4 * np.pi
 
 
 def rad_to_lambda(rad):
+    """Converts an angle in radians to a wavelength fraction."""
     return rad * 0.25 / np.pi
 
 
 def split_complex(z):
+    """Splits a complex number into its real and imaginary components."""
     return [np.real(z), np.imag(z)]
 
 
@@ -188,7 +205,8 @@ def vswr_rotation(
         tuple: A tuple `(z0, z1, lambda_rotation)` containing:
             - `z0 (complex)`: The input point converted to a complex number, `z0 = x + y * 1j`.
             - `z1 (complex)`: The destination point as a complex number after rotation.
-            - `lambda_rotation (float)`: The rotation angle in terms of wavelengths (e.g., 0.5 for 180 degrees).
+            - `lambda_rotation (float)`: The rotation angle in terms of wavelengths 
+               (e.g., 0.5 for 180 degrees).
 
     Notes:
         - If no destination is set (`real`, `imag`, or `lambda_rotation`), a full turn is performed.
@@ -207,7 +225,7 @@ def vswr_rotation(
     ang = 0.0
     check = 0
     z = x + y * 1j
-    z0 = moebius_z(z, impedance)
+    z0 = moebius_z(z, norm=impedance)
 
     if real is not None or imag is not None:
         a = np.abs(z0)
@@ -216,11 +234,11 @@ def vswr_rotation(
             assert real > 0, "Real destination must be positive."
             check += 1
 
-            b = 0.5 * (1 - moebius_z(real, impedance))
+            b = 0.5 * (1 - moebius_z(real, norm=impedance))
             c = 1 - b
             ang_0 = 0
 
-            if real < 0 or abs(moebius_z(real, impedance)) > a:
+            if real < 0 or abs(moebius_z(real, norm=impedance)) > a:
                 raise ValueError("The specified real destination is not reachable.")
 
             invert = solution2
@@ -255,9 +273,11 @@ def vswr_rotation(
             ang = -ang
 
     if check > 1:
-        raise ValueError("Too many destinations specified. Specify only one of `real`, `imag`, or `lambda_rotation`.")
+        s = "Too many destinations specified. Specify only one of"
+        s += "`real`, `imag`, or `lambda_rotation`."
+        raise ValueError(s)
 
     if check == 0:
         ang = TWO_PI
 
-    return (z, moebius_inv_z(z0 * ang_to_c(ang), impedance), rad_to_lambda(ang))
+    return (z, moebius_inv_z(z0 * ang_to_c(ang), norm=impedance), rad_to_lambda(ang))
