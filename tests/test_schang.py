@@ -27,7 +27,7 @@ def start_figure():
     chart_dir = os.path.join(script_dir, "charts")
     os.makedirs(chart_dir, exist_ok=True)
     plt.figure(figsize=(6, 6))
-    plt.subplot(1, 1, 1, projection='smith')
+    plt.subplot(1, 1, 1, projection="smith")
     yield chart_dir
 
 
@@ -88,8 +88,10 @@ def test_plot_normalized_axes(start_figure):
     for i, (do_normalize_axes, impedance) in enumerate(product([True, False], [10, 50, 200])):
         s11 = s11_of_parallel_cap_res(freqs, z0=impedance)
         plt.subplot(
-            2, 3, i + 1,
-            projection='smith',
+            2,
+            3,
+            i + 1,
+            projection="smith",
             axes_impedance=impedance,
             axes_normalize=do_normalize_axes,
         )
@@ -119,8 +121,10 @@ def test_plot_grid_styles(start_figure):
             offset += 1
             continue
         plt.subplot(
-            2, 3, i + 1 - offset,
-            projection='smith',
+            2,
+            3,
+            i + 1 - offset,
+            projection="smith",
             grid_major_fancy=major_fancy,
             grid_minor_enable=minor_enable,
             grid_minor_fancy=minor_fancy,

@@ -8,6 +8,7 @@ from pysmithchart import SmithAxes
 # have matplotlib legend include three markers instead of one
 rcParams.update({"legend.numpoints": 3})
 
+
 @pytest.fixture
 def setup_test_environment(tmp_path):
     """Fixture to set up a test environment with paths for data and charts."""

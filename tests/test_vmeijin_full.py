@@ -22,6 +22,7 @@ def setup_environment(tmp_path):
     os.makedirs(chart_dir, exist_ok=True)
     return data, chart_dir
 
+
 def load_complex_data(file_path, step=40):
     """
     Load and process complex data from a CSV file.
@@ -40,6 +41,7 @@ def load_complex_data(file_path, step=40):
     """
     data = np.loadtxt(file_path, delimiter=",", skiprows=1)[::step]
     return data[:, 1] + 1j * data[:, 2]
+
 
 def plot_example(title, sp_data, z_data, **kwargs):
     """Helper function to plot examples."""
@@ -75,7 +77,10 @@ def test_grid_styles(setup_environment):
                 if minor or not minor_fancy:
                     i += 1
                     plt.subplot(
-                        2, 3, i, projection="smith",
+                        2,
+                        3,
+                        i,
+                        projection="smith",
                         grid_major_fancy=major_fancy,
                         grid_minor_enable=minor,
                         grid_minor_fancy=minor_fancy,
@@ -103,7 +108,10 @@ def test_fancy_grids(setup_environment):
     for threshold in [15, 30, 60]:
         i += 1
         plt.subplot(
-            2, 3, i, projection="smith",
+            2,
+            3,
+            i,
+            projection="smith",
             grid_minor_fancy=True,
             grid_minor_enable=True,
             grid_minor_fancy_threshold=threshold,
@@ -146,7 +154,10 @@ def test_normalize(setup_environment):
         for impedance in [10, 50, 200]:
             i += 1
             plt.subplot(
-                2, 3, i, projection="smith",
+                2,
+                3,
+                i,
+                projection="smith",
                 axes_impedance=impedance,
                 axes_normalize=normalize,
             )
@@ -187,13 +198,14 @@ def test_markers(setup_environment):
     ]:
         i += 1
         ax = plt.subplot(
-            2, 3, i, projection="smith",
+            2,
+            3,
+            i,
+            projection="smith",
             plot_marker_hack=hackline,
             plot_marker_rotate=rotate_marker,
         )
-        SmithAxes.update_scParams(
-            instance=ax, plot_marker_start=startmarker, plot_marker_end=endmarker
-        )
+        SmithAxes.update_scParams(instance=ax, plot_marker_start=startmarker, plot_marker_end=endmarker)
         plot_example(
             f"HackLines: {hackline} - StartMarker: {startmarker}\nEndMarker: {endmarker} - Rotate: {rotate_marker}",
             sp_data=np.array([50]),
@@ -230,6 +242,7 @@ def test_interpolation(setup_environment):
 
     save_figure(chart_dir, "interpolation")
 
+
 def test_miscellaneous(setup_environment):
     """Test for miscellaneous Smith chart settings."""
     sp_data, chart_dir = setup_environment
@@ -243,7 +256,10 @@ def test_miscellaneous(setup_environment):
 
     divs = [1, 3, 7]
     plt.subplot(
-        2, 3, 2, projection="smith",
+        2,
+        3,
+        2,
+        projection="smith",
         grid_minor_enable=True,
         grid_minor_fancy=True,
         grid_minor_fancy_dividers=divs,

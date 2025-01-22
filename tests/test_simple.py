@@ -5,6 +5,7 @@ import pytest
 import matplotlib.pyplot as plt
 from pysmithchart import SmithAxes
 
+
 # Utility function
 def cs(z, N=5):
     """Convert complex number to string for printing."""
@@ -98,7 +99,9 @@ def test_vswr_circle(setup_chart_dir):
     plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     plt.plot(Zd, "r", linestyle="", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
     for i in [0, 5, 10, 15, 20]:
-        plt.text(Zd[i].real / 50, Zd[i].imag / 50, " %.2fλ" % lam[i], bbox=dict(facecolor="cyan", edgecolor="none"))
+        plt.text(
+            Zd[i].real / 50, Zd[i].imag / 50, " %.2fλ" % lam[i], bbox=dict(facecolor="cyan", edgecolor="none")
+        )
     image_path = os.path.join(setup_chart_dir, "vswr.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
@@ -119,7 +122,12 @@ def test_frequency_range(setup_chart_dir):
     plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
     plt.plot(ZL, "b", marker="o", markersize=10, linestyle="", datatype=SmithAxes.Z_PARAMETER)
     for i in [0, 3, 5, 9]:
-        plt.text(ZL[i].real / 50, ZL[i].imag / 50, " %.0fMHz" % (f[i] / 1e6), bbox=dict(facecolor="cyan", edgecolor="none"))
+        plt.text(
+            ZL[i].real / 50,
+            ZL[i].imag / 50,
+            " %.0fMHz" % (f[i] / 1e6),
+            bbox=dict(facecolor="cyan", edgecolor="none"),
+        )
     plt.title("RLC Series Load, R=50Ω, C=2pF, L=20nH")
     image_path = os.path.join(setup_chart_dir, "RLC_frequency.pdf")
     plt.savefig(image_path, format="pdf")
@@ -143,9 +151,10 @@ def test_stub_design(setup_chart_dir):
     plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
     plt.plot([ZL], "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     plt.plot(Zd, "r", marker="", datatype=SmithAxes.Z_PARAMETER)
-    plt.text(Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none"))
+    plt.text(
+        Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none")
+    )
     plt.plot(ZR, "g", marker=None, datatype=SmithAxes.Z_PARAMETER)
     image_path = os.path.join(setup_chart_dir, "stub.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
-
