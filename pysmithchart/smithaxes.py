@@ -36,10 +36,7 @@ of all given parameters. This does not work always, especially if the
 parameters are array-like types (e.g. numpy.ndarray).
 """
 
-try:
-    from collections.abc import Iterable
-except ImportError:
-    from collections import Iterable
+from collections.abc import Iterable
 from numbers import Number
 from types import MethodType, FunctionType
 
@@ -446,10 +443,9 @@ class SmithAxes(Axes):
         """
         if key in self.scParams:
             return self.scParams[key]
-        elif key in mp.rcParams:
+        if key in mp.rcParams:
             return mp.rcParams[key]
-        else:
-            raise KeyError("%s is not a valid key" % key)
+        raise KeyError("%s is not a valid key" % key)
 
     def _init_axis(self):
         self.xaxis = mp.axis.XAxis(self)
@@ -495,6 +491,7 @@ class SmithAxes(Axes):
             pass
 
         self.grid = dummy
+
         # Don't forget to call the base class
         Axes.clear(self)
         self.grid = tgrid
@@ -1001,12 +998,22 @@ class SmithAxes(Axes):
             return kw
 
         def check_fancy(yticks):
-            # checks if the imaginary axis is symmetric
-            len_y = (len(yticks) - 1) // 2
+            """
+            Checks if the imaginary axis ticks are symmetric about zero.
+
+            This property is required for "fancy" minor grid styling.
+
+            Args:
+                yticks: Array or list of tick values for the imaginary axis.
+
+            Returns:
+                The upper half of the `yticks` array (non-negative values).
+            """
+            len_y = (len(yticks) - 1) // 2  # Calculate the midpoint index
             if not (len(yticks) % 2 == 1 and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()):
-                raise ValueError(
-                    "fancy minor grid is only supported for zero-symmetric imaginary grid - e.g. ImagMaxNLocator"
-                )
+                s = "Fancy minor grid is only supported for zero-symmetric imaginary grid. "
+                s += "--- e.g., ImagMaxNLocator"
+                raise ValueError(s)
             return yticks[len_y:]
 
         def split_threshold(threshold):
@@ -1029,7 +1036,8 @@ class SmithAxes(Axes):
                 p1 (tuple): The other endpoint of the arc.
                 grid (str): Specifies whether the arc is part of the "major" or "minor" grid.
                             Must be one of ["major", "minor"].
-                type (str): Specifies the type of the arc, either "real" or "imag" for real or imaginary components.
+                type (str): Specifies the type of the arc, either "real" or "imag" for
+                            real or imaginary components.
 
             Side Effects:
                 Appends the created arc to the appropriate list:
