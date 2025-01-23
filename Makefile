@@ -43,6 +43,7 @@ rcheck:
 test:
 	pytest -v tests/test_xy_to_z.py
 	pytest -v tests/test_schang.py
+	pytest -v tests/test_noergaard.py
 	pytest -v tests/test_simple.py
 	pytest -v tests/test_vmeijin_short.py
 	pytest -v tests/test_vmeijin_full.py
