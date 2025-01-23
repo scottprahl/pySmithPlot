@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# last edit: 11.04.2018
 """
 Library for plotting a fully automatic Smith Chart with various customizable
 parameters and well-selected default values. It also provides the following
@@ -13,7 +11,7 @@ modifications and features:
     - 'fancy' option for adaptive grid generation
     - own tick locators for nice axis labels
 
-For making a Smith Chart plot, it is sufficient to import :mod:`smithplot` and
+For making a Smith Chart, it is sufficient to import :mod:`smithplot` and
 create a new subplot with projection set to 'smith'. Parameters can be set
 either with keyword arguments or :meth:`update_Params`.
 
@@ -58,6 +56,16 @@ from . import smithhelper
 from .smithhelper import EPSILON, TWO_PI, ang_to_c, z_to_xy
 
 
+def get_rcParams():
+    """Gets the default values for matplotlib parameters"""
+    return SmithAxes._rcDefaultParams
+
+
+def get_scParams():
+    """gets the global default values for all :class:`SmithAxes`"""
+    return SmithAxes.scParams
+
+
 class SmithAxes(Axes):
     """
     The :class:`SmithAxes` provides an implementation of :class:`matplotlib.axes.Axes`
@@ -90,8 +98,29 @@ class SmithAxes(Axes):
     _ax_lim_x = 2 * _inf  # prevents missing labels in special cases
     _ax_lim_y = 2 * _inf  # prevents missing labels in special cases
 
+    # default parameter for matplotlib
+    _rcDefaultParams = {
+        "font.size": 12,
+        "legend.fontsize": 12,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 12,
+        "lines.linestyle": "-",
+        "lines.linewidth": 2,
+        "lines.markersize": 7,
+        "lines.markeredgewidth": 1,
+        "xtick.major.pad": 0,
+        "ytick.major.pad": 4,
+        "legend.fancybox": False,
+        "legend.shadow": False,
+        "legend.markerscale": 1,
+        "legend.numpoints": 3,
+        "axes.axisbelow": True,
+    }
+
     # default parameter, see update_scParams for description
     scDefaultParams = {
+        "axes.impedance": 50,
+        "init.updaterc": True,
         "plot.zorder": 4,
         "plot.marker.hack": True,
         "plot.marker.rotate": True,
@@ -112,7 +141,8 @@ class SmithAxes(Axes):
         "grid.major.ymaxn": 16,
         "grid.major.fancy": True,
         "grid.major.fancy.threshold": (100, 50),
-        "grid.minor.enable": True,
+        "grid.minor.enable": False,
+        "grid.minor.linestyle": ":",
         "grid.minor.capstyle": "round",
         "grid.minor.dashes": [0.2, 2],
         "grid.minor.linewidth": 0.75,
@@ -122,8 +152,9 @@ class SmithAxes(Axes):
         "grid.minor.xauto": 4,
         "grid.minor.yauto": 4,
         "grid.minor.fancy": True,
-        "grid.minor.fancy.dividers": [0, 1, 2, 3, 5, 10, 20],
+        "grid.minor.fancy.dividers": [1, 2, 3, 5, 10, 20],
         "grid.minor.fancy.threshold": 35,
+        "path.default_interpolation": 75,
         "axes.xlabel.rotation": 90,
         "axes.xlabel.fancybox": {
             "boxstyle": "round,pad=0.2,rounding_size=0.2",
@@ -132,10 +163,10 @@ class SmithAxes(Axes):
             "mutation_aspect": 0.75,
             "alpha": 1,
         },
-        "axes.ylabel.correction": (-1, 0, 0),
-        "axes.radius": 0.44,
-        "axes.impedance": 50,
-        "axes.labelpos": -1 - 1j,
+        "axes.ylabel.correction": (-2, 0, 0),
+        "axes.radius": 0.43,
+        "axes.scale": 1,
+        "axes.normalize.label.position": -1 - 1j,
         "axes.normalize": True,
         "axes.normalize.label": True,
         "symbol.infinity": "∞ ",  # BUG: symbol gets cut off without end-space
@@ -225,14 +256,17 @@ class SmithAxes(Axes):
             grid.major.color: '0.2'
                 Major gridline color.
                 Accepts: matplotlib color
+                Note: changes both real x and imag y major grid lines.
 
             grid.major.color.x: '0.2'
                 Major real gridline color
                 Accepts: matplotlib color
+                Note: Major real valued grid lines.
 
             grid.major.color.y: '0.2'
                 Major imag gridline color
                 Accepts: matplotlib color
+                Note: Major imaginary valued grid lines.
 
             grid.major.xmaxn: 10
                 Maximum number of spacing steps for the real axis.
@@ -328,17 +362,17 @@ class SmithAxes(Axes):
                 Defines the reference impedance for normalisation.
                 Accepts: float
 
-            axes.labelpos: -1-1j
-                Position of normalization label, see axes.normalize.label
-
             axes.normalize: True
                 If True, the Smith Chart is normalized to the reference impedance.
                 Accepts: boolean
 
             axes.normalize.label: True
-                If 'axes.normalize' and True, a textbox with 'Z_0: ... Ohm' is put in
-                the lower left corner.
+                If 'axes.normalize' is True, a label like 'Z_0: 50 Ω' is created
                 Accepts: boolean
+
+            axes.normalize.label.position: -1-1j
+                Position of normalization label, default is lower left corner
+                Accepts: complex number (-1-1j is bottom left, 1+1j it top right)
 
             symbol.infinity: "∞ "
                 Symbol string for infinity.
@@ -360,6 +394,11 @@ class SmithAxes(Axes):
         """
         scParams = SmithAxes.scDefaultParams if instance is None else instance.scParams
 
+#         if instance is None:
+#             scParams = SmithAxes.scDefaultParams
+#         else:
+#             scParams = instance.scParams
+
         if sc_dict is not None:
             for key, value in sc_dict.items():
                 if key in scParams:
@@ -367,8 +406,7 @@ class SmithAxes(Axes):
                     if key == "grid.major.color":
                         scParams["grid.major.color.x"] = value
                         scParams["grid.major.color.y"] = value
-
-                    if key == "grid.minor.color":
+                    elif key == "grid.minor.color":
                         scParams["grid.minor.color.x"] = value
                         scParams["grid.minor.color.y"] = value
                 else:
@@ -383,10 +421,13 @@ class SmithAxes(Axes):
                 if key_dot == "grid.major.color":
                     scParams["grid.major.color.x"] = value
                     scParams["grid.major.color.y"] = value
-
-                if key_dot == "grid.minor.color":
+                elif key_dot == "grid.minor.color":
                     scParams["grid.minor.color.x"] = value
                     scParams["grid.minor.color.y"] = value
+                else:
+                    scParams[key_dot] = value
+            else:
+                raise KeyError("key '%s' is not in scParams" % key)
 
         if not filter_dict and len(remaining) > 0:
             raise KeyError(
@@ -414,15 +455,26 @@ class SmithAxes(Axes):
         self._current_zorder = None
         self.scParams = self.scDefaultParams.copy()
 
-        # seperate Axes parameter
-        Axes.__init__(
-            self,
-            *args,
-            **SmithAxes.update_scParams(instance=self, filter_dict=True, reset=False, **kwargs),
-        )
-        self.set_aspect(1, adjustable="box", anchor="C")
+        # Separate out parameters intended for Axes configuration.
+        # Iterate through the provided keyword arguments (`kwargs`) to identify any
+        # parameters not meant for `scParams` or `_rcDefaultParams`. These parameters
+        # are assumed to be for Axes and are moved to `axes_kwargs`.
+        axes_kwargs = {}
+        for key in kwargs.copy():
+            key_dot = key.replace("_", ".")
+            if not (key_dot in self.scParams or key_dot in self._rcDefaultParams):
+                axes_kwargs[key] = kwargs.pop(key_dot)
 
-        # remove all ticks
+        self.update_scParams(**kwargs)
+
+        # if 'init.updaterc' update matplotlib rc parameters to the our defaults
+        if self._get_key("init.updaterc"):
+            for key, value in self._rcDefaultParams.items():
+                if mp.rcParams[key] == mp.rcParamsDefault[key]:
+                    mp.rcParams[key] = value
+
+        Axes.__init__(self, *args, **axes_kwargs)
+        self.set_aspect(1, adjustable="box", anchor="C")
         self.tick_params(axis="both", which="both", bottom=False, top=False, left=False, right=False)
 
     def _get_key(self, key):
@@ -540,7 +592,7 @@ class SmithAxes(Axes):
         self.xaxis.set_major_formatter(self.RealFormatter(self))
 
         if self._get_key("axes.normalize") and self._get_key("axes.normalize.label"):
-            x, y = z_to_xy(self._moebius_inv_z(self._get_key("axes.labelpos")))
+            x, y = z_to_xy(self._moebius_inv_z(self._get_key("axes.normalize.label.position")))
             box = self.text(
                 x,
                 y,
@@ -557,6 +609,31 @@ class SmithAxes(Axes):
             self.grid(b=self._get_key("grid.%s.enable" % grid), which=grid)
 
     def _set_lim_and_transforms(self):
+        """
+        Configure the axis limits and transformation pipelines for the chart.
+
+        This method defines and applies a series of transformations to map data
+        space, Möbius space, axes space, and drawing space.
+
+        Transformations:
+            - `transProjection`: Maps data space to Möbius space using a Möbius transformation.
+            - `transAffine`: Scales and translates Möbius space to fit axes space.
+            - `transDataToAxes`: Combines `transProjection` and `transAffine` to map data space to axes space.
+            - `transAxes`: Maps axes space to drawing space using the bounding box (`bbox`).
+            - `transMoebius`: Combines `transAffine` and `transAxes` to map Möbius space to drawing space.
+            - `transData`: Combines `transProjection` and `transMoebius` as data-to-drawing-space transform.
+
+        X-axis transformations:
+            - `_xaxis_pretransform`: Scales and centers the x-axis based on axis limits.
+            - `_xaxis_transform`: Combines `_xaxis_pretransform` and `transData` for full x-axis mapping.
+            - `_xaxis_text1_transform`: Adjusts x-axis label positions.
+
+        Y-axis transformations:
+            - `_yaxis_stretch`: Scales the y-axis based on axis limits.
+            - `_yaxis_correction`: Applies additional translation to the y-axis for label adjustments.
+            - `_yaxis_transform`: Combines `_yaxis_stretch` and `transData` for full y-axis mapping.
+            - `_yaxis_text1_transform`: Combines `_yaxis_stretch` and `_yaxis_correction` for y label position.
+        """
         r = self._get_key("axes.radius")
         self.transProjection = self.MoebiusTransform(self)  # data space  -> moebius space
         self.transAffine = Affine2D().scale(r, r).translate(0.5, 0.5)  # moebius space -> axes space
@@ -602,7 +679,9 @@ class SmithAxes(Axes):
         )
 
     def _gen_axes_patch(self):
-        return Circle((0.5, 0.5), self._get_key("axes.radius") + 0.015)
+        r = self._get_key("axes.radius") + 0.015
+        c = self._get_key("grid.major.color.x")
+        return Circle((0.5, 0.5), r, edgecolor=c)
 
     def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
         return {SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))}
