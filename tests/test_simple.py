@@ -48,13 +48,13 @@ def test_empty_smith_chart(setup_chart_dir):
     """Test for plotting an empty Smith chart."""
     plt.figure(figsize=(8, 8))
     ax = plt.subplot(1, 1, 1, projection="smith")
-    SmithAxes.update_scParams(reset=True, instance=ax, grid_minor_color="blue")
+    SmithAxes.update_scParams(reset=True, instance=ax, grid_major_color="blue")
     image_path = os.path.join(setup_chart_dir, "plain_smith.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_minor_grid_colors():
+def test_minor_grid_colors(setup_chart_dir):
     """Test for verifying minor grid colors on the Smith chart."""
     plt.figure(figsize=(8, 8))
     ax = plt.subplot(1, 1, 1, projection="smith")
@@ -62,10 +62,13 @@ def test_minor_grid_colors():
         reset=True,
         instance=ax,
         grid_major_color_x="blue",
-        grid_minor_color_x="blue",
         grid_major_color_y="orange",
-        grid_minor_color_y="orange",
+        grid_minor_enable=True,
+        grid_minor_color_x="blue",
+        grid_minor_color_y="black",
     )
+    image_path = os.path.join(setup_chart_dir, "minor_colors.pdf")
+    plt.savefig(image_path, format="pdf")
     plt.close()
 
 
