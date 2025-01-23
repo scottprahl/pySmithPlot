@@ -1,10 +1,3 @@
-pysmithchart
-============
-
-This is a fork of **pysmithplot** that works with matplotlib versions greater than 3.6.
-
-**pysmithchart** is a matplotlib extension providing a projection class for creating high quality Smith Charts with Python. The generated plots blend seamless into matplotlib's style and support almost the full range of customization options. 
-
 .. |pypi| image:: https://img.shields.io/pypi/v/pysmithchart?color=68CA66
    :target: https://pypi.org/project/pysmithchart/
    :alt: pypi
@@ -36,6 +29,19 @@ This is a fork of **pysmithplot** that works with matplotlib versions greater th
 .. |downloads| image:: https://img.shields.io/pypi/dm/pysmithchart?color=68CA66
    :target: https://pypi.org/project/pysmithchart/
    :alt: Downloads
+
+pysmithchart
+============
+
+|pypi| |github| |conda| |doi|
+
+|license| |test| |docs| |downloads|
+
+
+This is a fork of **pysmithplot** that works with matplotlib versions greater than 3.6.
+
+**pysmithchart** is a matplotlib extension providing a projection class for creating high quality Smith Charts with Python. The generated plots blend seamless into matplotlib's style and support almost the full range of customization options. 
+
 
 
 Installation
