@@ -3,9 +3,25 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from pysmithchart import SmithAxes
+import pytest
 
 
-def test_vswr_circle():
+@pytest.fixture
+def chart_dir(tmpdir):
+    """
+    Fixture to provide the directory for saving charts.
+    - Locally: Saves charts in the `charts` folder within the `tests` directory.
+    - On GitHub Actions: Uses the provided `tmpdir`.
+    """
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        return tmpdir
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        local_chart_dir = os.path.join(script_dir, "charts")
+        os.makedirs(local_chart_dir, exist_ok=True)
+        return local_chart_dir
+        
+def test_vswr_circle(chart_dir):
     """Test plotting a VSWR circle on the Smith chart."""
 
     # Create VSWR circle
@@ -29,15 +45,6 @@ def test_vswr_circle():
 
     plt.legend()
     plt.tight_layout()
-
-    # Save the output
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    chart_dir = os.path.join(script_dir, "charts")
-    os.makedirs(chart_dir, exist_ok=True)
     output_path = os.path.join(chart_dir, "vswr_circle.pdf")
     plt.savefig(output_path, format="pdf")
     plt.close()
-
-
-if __name__ == "__main__":
-    test_vswr_circle()

@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.7', '3.12']
+        python-version: ['3.7', '3.13']
 
     steps:
       - name: Checkout code
@@ -33,4 +33,4 @@ jobs:
 
       - name: Tests
         run: |
-          pytest tests/test_pygrin.py
+          pytest tests/test_simple.py

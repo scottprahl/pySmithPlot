@@ -13,13 +13,22 @@ rcParams.update({"legend.numpoints": 3, "axes.axisbelow": True})
 
 @pytest.fixture
 def setup_environment(tmp_path):
-    """Fixture to set up the test environment."""
+    """
+    Fixture to provide the directory for saving charts.
+    - Locally: Saves charts in the `charts` folder within the `tests` directory.
+    - On GitHub Actions: Uses the provided `tmpdir`.
+    """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    data_path11 = os.path.join(script_dir, "data/s11.csv")
+    data_path11 = os.path.join(script_dir, os.path.join("data","s11.csv"))
     data = load_complex_data(data_path11)
 
-    chart_dir = os.path.join(script_dir, "charts")
-    os.makedirs(chart_dir, exist_ok=True)
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        chart_dir = tmpdir
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        chart_dir = os.path.join(script_dir, "charts")
+        os.makedirs(chart_dir, exist_ok=True)
+
     return data, chart_dir
 
 

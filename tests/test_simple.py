@@ -5,27 +5,23 @@ import pytest
 import matplotlib.pyplot as plt
 from pysmithchart import SmithAxes
 
-
-# Utility function
-def cs(z, N=5):
-    """Convert complex number to string for printing."""
-    if z.imag < 0:
-        form = "(%% .%df - %%.%dfj)" % (N, N)
-    else:
-        form = "(%% .%df + %%.%dfj)" % (N, N)
-    return form % (z.real, abs(z.imag))
-
-
 @pytest.fixture
-def setup_chart_dir(tmp_path):
-    """Fixture to set up a temporary directory for saving charts."""
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    chart_dir = os.path.join(script_dir, "charts")
-    os.makedirs(chart_dir, exist_ok=True)
-    return chart_dir
+def chart_dir(tmpdir):
+    """
+    Fixture to provide the directory for saving charts.
+    - Locally: Saves charts in the `charts` folder within the `tests` directory.
+    - On GitHub Actions: Uses the provided `tmpdir`.
+    """
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        return tmpdir
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        local_chart_dir = os.path.join(script_dir, "charts")
+        os.makedirs(local_chart_dir, exist_ok=True)
+        return local_chart_dir
 
 
-def test_transformer_circle(setup_chart_dir):
+def test_transformer_circle(chart_dir):
     """Test for plotting transformer circle on the Smith chart."""
     Z0 = 50
     ZL = 30 + 30j
@@ -39,22 +35,22 @@ def test_transformer_circle(setup_chart_dir):
     plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
     plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     plt.plot(Zd, "r", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
-    image_path = os.path.join(setup_chart_dir, "lambda_over_eight.pdf")
+    image_path = os.path.join(chart_dir, "lambda_over_eight.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_empty_smith_chart(setup_chart_dir):
+def test_empty_smith_chart(chart_dir):
     """Test for plotting an empty Smith chart."""
     plt.figure(figsize=(8, 8))
     ax = plt.subplot(1, 1, 1, projection="smith")
     SmithAxes.update_scParams(reset=True, instance=ax, grid_major_color="blue")
-    image_path = os.path.join(setup_chart_dir, "plain_smith.pdf")
+    image_path = os.path.join(chart_dir, "plain_smith.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_minor_grid_colors(setup_chart_dir):
+def test_minor_grid_colors(chart_dir):
     """Test for verifying minor grid colors on the Smith chart."""
     plt.figure(figsize=(8, 8))
     ax = plt.subplot(1, 1, 1, projection="smith")
@@ -67,12 +63,12 @@ def test_minor_grid_colors(setup_chart_dir):
         grid_minor_color_x="blue",
         grid_minor_color_y="black",
     )
-    image_path = os.path.join(setup_chart_dir, "minor_colors.pdf")
+    image_path = os.path.join(chart_dir, "minor_colors.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_plot_single_load(setup_chart_dir):
+def test_plot_single_load(chart_dir):
     """Test for plotting a single load on the Smith chart."""
     ZL = 75 + 50j
     Z0 = 50
@@ -80,12 +76,12 @@ def test_plot_single_load(setup_chart_dir):
     ax = plt.subplot(1, 1, 1, projection="smith")
     SmithAxes.update_scParams(instance=ax, reset=True, grid_major_enable=True)
     plt.plot([ZL], color="b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
-    image_path = os.path.join(setup_chart_dir, "one_point.pdf")
+    image_path = os.path.join(chart_dir, "one_point.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_vswr_circle(setup_chart_dir):
+def test_vswr_circle(chart_dir):
     """Test for plotting VSWR circle on the Smith chart."""
     Z0 = 50
     ZL = 30 + 30j
@@ -105,12 +101,12 @@ def test_vswr_circle(setup_chart_dir):
         plt.text(
             Zd[i].real / 50, Zd[i].imag / 50, " %.2fλ" % lam[i], bbox=dict(facecolor="cyan", edgecolor="none")
         )
-    image_path = os.path.join(setup_chart_dir, "vswr.pdf")
+    image_path = os.path.join(chart_dir, "vswr.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_frequency_range(setup_chart_dir):
+def test_frequency_range(chart_dir):
     """Test for plotting RLC frequency range on the Smith chart."""
     R = 50
     L = 20e-9
@@ -132,12 +128,12 @@ def test_frequency_range(setup_chart_dir):
             bbox=dict(facecolor="cyan", edgecolor="none"),
         )
     plt.title("RLC Series Load, R=50Ω, C=2pF, L=20nH")
-    image_path = os.path.join(setup_chart_dir, "RLC_frequency.pdf")
+    image_path = os.path.join(chart_dir, "RLC_frequency.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
 
 
-def test_stub_design(setup_chart_dir):
+def test_stub_design(chart_dir):
     """Test for plotting stub design with SWR and constant resistance circles."""
     Z0 = 50
     ZL = 100 + 50j
@@ -158,6 +154,6 @@ def test_stub_design(setup_chart_dir):
         Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none")
     )
     plt.plot(ZR, "g", marker=None, datatype=SmithAxes.Z_PARAMETER)
-    image_path = os.path.join(setup_chart_dir, "stub.pdf")
+    image_path = os.path.join(chart_dir, "stub.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
