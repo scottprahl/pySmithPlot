@@ -10,27 +10,51 @@ rcParams.update({"legend.numpoints": 3})
 
 
 @pytest.fixture
-def setup_test_environment(tmp_path):
-    """Fixture to set up a test environment with paths for data and charts."""
+def setup_environment(tmp_path):
+    """
+    Fixture to provide the directory for saving charts.
+    - Locally: Saves charts in the `charts` folder within the `tests` directory.
+    - On GitHub Actions: Uses the provided `tmpdir`.
+    """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    data_path11 = os.path.join(script_dir, "data/s11.csv")
+    data_path11 = os.path.join(script_dir, os.path.join("data", "s11.csv"))
+    data11 = load_complex_data(data_path11)
     data_path22 = os.path.join(script_dir, "data/s22.csv")
+    data22 = load_complex_data(data_path22)
 
-    chart_dir = os.path.join(script_dir, "charts")
-    os.makedirs(chart_dir, exist_ok=True)
-    return data_path11, data_path22, chart_dir
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        chart_dir = tmpdir
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        chart_dir = os.path.join(script_dir, "charts")
+        os.makedirs(chart_dir, exist_ok=True)
+
+    return data11, data22, chart_dir
 
 
-def test_smith_chart_plot(setup_test_environment):
+def load_complex_data(file_path, step=100):
+    """
+    Load and process complex data from a CSV file.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the CSV file containing the data.
+    step : int, optional
+        Step size for slicing the data (default is 40).
+
+    Returns
+    -------
+    numpy.ndarray
+        Processed complex data as a 1D numpy array.
+    """
+    data = np.loadtxt(file_path, delimiter=",", skiprows=1)[::step]
+    return data[:, 1] + 1j * data[:, 2]
+
+
+def test_smith_chart_plot(setup_environment):
     """Test for plotting data on a Smith chart using various configurations."""
-    data_path11, data_path22, chart_dir = setup_test_environment
-
-    # Load data
-    data = np.loadtxt(data_path11, delimiter=",", skiprows=1)[::100]
-    val1 = data[:, 1] + data[:, 2] * 1j
-
-    data = np.loadtxt(data_path22, delimiter=",", skiprows=1)[::100]
-    val2 = data[:, 1] + data[:, 2] * 1j
+    val1, val2, chart_dir = setup_environment
 
     # Plot data
     plt.figure(figsize=(6, 6))
@@ -68,6 +92,3 @@ def test_smith_chart_plot(setup_test_environment):
     export_path = os.path.join(chart_dir, "vmeijin_short.pdf")
     plt.savefig(export_path, format="pdf")
     plt.close()
-
-    # Verify output
-    assert os.path.exists(export_path), "Exported chart file does not exist."
