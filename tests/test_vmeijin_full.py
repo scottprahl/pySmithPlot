@@ -19,7 +19,7 @@ def setup_environment(tmp_path):
     - On GitHub Actions: Uses the provided `tmpdir`.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    data_path11 = os.path.join(script_dir, os.path.join("data","s11.csv"))
+    data_path11 = os.path.join(script_dir, os.path.join("data", "s11.csv"))
     data = load_complex_data(data_path11)
 
     if os.getenv("GITHUB_ACTIONS") == "true":

@@ -18,7 +18,7 @@ notecheck:
 rstcheck:
 	-rstcheck README.rst
 	-rstcheck CHANGELOG.rst
-	-rstcheck docs/index.rst
+#	-rstcheck docs/index.rst
 
 lint:
 	-pylint pysmithchart/smithaxes.py

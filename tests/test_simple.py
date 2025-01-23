@@ -5,6 +5,7 @@ import pytest
 import matplotlib.pyplot as plt
 from pysmithchart import SmithAxes
 
+
 @pytest.fixture
 def chart_dir(tmpdir):
     """

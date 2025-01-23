@@ -56,7 +56,6 @@ def s11_of_parallel_cap_res(freq, z0=50):
         50 - 10j,
     ],
 )
-
 def test_plot_point(chart_dir, point):
     """Test plotting a single point on the Smith chart."""
     plt.figure(figsize=(6, 6))
@@ -126,10 +125,10 @@ def test_plot_grid_styles(chart_dir):
     major_fancy_options = [True, False]
     minor_enable_options = [True, False]
     minor_fancy_options = [True, False]
-    
+
     # Generate all combinations
     combinations = product(major_fancy_options, minor_enable_options, minor_fancy_options)
-    
+
     # Iterate through the combinations
     plt.figure(figsize=(18, 12)).set_layout_engine("tight")
     for i, (major_fancy, minor_enable, minor_fancy) in enumerate(combinations):

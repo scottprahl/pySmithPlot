@@ -16,12 +16,11 @@ Releasing a new version
   git push origin v0.4.4
 
 # manually publish release at
-  open https://github.com/scottprahl/pygrin
+  open https://github.com/scottprahl/pysmithchart
   
 # verify action success
-  open https://zenodo.org/badge/latestdoi/122556263
-  open https://pypi.org/project/pygrin/
-  open https://pygrin.readthedocs.io
+  open https://pypi.org/project/pysmithchart/
+  open https://pysmithchart.readthedocs.io
   
 # wait for feedstock update
-  open https://github.com/conda-forge/pygrin-feedstock
+  open https://github.com/conda-forge/pysmithchart-feedstock

@@ -394,10 +394,10 @@ class SmithAxes(Axes):
         """
         scParams = SmithAxes.scDefaultParams if instance is None else instance.scParams
 
-#         if instance is None:
-#             scParams = SmithAxes.scDefaultParams
-#         else:
-#             scParams = instance.scParams
+        #         if instance is None:
+        #             scParams = SmithAxes.scDefaultParams
+        #         else:
+        #             scParams = instance.scParams
 
         if sc_dict is not None:
             for key, value in sc_dict.items():

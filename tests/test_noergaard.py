@@ -20,7 +20,8 @@ def chart_dir(tmpdir):
         local_chart_dir = os.path.join(script_dir, "charts")
         os.makedirs(local_chart_dir, exist_ok=True)
         return local_chart_dir
-        
+
+
 def test_vswr_circle(chart_dir):
     """Test plotting a VSWR circle on the Smith chart."""
 
