@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import pytest
 import numpy as np
@@ -167,13 +168,12 @@ def test_normalize(setup_environment):
                 3,
                 i,
                 projection="smith",
-                axes_impedance=impedance,
                 axes_normalize=normalize,
+                axes_impedance=impedance,
             )
             plot_example(f"Impedance: {impedance} Ω — Normalize: {normalize}", sp_data, z_data)
 
     save_figure(chart_dir, "normalize")
-
 
 def test_markers(setup_environment):
     """Test for marker styles and configurations."""
@@ -214,7 +214,7 @@ def test_markers(setup_environment):
             plot_marker_hack=hackline,
             plot_marker_rotate=rotate_marker,
         )
-        SmithAxes.update_scParams(instance=ax, plot_marker_start=startmarker, plot_marker_end=endmarker)
+        ax.update_scParams(plot_marker_start=startmarker, plot_marker_end=endmarker)
         plot_example(
             f"HackLines: {hackline} - StartMarker: {startmarker}\nEndMarker: {endmarker} - Rotate: {rotate_marker}",
             sp_data=np.array([50]),

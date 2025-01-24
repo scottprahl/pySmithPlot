@@ -30,19 +30,12 @@ def test_vswr_circle(chart_dir):
     ZL = -(G + 1) / (G - 1)
 
     plt.figure(figsize=(6, 6))
-    ax = plt.subplot(1, 1, 1, projection="smith")
-    SmithAxes.update_scParams(
-        instance=ax,
-        reset=True,
-        grid_major_enable=True,
-        axes_impedance=1,
-        plot_default_datatype=SmithAxes.Z_PARAMETER,
-    )
+    plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
 
-    plt.plot(ZL, "k", label="VSWR Circle")
-    plt.plot(1 + 0j, "b", marker="o", label="$1+0j$")
-    plt.plot(1 + 1j, "r", marker="o", label="$1+1j$")
-    plt.plot(0.5 - 0.5j, "g", marker="o", label="$0.5-0.5j$")
+    plt.plot(ZL, "k", datatype=SmithAxes.Z_PARAMETER, label="VSWR Circle")
+    plt.plot(1 + 0j, "b", datatype=SmithAxes.Z_PARAMETER, marker="o", label="$1+0j$")
+    plt.plot(1 + 1j, "r", datatype=SmithAxes.Z_PARAMETER, marker="o", label="$1+1j$")
+    plt.plot(0.5 - 0.5j, "g", datatype=SmithAxes.Z_PARAMETER, marker="o", label="$0.5-0.5j$")
 
     plt.legend()
     plt.tight_layout()

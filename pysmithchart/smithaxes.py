@@ -33,7 +33,7 @@ expected, because subplot uses an index for the axes with a key created
 of all given parameters. This does not work always, especially if the
 parameters are array-like types (e.g. numpy.ndarray).
 """
-
+import copy
 from collections.abc import Iterable
 from numbers import Number
 from types import MethodType, FunctionType
@@ -82,6 +82,221 @@ class SmithAxes(Axes):
         - :class:`matplotlib.ticker.Formatter`
             -> :class:`RealFormatter`
             -> :class:`ImagFormatter`
+
+        Method for updating the parameters of a SmithAxes instance. If no instance
+        is given, the changes are global, but affect only instances created
+        afterwards. Parameter can be passed as dictionary or keyword arguments.
+        If passed as keyword, the separator '.' must be  replaced with '_'.
+
+        Note: Parameter changes are not always immediate (e.g. changes to the
+        grid). It is not recommended to modify parameter after adding anything to
+        the plot. For a reset call :meth:`clear`.
+
+        Example:
+            update_scParams({grid.major: True})
+            update_scParams(grid_major=True)
+
+        Valid parameters with default values and description:
+
+        plot.zorder: 5
+            Zorder of plotted lines.
+            Accepts: integer
+
+        plot.marker.hack: True
+            Enables the replacement of start and endmarkers.
+            Accepts: boolean
+            Note: Uses ugly code injection and may causes unexpected behavior.
+
+        plot.marker.rotate: True
+            Rotates the endmarker in the direction of its line.
+            Accepts: boolean
+            Note: needs plot.marker.hack=True
+
+        plot.marker.start: 's',
+            Marker for the first point of a line, if it has more than 1 point.
+            Accepts: None or see matplotlib.markers.MarkerStyle()
+            Note: needs plot.marker.hack=True
+
+        plot.marker.default: 'o'
+            Marker used for linepoints.
+            Accepts: None or see matplotlib.markers.MarkerStyle()
+
+        plot.marker.end: '^',
+            Marker for the last point of a line, if it has more than 1 point.
+            Accepts: None or see matplotlib.markers.MarkerStyle()
+            Note: needs plot.marker.hack=True
+
+        plot.default.interpolation: 5
+            Default number of interpolated steps between two points of a
+            line, if interpolation is used.
+            Accepts: integer
+
+        plot.default.datatype: SmithAxes.S_PARAMETER
+            Default datatype for plots.
+            Accepts: SmithAxes.[S_PARAMETER,Z_PARAMETER,Y_PARAMETER]
+
+        grid.zorder : 1
+            Zorder of the gridlines.
+            Accepts: integer
+            Note: may not work as expected
+
+        grid.locator.precision: 2
+            Sets the number of significant decimals per decade for the
+            Real and Imag MaxNLocators. Example with precision 2:
+                1.12 -> 1.1, 22.5 -> 22, 135 -> 130, ...
+            Accepts: integer
+            Note: value is an orientation, several exceptions are implemented
+
+        grid.major.enable: True
+            Enables the major grid.
+            Accepts: boolean
+
+        grid.major.linestyle: 'solid'
+            Major gridline style.
+            Accepts: see matplotlib.patches.Patch.set_linestyle()
+
+        grid.major.linewidth: 1
+            Major gridline width.
+            Accepts: float
+
+        grid.major.color: '0.2'
+            Major gridline color.
+            Accepts: matplotlib color
+            Note: changes both real x and imag y major grid lines.
+
+        grid.major.color.x: '0.2'
+            Major real gridline color
+            Accepts: matplotlib color
+            Note: Major real valued grid lines.
+
+        grid.major.color.y: '0.2'
+            Major imag gridline color
+            Accepts: matplotlib color
+            Note: Major imaginary valued grid lines.
+
+        grid.major.xmaxn: 10
+            Maximum number of spacing steps for the real axis.
+            Accepts: integer
+
+        grid.major.ymaxn: 16
+            Maximum number of spacing steps for the imaginary axis.
+            Accepts: integer
+
+        grid.major.fancy: True
+            Draws a fancy major grid instead of the standard one.
+            Accepts: boolean
+
+        grid.major.fancy.threshold: (100, 50)
+            Minimum distance times 1000 between two gridlines relative to
+            total plot size 2x2. Either tuple for individual real and
+            imaginary distances or single value for both.
+            Accepts: (float, float) or float
+
+        grid.minor.enable: True
+            Enables the minor grid.
+            Accepts: boolean
+
+        grid.minor.capstyle: 'round'
+            Minor dashes capstyle
+            Accepts: 'round', 'butt', 'miter', 'projecting'
+
+        grid.minor.dashes: (0.2, 2)
+            Minor gridline dash style.
+            Accepts: tuple
+
+        grid.minor.linewidth: 0.75
+            Minor gridline width.
+            Accepts: float
+
+        grid.minor.color: 0.4
+            Minor gridline color.
+            Accepts: matplotlib color
+
+        grid.minor.color.x: '0.2'
+            Minor real gridline color
+            Accepts: matplotlib color
+
+        grid.minor.color.y: '0.2'
+            Minor imag gridline color
+            Accepts: matplotlib color
+
+        grid.minor.xauto: 4
+            Maximum number of spacing steps for the real axis.
+            Accepts: integer
+
+        grid.minor.yauto: 4
+            Maximum number of spacing steps for the imaginary axis.
+            Accepts: integer
+
+        grid.minor.fancy: True
+            Draws a fancy minor grid instead the standard one.
+            Accepts: boolean
+
+        grid.minor.fancy.dividers: [1, 2, 3, 5, 10, 20]
+            Divisions for the fancy minor grid, which are selected by
+            comparing the distance of gridlines with the threshold value.
+            Accepts: list of integers
+
+        grid.minor.fancy.threshold: 25
+            Minimum distance for using the next bigger divider. Value times
+            1000 relative to total plot size 2.
+            Accepts: float
+
+        axes.xlabel.rotation: 90
+           Rotation of the real axis labels in degree.
+           Accepts: float
+
+        axes.xlabel.fancybox: {"boxstyle": "round4,pad=0.3,rounding_size=0.2",
+                                           "facecolor": 'w',
+                                           "edgecolor": "w",
+                                           "mutation_aspect": 0.75,
+                                           "alpha": 1},
+            FancyBboxPatch parameters for the x-label background box.
+            Accepts: dictionary with rectprops
+
+        axes.ylabel.correction: (-1, 0, 0)
+            Correction in x, y, and radial direction for the labels of the imaginary axis.
+            Usually needs to be adapted when fontsize changes 'font.size'.
+            Accepts: (float, float, float)
+
+        axes.radius: 0.44
+            Radius of the plotting area. Usually needs to be adapted to
+            the size of the figure.
+            Accepts: float
+
+        axes.impedance: 50
+            Defines the reference impedance for normalisation.
+            Accepts: float
+
+        axes.normalize: True
+            If True, the Smith Chart is normalized to the reference impedance.
+            Accepts: boolean
+
+        axes.normalize.label: True
+            If 'axes.normalize' is True, a label like 'Z_0: 50 Ω' is created
+            Accepts: boolean
+
+        axes.normalize.label.position: -1-1j
+            Position of normalization label, default is lower left corner
+            Accepts: complex number (-1-1j is bottom left, 1+1j it top right)
+
+        symbol.infinity: "∞ "
+            Symbol string for infinity.
+            Accepts: string
+
+            Note: Without the trailing space the label might get cut off.
+
+        symbol.infinity.correction: 8
+            Correction of size for the infinity symbol, because normal symbol
+            seems smaller than other letters.
+            Accepts: float
+
+        symbol.ohm "Ω"
+            Symbol string for the resistance unit (usually a large Omega).
+            Accepts: string
+
+    Note: The keywords are processed after the dictionary and override
+    possible double entries.
     """
 
     name = "smith"
@@ -119,7 +334,6 @@ class SmithAxes(Axes):
 
     # default parameter, see update_scParams for description
     scDefaultParams = {
-        "axes.impedance": 50,
         "init.updaterc": True,
         "plot.zorder": 4,
         "plot.marker.hack": True,
@@ -155,6 +369,9 @@ class SmithAxes(Axes):
         "grid.minor.fancy.dividers": [1, 2, 3, 5, 10, 20],
         "grid.minor.fancy.threshold": 35,
         "path.default_interpolation": 75,
+        "symbol.infinity": "∞ ",  # BUG: symbol gets cut off without end-space
+        "symbol.infinity.correction": 8,
+        "symbol.ohm": "Ω",
         "axes.xlabel.rotation": 90,
         "axes.xlabel.fancybox": {
             "boxstyle": "round,pad=0.2,rounding_size=0.2",
@@ -163,282 +380,62 @@ class SmithAxes(Axes):
             "mutation_aspect": 0.75,
             "alpha": 1,
         },
+        "axes.impedance": 50,
         "axes.ylabel.correction": (-2, 0, 0),
         "axes.radius": 0.43,
-        "axes.scale": 1,
         "axes.normalize.label.position": -1 - 1j,
         "axes.normalize": True,
         "axes.normalize.label": True,
-        "symbol.infinity": "∞ ",  # BUG: symbol gets cut off without end-space
-        "symbol.infinity.correction": 8,
-        "symbol.ohm": "Ω",
     }
 
-    @staticmethod
-    def update_scParams(sc_dict=None, instance=None, filter_dict=False, reset=True, **kwargs):
+    def update_scParams(self, sc_dict=None, filter_dict=False, reset=False, **kwargs):
         """
-        Method for updating the parameters of a SmithAxes instance. If no instance
-        is given, the changes are global, but affect only instances created
-        afterwards. Parameter can be passed as dictionary or keyword arguments.
-        If passed as keyword, the separator '.' must be  replaced with '_'.
-
-        Note: Parameter changes are not always immediate (e.g. changes to the
-        grid). It is not recommended to modify parameter after adding anything to
-        the plot. For a reset call :meth:`clear`.
-
-        Example:
-            update_scParams({grid.major: True})
-            update_scParams(grid_major=True)
-
-        Valid parameters with default values and description:
-
-            plot.zorder: 5
-                Zorder of plotted lines.
-                Accepts: integer
-
-            plot.marker.hack: True
-                Enables the replacement of start and endmarkers.
-                Accepts: boolean
-                Note: Uses ugly code injection and may causes unexpected behavior.
-
-            plot.marker.rotate: True
-                Rotates the endmarker in the direction of its line.
-                Accepts: boolean
-                Note: needs plot.marker.hack=True
-
-            plot.marker.start: 's',
-                Marker for the first point of a line, if it has more than 1 point.
-                Accepts: None or see matplotlib.markers.MarkerStyle()
-                Note: needs plot.marker.hack=True
-
-            plot.marker.default: 'o'
-                Marker used for linepoints.
-                Accepts: None or see matplotlib.markers.MarkerStyle()
-
-            plot.marker.end: '^',
-                Marker for the last point of a line, if it has more than 1 point.
-                Accepts: None or see matplotlib.markers.MarkerStyle()
-                Note: needs plot.marker.hack=True
-
-            plot.default.interpolation: 5
-                Default number of interpolated steps between two points of a
-                line, if interpolation is used.
-                Accepts: integer
-
-            plot.default.datatype: SmithAxes.S_PARAMETER
-                Default datatype for plots.
-                Accepts: SmithAxes.[S_PARAMETER,Z_PARAMETER,Y_PARAMETER]
-
-            grid.zorder : 1
-                Zorder of the gridlines.
-                Accepts: integer
-                Note: may not work as expected
-
-            grid.locator.precision: 2
-                Sets the number of significant decimals per decade for the
-                Real and Imag MaxNLocators. Example with precision 2:
-                    1.12 -> 1.1, 22.5 -> 22, 135 -> 130, ...
-                Accepts: integer
-                Note: value is an orientation, several exceptions are implemented
-
-            grid.major.enable: True
-                Enables the major grid.
-                Accepts: boolean
-
-            grid.major.linestyle: 'solid'
-                Major gridline style.
-                Accepts: see matplotlib.patches.Patch.set_linestyle()
-
-            grid.major.linewidth: 1
-                Major gridline width.
-                Accepts: float
-
-            grid.major.color: '0.2'
-                Major gridline color.
-                Accepts: matplotlib color
-                Note: changes both real x and imag y major grid lines.
-
-            grid.major.color.x: '0.2'
-                Major real gridline color
-                Accepts: matplotlib color
-                Note: Major real valued grid lines.
-
-            grid.major.color.y: '0.2'
-                Major imag gridline color
-                Accepts: matplotlib color
-                Note: Major imaginary valued grid lines.
-
-            grid.major.xmaxn: 10
-                Maximum number of spacing steps for the real axis.
-                Accepts: integer
-
-            grid.major.ymaxn: 16
-                Maximum number of spacing steps for the imaginary axis.
-                Accepts: integer
-
-            grid.major.fancy: True
-                Draws a fancy major grid instead of the standard one.
-                Accepts: boolean
-
-            grid.major.fancy.threshold: (100, 50)
-                Minimum distance times 1000 between two gridlines relative to
-                total plot size 2x2. Either tuple for individual real and
-                imaginary distances or single value for both.
-                Accepts: (float, float) or float
-
-            grid.minor.enable: True
-                Enables the minor grid.
-                Accepts: boolean
-
-            grid.minor.capstyle: 'round'
-                Minor dashes capstyle
-                Accepts: 'round', 'butt', 'miter', 'projecting'
-
-            grid.minor.dashes: (0.2, 2)
-                Minor gridline dash style.
-                Accepts: tuple
-
-            grid.minor.linewidth: 0.75
-                Minor gridline width.
-                Accepts: float
-
-            grid.minor.color: 0.4
-                Minor gridline color.
-                Accepts: matplotlib color
-
-            grid.minor.color.x: '0.2'
-                Minor real gridline color
-                Accepts: matplotlib color
-
-            grid.minor.color.y: '0.2'
-                Minor imag gridline color
-                Accepts: matplotlib color
-
-            grid.minor.xauto: 4
-                Maximum number of spacing steps for the real axis.
-                Accepts: integer
-
-            grid.minor.yauto: 4
-                Maximum number of spacing steps for the imaginary axis.
-                Accepts: integer
-
-            grid.minor.fancy: True
-                Draws a fancy minor grid instead the standard one.
-                Accepts: boolean
-
-            grid.minor.fancy.dividers: [1, 2, 3, 5, 10, 20]
-                Divisions for the fancy minor grid, which are selected by
-                comparing the distance of gridlines with the threshold value.
-                Accepts: list of integers
-
-            grid.minor.fancy.threshold: 25
-                Minimum distance for using the next bigger divider. Value times
-                1000 relative to total plot size 2.
-                Accepts: float
-
-            axes.xlabel.rotation: 90
-               Rotation of the real axis labels in degree.
-               Accepts: float
-
-            axes.xlabel.fancybox: {"boxstyle": "round4,pad=0.3,rounding_size=0.2",
-                                               "facecolor": 'w',
-                                               "edgecolor": "w",
-                                               "mutation_aspect": 0.75,
-                                               "alpha": 1},
-                FancyBboxPatch parameters for the x-label background box.
-                Accepts: dictionary with rectprops
-
-            axes.ylabel.correction: (-1, 0, 0)
-                Correction in x, y, and radial direction for the labels of the imaginary axis.
-                Usually needs to be adapted when fontsize changes 'font.size'.
-                Accepts: (float, float, float)
-
-            axes.radius: 0.44
-                Radius of the plotting area. Usually needs to be adapted to
-                the size of the figure.
-                Accepts: float
-
-            axes.impedance: 50
-                Defines the reference impedance for normalisation.
-                Accepts: float
-
-            axes.normalize: True
-                If True, the Smith Chart is normalized to the reference impedance.
-                Accepts: boolean
-
-            axes.normalize.label: True
-                If 'axes.normalize' is True, a label like 'Z_0: 50 Ω' is created
-                Accepts: boolean
-
-            axes.normalize.label.position: -1-1j
-                Position of normalization label, default is lower left corner
-                Accepts: complex number (-1-1j is bottom left, 1+1j it top right)
-
-            symbol.infinity: "∞ "
-                Symbol string for infinity.
-                Accepts: string
-
-                Note: Without the trailing space the label might get cut off.
-
-            symbol.infinity.correction: 8
-                Correction of size for the infinity symbol, because normal symbol
-                seems smaller than other letters.
-                Accepts: float
-
-            symbol.ohm "Ω"
-                Symbol string for the resistance unit (usually a large Omega).
-                Accepts: string
-
-        Note: The keywords are processed after the dictionary and override
-        possible double entries.
+        Update scParams for the current instance based on a dictionary or keyword arguments.
+    
+        Args:
+            sc_dict (dict, optional): Dictionary of parameters to update.
+            filter_dict (bool, optional): If True, filters out invalid keys without raising an error.
+            reset (bool, optional): If True, resets scParams to default values before updating.
+            **kwargs: Additional key-value pairs to update parameters.
+            
+        Raises:
+            KeyError: If an invalid parameter key is provided (unless `filter_dict` is True).
         """
-        scParams = SmithAxes.scDefaultParams if instance is None else instance.scParams
+        # Reset to defaults if specified
+        if reset:
+            self.scParams = copy.deepcopy(SmithAxes.scDefaultParams)
 
-        #         if instance is None:
-        #             scParams = SmithAxes.scDefaultParams
-        #         else:
-        #             scParams = instance.scParams
-
+        # Updates from sc_dict
         if sc_dict is not None:
             for key, value in sc_dict.items():
-                if key in scParams:
-                    scParams[key] = value
+                if key in self.scParams:
+                    self.scParams[key] = value
                     if key == "grid.major.color":
-                        scParams["grid.major.color.x"] = value
-                        scParams["grid.major.color.y"] = value
+                        self.scParams["grid.major.color.x"] = value
+                        self.scParams["grid.major.color.y"] = value
                     elif key == "grid.minor.color":
-                        scParams["grid.minor.color.x"] = value
-                        scParams["grid.minor.color.y"] = value
+                        self.scParams["grid.minor.color.x"] = value
+                        self.scParams["grid.minor.color.y"] = value
                 else:
                     raise KeyError("key '%s' is not in scParams" % key)
 
+        # Update from kwargs
         remaining = kwargs.copy()
         for key in kwargs:
             key_dot = key.replace("_", ".")
-            if key_dot in scParams:
+            if key_dot in self.scParams:
                 value = remaining.pop(key)  # Extract value from kwargs
-                scParams[key_dot] = value
+                self.scParams[key_dot] = value
                 if key_dot == "grid.major.color":
-                    scParams["grid.major.color.x"] = value
-                    scParams["grid.major.color.y"] = value
+                    self.scParams["grid.major.color.x"] = value
+                    self.scParams["grid.major.color.y"] = value
                 elif key_dot == "grid.minor.color":
-                    scParams["grid.minor.color.x"] = value
-                    scParams["grid.minor.color.y"] = value
+                    self.scParams["grid.minor.color.x"] = value
+                    self.scParams["grid.minor.color.y"] = value
                 else:
-                    scParams[key_dot] = value
+                    self.scParams[key_dot] = value
             else:
-                raise KeyError("key '%s' is not in scParams" % key)
-
-        if not filter_dict and len(remaining) > 0:
-            raise KeyError(
-                "Following keys are invalid SmithAxes parameters: '%s'" % ",".join(remaining.keys())
-            )
-
-        if reset and instance is not None:
-            instance.clear()
-
-        if filter_dict:
-            return remaining
+                raise KeyError("key '%s' is not in scParams" % key_dot)
 
     def __init__(self, *args, **kwargs):
         """
@@ -453,7 +450,9 @@ class SmithAxes(Axes):
         self._impedance = None
         self._normalize = None
         self._current_zorder = None
-        self.scParams = self.scDefaultParams.copy()
+
+        # Create a unique copy of the default parameters for this instance
+        self.scParams = copy.deepcopy(SmithAxes.scDefaultParams)
 
         # Separate out parameters intended for Axes configuration.
         # Iterate through the provided keyword arguments (`kwargs`) to identify any
@@ -467,7 +466,6 @@ class SmithAxes(Axes):
 
         self.update_scParams(**kwargs)
 
-        # if 'init.updaterc' update matplotlib rc parameters to the our defaults
         if self._get_key("init.updaterc"):
             for key, value in self._rcDefaultParams.items():
                 if mp.rcParams[key] == mp.rcParamsDefault[key]:
@@ -478,21 +476,7 @@ class SmithAxes(Axes):
         self.tick_params(axis="both", which="both", bottom=False, top=False, left=False, right=False)
 
     def _get_key(self, key):
-        """
-        Get a key from the local parameter dictionary or from global
-        matplotlib rcParams.
-
-        Keyword arguments:
-
-            *key*:
-                Key to get from scParams or matplotlib.rcParams
-                Accepts: string
-
-        Returns:
-
-            *value*:
-                Value got from scParams or rcParams with key
-        """
+        """Get value for key from the local dictionary or the global matplotlib rcParams."""
         if key in self.scParams:
             return self.scParams[key]
         if key in mp.rcParams:
@@ -593,14 +577,8 @@ class SmithAxes(Axes):
 
         if self._get_key("axes.normalize") and self._get_key("axes.normalize.label"):
             x, y = z_to_xy(self._moebius_inv_z(self._get_key("axes.normalize.label.position")))
-            box = self.text(
-                x,
-                y,
-                r"Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm")),
-                ha="left",
-                va="bottom",
-            )
-
+            s = r"Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm"))
+            box = self.text(x, y, s, ha="left", va="bottom")
             px = self._get_key("ytick.major.pad")
             py = px + 0.5 * box.get_size()
             box.set_transform(self._yaxis_correction + Affine2D().translate(-px, -py))
@@ -726,29 +704,40 @@ class SmithAxes(Axes):
 
     def _moebius_z(self, *args, normalize=None):
         """
-        Basic transformation.
-
-        Arguments:
-
-            *z*:
-                Complex number or numpy.ndarray with dtype=complex
-
-            *x, y*:
-                Float numbers or numpy.ndarray's with dtype not complex
-
-            *normalize*:
-                If True, the values are normalized to self._impedance.
-                If None, self._normalize determines behaviour.
-                Accepts: boolean or None
-
+        Apply a Möbius transformation to the input values.
+    
+        This function uses the `smithhelper.moebius_z` method to compute the Möbius transformation:
+        `w = 1 - 2 * norm / (z + norm)`. The transformation can handle a single complex value or
+        a combination of real and imaginary parts provided as separate arguments. The normalization
+        value can be specified or determined automatically based on the instance's settings.
+    
+        Args:
+            *args: 
+                Input arguments passed to `smithhelper.moebius_z`. These can include:
+                - A single complex number or numpy.ndarray with `dtype=complex`.
+                - Two arguments representing the real and imaginary parts of a complex number
+                  or array of complex numbers (floats or arrays of floats).
+            normalize (bool or None, optional): 
+                If `True`, normalizes the values to `self._impedance`.
+                If `None`, uses the instance attribute `self._normalize` to determine behavior.
+                If `False`, no normalization is applied.
+    
         Returns:
-
-            *w*:
-                Performs w = (z - k) / (z + k) with k = 'axes.scale'
-                Type: Complex number or numpy.ndarray with dtype=complex
+            complex or numpy.ndarray: 
+                The Möbius-transformed value(s), returned as a complex number or an array of
+                complex numbers, depending on the input.
         """
-        normalize = self._normalize if normalize is None else normalize
-        norm = 1 if normalize else self._impedance
+        if normalize is not None:
+            print("moebius normalize=", normalize)
+
+        if normalize is None:
+            normalize = self._normalize
+
+        if normalize:
+            norm = 1
+        else:
+            norm = self._impedance
+        
         return smithhelper.moebius_z(*args, norm=norm)
 
     def _moebius_inv_z(self, *args, normalize=None):

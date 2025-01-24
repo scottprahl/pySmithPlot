@@ -33,7 +33,7 @@ def test_transformer_circle(chart_dir):
     Zd = z * Z0
 
     plt.figure(figsize=(8, 8))
-    plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
+    plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     plt.plot(Zd, "r", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
     image_path = os.path.join(chart_dir, "lambda_over_eight.pdf")
@@ -44,8 +44,7 @@ def test_transformer_circle(chart_dir):
 def test_empty_smith_chart(chart_dir):
     """Test for plotting an empty Smith chart."""
     plt.figure(figsize=(8, 8))
-    ax = plt.subplot(1, 1, 1, projection="smith")
-    SmithAxes.update_scParams(reset=True, instance=ax, grid_major_color="blue")
+    plt.subplot(1, 1, 1, projection="smith", grid_major_color="blue")
     image_path = os.path.join(chart_dir, "plain_smith.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
@@ -54,16 +53,14 @@ def test_empty_smith_chart(chart_dir):
 def test_minor_grid_colors(chart_dir):
     """Test for verifying minor grid colors on the Smith chart."""
     plt.figure(figsize=(8, 8))
-    ax = plt.subplot(1, 1, 1, projection="smith")
-    SmithAxes.update_scParams(
-        reset=True,
-        instance=ax,
-        grid_major_color_x="blue",
-        grid_major_color_y="orange",
-        grid_minor_enable=True,
-        grid_minor_color_x="blue",
-        grid_minor_color_y="black",
-    )
+    params = {
+        "grid_major_color_x": "blue",
+        "grid_major_color_y": "red",
+        "grid_minor_enable" : True,
+        "grid_minor_color_x": "blue",
+        "grid_minor_color_y": "orange",
+        }
+    plt.subplot(1, 1, 1, projection="smith", **params)
     image_path = os.path.join(chart_dir, "minor_colors.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
@@ -74,8 +71,7 @@ def test_plot_single_load(chart_dir):
     ZL = 75 + 50j
     Z0 = 50
     plt.figure(figsize=(8, 8))
-    ax = plt.subplot(1, 1, 1, projection="smith")
-    SmithAxes.update_scParams(instance=ax, reset=True, grid_major_enable=True)
+    plt.subplot(1, 1, 1, projection="smith")
     plt.plot([ZL], color="b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     image_path = os.path.join(chart_dir, "one_point.pdf")
     plt.savefig(image_path, format="pdf")
@@ -95,7 +91,7 @@ def test_vswr_circle(chart_dir):
     Zd = z * Z0
 
     plt.figure(figsize=(8, 8))
-    plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
+    plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     plt.plot(Zd, "r", linestyle="", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
     for i in [0, 5, 10, 15, 20]:
@@ -119,7 +115,7 @@ def test_frequency_range(chart_dir):
     ZL = R + 1 / (1j * omega * C) + 1j * omega * L
 
     plt.figure(figsize=(8, 8))
-    plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
+    plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, linestyle="", datatype=SmithAxes.Z_PARAMETER)
     for i in [0, 3, 5, 9]:
         plt.text(
@@ -148,7 +144,7 @@ def test_stub_design(chart_dir):
     ZR = 50 + np.linspace(-1e4, 1e4, 1000) * 1j
 
     plt.figure(figsize=(8, 8))
-    plt.subplot(1, 1, 1, projection="smith", grid_major_enable=True)
+    plt.subplot(1, 1, 1, projection="smith")
     plt.plot([ZL], "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
     plt.plot(Zd, "r", marker="", datatype=SmithAxes.Z_PARAMETER)
     plt.text(
