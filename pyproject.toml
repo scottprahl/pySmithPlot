@@ -35,7 +35,9 @@ line-length = 110
 target-version = ["py38", "py39", "py310", "py311", "py312", "py313"]
 
 [tool.pylint]
-disable = ["C0103", "C0209", "C0302", "R0902", "R0913", "R0914", "R0912", "R0915"]  
+disable = ["C0103", "C0209", "C0302",
+           "R0902", "R0904", "R0912", "R0913", "R0914", "R0915", "R1702",
+           "W0511"]
 max-line-length = 110
 
 [tool.flake8]
@@ -51,11 +53,11 @@ exclude = [".git", "__pycache__", "docs"]
 docstring-convention = "google"
 
 [tool.ruff]
-line-length = 100
+line-length = 110
 exclude = ["docs"]
-select = ["D", "E", "F", "W"]
-ignore = ["D200", "D212", "F403"]
-pydocstyle.convention = "google"
+lint.select = ["D", "E", "F", "W"]
+lint.ignore = ["D200", "D212", "F403"]
+lint.pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/smith_full_test.py" = ["D100", "D101", "D102", "D103", "F405"]
