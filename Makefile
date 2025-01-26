@@ -23,21 +23,22 @@ rstcheck:
 lint:
 	-pylint pysmithchart/smithaxes.py
 	-pylint pysmithchart/smithhelper.py
-	-pylint tests/smith_full_test.py
-	-pylint tests/smith_short_test.py
-
-doccheck:
-	-ruff check miepython/miepython.py
+	-pylint tests/test_xy_to_z.py
+	-pylint tests/test_schang.py
+	-pylint tests/test_noergaard.py
+	-pylint tests/test_simple.py
+	-pylint tests/test_vmeijin_short.py
+	-pylint tests/test_vmeijin_full.py
 
 rcheck:
-	make notecheck
+	make clean
+	black .
+	ruff check .
 	make rstcheck
-	make lintcheck
-	make doccheck
-	- flake8 .
 	pyroma -d .
 	check-manifest
-	make html
+#	make notecheck
+#	make html
 	make test
 
 test:
