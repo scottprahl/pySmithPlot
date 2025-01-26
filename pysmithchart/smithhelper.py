@@ -1,6 +1,4 @@
 """
-Module: smithhelper
-
 This module provides utility functions for computations related to Smith charts.
 
 Constants:
