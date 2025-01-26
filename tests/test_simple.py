@@ -1,3 +1,23 @@
+# pylint: disable=redefined-outer-name
+"""
+Tests for Smith chart plotting functionality using `pysmithchart`.
+
+This test suite validates various features of the `pysmithchart` library by
+generating and saving Smith chart plots. Each test ensures specific use cases,
+such as plotting impedance circles, VSWR, or frequency ranges, are rendered
+correctly. The generated plots are saved as PDF files.
+
+Test Functions:
+    - test_transformer_circle: Test for plotting transformer impedance circles.
+    - test_empty_smith_chart: Test for rendering an empty Smith chart with a grid.
+    - test_minor_grid_colors: Test for verifying minor grid colors on the chart.
+    - test_plot_single_load: Test for plotting a single load impedance.
+    - test_vswr_circle: Test for plotting VSWR circles with labeled points.
+    - test_frequency_range: Test for visualizing an RLC frequency range.
+    - test_stub_design: Test for plotting stub designs with constant resistance and
+      SWR circles.
+"""
+
 import os
 import numpy as np
 import pytest
@@ -9,16 +29,17 @@ from pysmithchart import Z_PARAMETER
 def chart_dir(tmpdir):
     """
     Fixture to provide the directory for saving charts.
+
     - Locally: Saves charts in the `charts` folder within the `tests` directory.
     - On GitHub Actions: Uses the provided `tmpdir`.
     """
     if os.getenv("GITHUB_ACTIONS") == "true":
         return tmpdir
-    else:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        local_chart_dir = os.path.join(script_dir, "charts")
-        os.makedirs(local_chart_dir, exist_ok=True)
-        return local_chart_dir
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    local_chart_dir = os.path.join(script_dir, "charts")
+    os.makedirs(local_chart_dir, exist_ok=True)
+    return local_chart_dir
 
 
 def test_transformer_circle(chart_dir):
@@ -68,7 +89,6 @@ def test_minor_grid_colors(chart_dir):
 def test_plot_single_load(chart_dir):
     """Test for plotting a single load on the Smith chart."""
     ZL = 75 + 50j
-    Z0 = 50
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot([ZL], color="b", marker="o", markersize=10, datatype=Z_PARAMETER)
@@ -89,14 +109,13 @@ def test_vswr_circle(chart_dir):
     z = (1 + Gamma_d) / (1 - Gamma_d)
     Zd = z * Z0
 
+    bdict = {"facecolor": 'cyan', "edgecolor": 'none'}
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, datatype=Z_PARAMETER)
     plt.plot(Zd, "r", linestyle="", marker="o", markersize=5, datatype=Z_PARAMETER)
     for i in [0, 5, 10, 15, 20]:
-        plt.text(
-            Zd[i].real / 50, Zd[i].imag / 50, " %.2fλ" % lam[i], bbox=dict(facecolor="cyan", edgecolor="none")
-        )
+        plt.text(Zd[i].real / 50, Zd[i].imag / 50, " %.2fλ" % lam[i], bbox=bdict)
     image_path = os.path.join(chart_dir, "vswr.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
@@ -110,9 +129,9 @@ def test_frequency_range(chart_dir):
     f = np.linspace(2, 20, 10) * 100e6
     omega = 2 * np.pi * f
 
-    Z0 = 50
     ZL = R + 1 / (1j * omega * C) + 1j * omega * L
 
+    bdict = {"facecolor": 'cyan', "edgecolor": 'none'}
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, linestyle="", datatype=Z_PARAMETER)
@@ -121,7 +140,7 @@ def test_frequency_range(chart_dir):
             ZL[i].real / 50,
             ZL[i].imag / 50,
             " %.0fMHz" % (f[i] / 1e6),
-            bbox=dict(facecolor="cyan", edgecolor="none"),
+            bbox=bdict,
         )
     plt.title("RLC Series Load, R=50Ω, C=2pF, L=20nH")
     image_path = os.path.join(chart_dir, "RLC_frequency.pdf")
@@ -142,13 +161,12 @@ def test_stub_design(chart_dir):
 
     ZR = 50 + np.linspace(-1e4, 1e4, 1000) * 1j
 
+    bdict = {"facecolor": 'cyan', "edgecolor": 'none'}
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot([ZL], "b", marker="o", markersize=10, datatype=Z_PARAMETER)
     plt.plot(Zd, "r", marker="", datatype=Z_PARAMETER)
-    plt.text(
-        Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none")
-    )
+    plt.text(Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=bdict)
     plt.plot(ZR, "g", marker=None, datatype=Z_PARAMETER)
     image_path = os.path.join(chart_dir, "stub.pdf")
     plt.savefig(image_path, format="pdf")

@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name
 """
 Test basic Smith chart functionality.
 
@@ -24,16 +25,17 @@ from pysmithchart import Z_PARAMETER, S_PARAMETER
 def chart_dir(tmpdir):
     """
     Fixture to provide the directory for saving charts.
+
     - Locally: Saves charts in the `charts` folder within the `tests` directory.
     - On GitHub Actions: Uses the provided `tmpdir`.
     """
     if os.getenv("GITHUB_ACTIONS") == "true":
         return tmpdir
-    else:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        local_chart_dir = os.path.join(script_dir, "charts")
-        os.makedirs(local_chart_dir, exist_ok=True)
-        return local_chart_dir
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    local_chart_dir = os.path.join(script_dir, "charts")
+    os.makedirs(local_chart_dir, exist_ok=True)
+    return local_chart_dir
 
 
 def s11_of_cap(freq):
@@ -55,6 +57,8 @@ def s11_of_parallel_cap_res(freq, z0=50):
         50 - 10j,
     ],
 )
+
+
 def test_plot_point(chart_dir, point):
     """Test plotting a single point on the Smith chart."""
     plt.figure(figsize=(6, 6))

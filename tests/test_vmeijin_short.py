@@ -1,3 +1,11 @@
+# pylint: disable=redefined-outer-name
+"""
+Tests for advanced Smith chart plotting functionality using `pysmithchart`.
+
+This test file validates various plotting configurations on the Smith chart,
+such as interpolation, equipoints, and custom markers.
+"""
+
 import os
 import numpy as np
 import pytest
@@ -10,9 +18,10 @@ rcParams.update({"legend.numpoints": 3})
 
 
 @pytest.fixture
-def setup_environment(tmp_path):
+def setup_environment(tmpdir):
     """
     Fixture to provide the directory for saving charts.
+
     - Locally: Saves charts in the `charts` folder within the `tests` directory.
     - On GitHub Actions: Uses the provided `tmpdir`.
     """
@@ -58,7 +67,7 @@ def test_smith_chart_plot(setup_environment):
 
     # Plot data
     plt.figure(figsize=(6, 6))
-    ax = plt.subplot(1, 1, 1, projection="smith")
+    plt.subplot(1, 1, 1, projection="smith")
     plt.plot([10, 100], markevery=1)
     plt.plot(200 + 100j, datatype=Z_PARAMETER)
     plt.plot(50 * val1, label="default", datatype=Z_PARAMETER)

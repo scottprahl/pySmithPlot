@@ -1,3 +1,25 @@
+"""
+Unit tests for the `xy_to_z` function in `pysmithchart.smithhelper`.
+
+This test suite validates the behavior of the `xy_to_z` function, which converts
+Cartesian coordinates (x, y) to their corresponding complex representations (z = x + yj).
+The tests cover a variety of input types, including scalars, iterables, and arrays,
+and ensure proper handling of edge cases and invalid inputs.
+
+Functions:
+    - test_single_complex_number: Test conversion of a single complex number.
+    - test_single_iterable_of_complex_numbers: Test conversion of an iterable of complex numbers.
+    - test_iterable_with_two_rows: Test conversion of a 2D array with real and imaginary parts.
+    - test_invalid_shape: Ensure proper error handling for invalid array dimensions.
+    - test_two_arguments_scalars: Test conversion of two scalar arguments.
+    - test_two_arguments_iterables: Test conversion of two iterables with matching lengths.
+    - test_two_arguments_mismatched_lengths: Ensure error handling for mismatched iterable lengths.
+    - test_invalid_number_of_arguments: Ensure error handling for invalid argument counts.
+    - test_empty_input: Ensure error handling for empty inputs.
+    - test_single_empty_iterable: Test conversion of an empty iterable.
+    - test_weird_zero: Handle edge cases like empty strings or unexpected input values.
+"""
+
 import numpy as np
 import pytest
 from pysmithchart.smithhelper import xy_to_z

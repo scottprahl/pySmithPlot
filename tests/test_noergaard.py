@@ -1,25 +1,37 @@
-# from https://github.com/soerenbnoergaard/pySmithPlot
+# pylint: disable=redefined-outer-name
+"""
+Tests for Smith chart functionality using `pysmithchart`.
+
+This file contains unit tests to validate the behavior of the `pysmithchart` library.
+Specifically, it includes tests for plotting elements like VSWR (Voltage Standing
+Wave Ratio) circles on the Smith chart and saving them as PDF files.
+
+This is adapted from https://github.com/soerenbnoergaard/pySmithPlot
+"""
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from pysmithchart import Z_PARAMETER
 import pytest
+
+from pysmithchart import Z_PARAMETER
 
 
 @pytest.fixture
 def chart_dir(tmpdir):
     """
     Fixture to provide the directory for saving charts.
+
     - Locally: Saves charts in the `charts` folder within the `tests` directory.
     - On GitHub Actions: Uses the provided `tmpdir`.
     """
     if os.getenv("GITHUB_ACTIONS") == "true":
         return tmpdir
-    else:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        local_chart_dir = os.path.join(script_dir, "charts")
-        os.makedirs(local_chart_dir, exist_ok=True)
-        return local_chart_dir
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    local_chart_dir = os.path.join(script_dir, "charts")
+    os.makedirs(local_chart_dir, exist_ok=True)
+    return local_chart_dir
 
 
 def test_vswr_circle(chart_dir):
