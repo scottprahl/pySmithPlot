@@ -1,9 +1,8 @@
-import sys
 import os
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
-from pysmithchart import SmithAxes
+from pysmithchart import Z_PARAMETER
 
 
 @pytest.fixture
@@ -34,8 +33,8 @@ def test_transformer_circle(chart_dir):
 
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
-    plt.plot(Zd, "r", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(ZL, "b", marker="o", markersize=10, datatype=Z_PARAMETER)
+    plt.plot(Zd, "r", marker="o", markersize=5, datatype=Z_PARAMETER)
     image_path = os.path.join(chart_dir, "lambda_over_eight.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
@@ -56,10 +55,10 @@ def test_minor_grid_colors(chart_dir):
     params = {
         "grid_major_color_x": "blue",
         "grid_major_color_y": "red",
-        "grid_minor_enable" : True,
+        "grid_minor_enable": True,
         "grid_minor_color_x": "blue",
         "grid_minor_color_y": "orange",
-        }
+    }
     plt.subplot(1, 1, 1, projection="smith", **params)
     image_path = os.path.join(chart_dir, "minor_colors.pdf")
     plt.savefig(image_path, format="pdf")
@@ -72,7 +71,7 @@ def test_plot_single_load(chart_dir):
     Z0 = 50
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot([ZL], color="b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot([ZL], color="b", marker="o", markersize=10, datatype=Z_PARAMETER)
     image_path = os.path.join(chart_dir, "one_point.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()
@@ -92,8 +91,8 @@ def test_vswr_circle(chart_dir):
 
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(ZL, "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
-    plt.plot(Zd, "r", linestyle="", marker="o", markersize=5, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(ZL, "b", marker="o", markersize=10, datatype=Z_PARAMETER)
+    plt.plot(Zd, "r", linestyle="", marker="o", markersize=5, datatype=Z_PARAMETER)
     for i in [0, 5, 10, 15, 20]:
         plt.text(
             Zd[i].real / 50, Zd[i].imag / 50, " %.2fλ" % lam[i], bbox=dict(facecolor="cyan", edgecolor="none")
@@ -116,7 +115,7 @@ def test_frequency_range(chart_dir):
 
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(ZL, "b", marker="o", markersize=10, linestyle="", datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(ZL, "b", marker="o", markersize=10, linestyle="", datatype=Z_PARAMETER)
     for i in [0, 3, 5, 9]:
         plt.text(
             ZL[i].real / 50,
@@ -145,12 +144,12 @@ def test_stub_design(chart_dir):
 
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot([ZL], "b", marker="o", markersize=10, datatype=SmithAxes.Z_PARAMETER)
-    plt.plot(Zd, "r", marker="", datatype=SmithAxes.Z_PARAMETER)
+    plt.plot([ZL], "b", marker="o", markersize=10, datatype=Z_PARAMETER)
+    plt.plot(Zd, "r", marker="", datatype=Z_PARAMETER)
     plt.text(
         Zd[25].real / 50, Zd[25].imag / 50, " %.3fλ" % lam[25], bbox=dict(facecolor="cyan", edgecolor="none")
     )
-    plt.plot(ZR, "g", marker=None, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(ZR, "g", marker=None, datatype=Z_PARAMETER)
     image_path = os.path.join(chart_dir, "stub.pdf")
     plt.savefig(image_path, format="pdf")
     plt.close()

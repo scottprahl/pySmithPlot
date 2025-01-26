@@ -1,12 +1,9 @@
 import os
-import sys
-import shutil
 import pytest
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from pysmithchart.smithaxes import SmithAxes
-from pysmithchart import smithhelper
+from pysmithchart import smithhelper, S_PARAMETER, Z_PARAMETER
 
 # Configure Matplotlib settings
 rcParams.update({"legend.numpoints": 3, "axes.axisbelow": True})
@@ -44,7 +41,7 @@ def load_complex_data(file_path, step=40):
     step : int, optional
         Step size for slicing the data (default is 40).
 
-    Returns
+    Returns:
     -------
     numpy.ndarray
         Processed complex data as a 1D numpy array.
@@ -56,10 +53,10 @@ def load_complex_data(file_path, step=40):
 def plot_example(title, sp_data, z_data, **kwargs):
     """Helper function to plot examples."""
     kwargs.setdefault("markevery", 1)
-    plt.plot(smithhelper.moebius_inv_z(sp_data, norm=50), datatype="Z", **kwargs)
-    plt.plot(z_data, datatype="Z", **kwargs)
-    plt.plot(100, datatype="Z", **kwargs)
-    plt.plot(25 + 25j, datatype="Z", **kwargs)
+    plt.plot(sp_data, datatype=S_PARAMETER, **kwargs)
+    plt.plot(z_data, datatype=Z_PARAMETER, **kwargs)
+    plt.plot(100, datatype=Z_PARAMETER, **kwargs)
+    plt.plot(25 + 25j, datatype=Z_PARAMETER, **kwargs)
     plt.title(title)
 
 
@@ -174,6 +171,7 @@ def test_normalize(setup_environment):
             plot_example(f"Impedance: {impedance} Ω — Normalize: {normalize}", sp_data, z_data)
 
     save_figure(chart_dir, "normalize")
+
 
 def test_markers(setup_environment):
     """Test for marker styles and configurations."""

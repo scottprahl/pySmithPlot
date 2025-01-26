@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-from collections.abc import Iterable
 from pysmithchart.smithhelper import xy_to_z
 
 

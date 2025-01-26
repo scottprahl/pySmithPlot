@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-from pysmithchart import SmithAxes
+from pysmithchart import S_PARAMETER, Z_PARAMETER
 
 # have matplotlib legend include three markers instead of one
 rcParams.update({"legend.numpoints": 3})
@@ -43,7 +43,7 @@ def load_complex_data(file_path, step=100):
     step : int, optional
         Step size for slicing the data (default is 40).
 
-    Returns
+    Returns:
     -------
     numpy.ndarray
         Processed complex data as a 1D numpy array.
@@ -60,28 +60,28 @@ def test_smith_chart_plot(setup_environment):
     plt.figure(figsize=(6, 6))
     ax = plt.subplot(1, 1, 1, projection="smith")
     plt.plot([10, 100], markevery=1)
-    plt.plot(200 + 100j, datatype=SmithAxes.Z_PARAMETER)
-    plt.plot(50 * val1, label="default", datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(200 + 100j, datatype=Z_PARAMETER)
+    plt.plot(50 * val1, label="default", datatype=Z_PARAMETER)
     plt.plot(
         50 * val2,
         markevery=1,
         label="interpolate=3",
         interpolate=3,
-        datatype=SmithAxes.Z_PARAMETER,
+        datatype=Z_PARAMETER,
     )
     plt.plot(
         val1,
         markevery=1,
         label="equipoints=22",
         equipoints=22,
-        datatype=SmithAxes.S_PARAMETER,
+        datatype=S_PARAMETER,
     )
     plt.plot(
         val2,
         markevery=3,
         label="equipoints=22, \nmarkevery=3",
         equipoints=22,
-        datatype=SmithAxes.S_PARAMETER,
+        datatype=S_PARAMETER,
     )
 
     # Add legend and title

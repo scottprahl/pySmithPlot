@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from pysmithchart import SmithAxes
+from pysmithchart import Z_PARAMETER
 import pytest
 
 
@@ -24,7 +24,6 @@ def chart_dir(tmpdir):
 
 def test_vswr_circle(chart_dir):
     """Test plotting a VSWR circle on the Smith chart."""
-
     # Create VSWR circle
     G = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 100))
     ZL = -(G + 1) / (G - 1)
@@ -32,10 +31,10 @@ def test_vswr_circle(chart_dir):
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
 
-    plt.plot(ZL, "k", datatype=SmithAxes.Z_PARAMETER, label="VSWR Circle")
-    plt.plot(1 + 0j, "b", datatype=SmithAxes.Z_PARAMETER, marker="o", label="$1+0j$")
-    plt.plot(1 + 1j, "r", datatype=SmithAxes.Z_PARAMETER, marker="o", label="$1+1j$")
-    plt.plot(0.5 - 0.5j, "g", datatype=SmithAxes.Z_PARAMETER, marker="o", label="$0.5-0.5j$")
+    plt.plot(ZL, "k", datatype=Z_PARAMETER, label="VSWR Circle")
+    plt.plot(1 + 0j, "b", datatype=Z_PARAMETER, marker="o", label="$1+0j$")
+    plt.plot(1 + 1j, "r", datatype=Z_PARAMETER, marker="o", label="$1+1j$")
+    plt.plot(0.5 - 0.5j, "g", datatype=Z_PARAMETER, marker="o", label="$0.5-0.5j$")
 
     plt.legend()
     plt.tight_layout()

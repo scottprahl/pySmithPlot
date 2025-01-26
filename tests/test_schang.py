@@ -17,8 +17,7 @@ import os
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
-from pysmithchart import SmithAxes
-from itertools import product
+from pysmithchart import Z_PARAMETER, S_PARAMETER
 
 
 @pytest.fixture
@@ -60,7 +59,7 @@ def test_plot_point(chart_dir, point):
     """Test plotting a single point on the Smith chart."""
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(point, datatype=SmithAxes.Z_PARAMETER)
+    plt.plot(point, datatype=Z_PARAMETER)
     plt.title(f"Plot of a Single Point: {point}")
     plt.savefig(os.path.join(chart_dir, "schang_point.pdf"), format="pdf")
     plt.close()
@@ -72,7 +71,7 @@ def test_plot_s_param(chart_dir):
     s11 = s11_of_cap(freqs)
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(s11, markevery=1, datatype=SmithAxes.S_PARAMETER)
+    plt.plot(s11, markevery=1, datatype=S_PARAMETER)
     plt.title("S-Parameters of a Capacitor")
     plt.savefig(os.path.join(chart_dir, "schang_s_param.pdf"), format="pdf")
     plt.close()
@@ -84,7 +83,7 @@ def test_plot_labels(chart_dir):
     s11 = s11_of_cap(freqs)
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(s11, markevery=1, datatype=SmithAxes.S_PARAMETER, label="s11")
+    plt.plot(s11, markevery=1, datatype=S_PARAMETER, label="s11")
     plt.legend()
     plt.title("S-Parameters with Labels and Legend")
     plt.savefig(os.path.join(chart_dir, "schang_labels.pdf"), format="pdf")
