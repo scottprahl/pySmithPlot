@@ -1,11 +1,6 @@
 """
 This module provides utility functions for computations related to Smith charts.
 
-Constants:
-    INF (float): A large value used to approximate infinity in calculations (default: 1e9).
-    EPSILON (float): A small value to prevent division by zero in transformations (default: 1e-7).
-    TWO_PI (float): The value of 2 * pi for convenience in angular calculations.
-
 Functions:
     cs(z, N=5):
         Converts a complex number to a formatted string for printing.
@@ -29,10 +24,7 @@ Functions:
 
 from collections.abc import Iterable
 import numpy as np
-
-INF = 1e9
-EPSILON = 1e-7
-TWO_PI = 2 * np.pi
+from .constants import EPSILON
 
 
 def cs(z, N=5):
@@ -254,13 +246,13 @@ def vswr_rotation(
 
             invert = solution2 != (imag < 0)
 
-        gamma = np.arccos((a**2 + c**2 - b**2) / (2 * a * c)) % TWO_PI
+        gamma = np.arccos((a**2 + c**2 - b**2) / (2 * a * c)) % (2 * np.pi)
         if invert:
             gamma = -gamma
-        gamma = (ang_0 + gamma) % TWO_PI
+        gamma = (ang_0 + gamma) % (2 * np.pi)
 
-        ang_z = np.angle(z0) % TWO_PI
-        ang = (gamma - ang_z) % TWO_PI
+        ang_z = np.angle(z0) % (2 * np.pi)
+        ang = (gamma - ang_z) % (2 * np.pi)
 
         if cw:
             ang -= 2 * np.pi
@@ -277,6 +269,6 @@ def vswr_rotation(
         raise ValueError(s)
 
     if check == 0:
-        ang = TWO_PI
+        ang = 2 * np.pi
 
     return (z, moebius_inv_z(z0 * ang_to_c(ang), norm=impedance), rad_to_lambda(ang))
