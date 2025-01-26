@@ -1,5 +1,5 @@
 """
-Unit tests for the `xy_to_z` function in `pysmithchart.smithhelper`.
+Unit tests for the `xy_to_z` function in `pysmithchart.utils`.
 
 This test suite validates the behavior of the `xy_to_z` function, which converts
 Cartesian coordinates (x, y) to their corresponding complex representations (z = x + yj).
@@ -22,7 +22,8 @@ Functions:
 
 import numpy as np
 import pytest
-from pysmithchart.smithhelper import xy_to_z
+
+from pysmithchart.utils import xy_to_z
 
 
 def test_single_complex_number():

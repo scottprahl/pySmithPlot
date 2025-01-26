@@ -23,6 +23,7 @@ import pytest
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+
 from pysmithchart import S_PARAMETER, Z_PARAMETER
 
 # Configure Matplotlib settings

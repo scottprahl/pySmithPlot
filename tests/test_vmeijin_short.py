@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+
 from pysmithchart import S_PARAMETER, Z_PARAMETER
 
 # have matplotlib legend include three markers instead of one

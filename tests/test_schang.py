@@ -18,6 +18,7 @@ import os
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
+
 from pysmithchart import Z_PARAMETER, S_PARAMETER
 
 
@@ -57,8 +58,6 @@ def s11_of_parallel_cap_res(freq, z0=50):
         50 - 10j,
     ],
 )
-
-
 def test_plot_point(chart_dir, point):
     """Test plotting a single point on the Smith chart."""
     plt.figure(figsize=(6, 6))

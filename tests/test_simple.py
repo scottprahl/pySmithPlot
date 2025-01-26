@@ -22,6 +22,7 @@ import os
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
+
 from pysmithchart import Z_PARAMETER
 
 
@@ -109,7 +110,7 @@ def test_vswr_circle(chart_dir):
     z = (1 + Gamma_d) / (1 - Gamma_d)
     Zd = z * Z0
 
-    bdict = {"facecolor": 'cyan', "edgecolor": 'none'}
+    bdict = {"facecolor": "cyan", "edgecolor": "none"}
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, datatype=Z_PARAMETER)
@@ -131,7 +132,7 @@ def test_frequency_range(chart_dir):
 
     ZL = R + 1 / (1j * omega * C) + 1j * omega * L
 
-    bdict = {"facecolor": 'cyan', "edgecolor": 'none'}
+    bdict = {"facecolor": "cyan", "edgecolor": "none"}
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot(ZL, "b", marker="o", markersize=10, linestyle="", datatype=Z_PARAMETER)
@@ -161,7 +162,7 @@ def test_stub_design(chart_dir):
 
     ZR = 50 + np.linspace(-1e4, 1e4, 1000) * 1j
 
-    bdict = {"facecolor": 'cyan', "edgecolor": 'none'}
+    bdict = {"facecolor": "cyan", "edgecolor": "none"}
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot([ZL], "b", marker="o", markersize=10, datatype=Z_PARAMETER)
