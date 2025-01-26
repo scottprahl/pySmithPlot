@@ -604,7 +604,7 @@ class SmithAxes(Axes):
             label.set_rotation_mode("anchor")
             label.set_rotation(self._get_key("axes.xlabel.rotation"))
             label.set_bbox(self._get_key("axes.xlabel.fancybox"))
-            self.add_artist(label)  # if not readded, labels are drawn behind grid
+            self.add_artist(label)  # if not re-added, labels are drawn behind grid
 
         for tick, loc in zip(self.yaxis.get_major_ticks(), self.yaxis.get_majorticklocs()):
             # workaround for fixing too small infinity symbol
@@ -719,6 +719,17 @@ class SmithAxes(Axes):
     def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
         """Generate the spines for the circular Smith chart axes."""
         return {SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))}
+
+    def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
+        """Generate the spines for the circular Smith chart axes."""
+        spine = Spine.circular_spine(
+            self,
+            (0.5, 0.5),
+            self._get_key("axes.radius"),
+        )
+        spine.set_edgecolor(self._get_key("grid.major.color.x"))
+        return {SmithAxes.name: spine}
+
 
     def set_xscale(self, *args, **kwargs):
         """
