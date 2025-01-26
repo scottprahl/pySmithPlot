@@ -21,8 +21,14 @@ rstcheck:
 #	-rstcheck docs/index.rst
 
 lint:
-	-pylint pysmithchart/smithaxes.py
-	-pylint pysmithchart/smithhelper.py
+	-pylint pysmithchart/__init__.py
+	-pylint pysmithchart/axes.py
+	-pylint pysmithchart/constants.py
+	-pylint pysmithchart/formatters.py
+	-pylint pysmithchart/locators.py
+	-pylint pysmithchart/moebius_transform.py
+	-pylint pysmithchart/polar_transform.py
+	-pylint pysmithchart/utils.py
 	-pylint tests/test_xy_to_z.py
 	-pylint tests/test_schang.py
 	-pylint tests/test_noergaard.py
