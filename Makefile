@@ -46,6 +46,7 @@ rcheck:
 #	make notecheck
 #	make html
 	make test
+	python -m build
 
 test:
 	pytest -v tests/test_xy_to_z.py
@@ -60,13 +61,14 @@ clean:
 	rm -rf .DS_Store
 	rm -rf pysmithchart.egg-info
 	rm -rf pysmithchart/__pycache__
+	rm -rf pysmithchart/.DS_Store
 	rm -rf tests/__pycache__
 	rm -rf tests/.ipynb_checkpoints
 	rm -rf tests/.DS_Store
 	rm -rf build
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
-	rm -rf tests/charts/*
+	rm -rf tests/charts
 
 realclean:
 	make clean

@@ -15,10 +15,6 @@ dependencies = [
 ]
 requires-python = ">=3.8"
 keywords = ["Smith Chart", "impedance", "reflection", "RF engineering", "microwave"]
-
-[project.optional-dependencies]
-dev = ["pytest >= 7.0"]
-
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: BSD License",
@@ -30,13 +26,16 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12"
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13"
 ]
 
+[project.optional-dependencies]
+dev = ["pytest >= 7.0"]
+
 [project.urls]
-Homepage = "https://github.com/scottprahl/pysmithchart"
-Bug Tracker = "https://github.com/scottprahl/pysmithchart/issues"
+"Homepage" = "https://github.com/scottprahl/pysmithchart"
+"Bug Tracker" = "https://github.com/scottprahl/pysmithchart/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -57,6 +56,7 @@ max-line-length = 110
 [tool.ruff]
 line-length = 110
 exclude = ["docs"]
-select = ["D", "E", "F", "W"]
-ignore = ["D200", "D212", "F403"]
-pydocstyle.convention = "google"
+lint.select = ["D", "E", "F", "W"]
+lint.ignore = ["D200", "D212", "F403"]
+lint.pydocstyle.convention = "google"
+

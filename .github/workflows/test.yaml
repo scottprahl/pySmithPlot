@@ -1,7 +1,7 @@
 ---
 name: test
 
-on:    # yamllint disable-line rule:truthy
+on:
   push:
     branches: [main]
   pull_request:
@@ -26,11 +26,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install build backend (if needed)
+        run: |
+          pip install build
+
       - name: Install package and dependencies
         run: |
-          pip install -r requirements.txt
-          pip install -e .  # current package in editable mode
+          pip install .[dev]
 
-      - name: Tests
+      - name: Run tests
         run: |
           pytest tests/test_simple.py
