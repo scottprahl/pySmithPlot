@@ -638,10 +638,6 @@ class SmithAxes(Axes):
 
     def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
         """Generate the spines for the circular Smith chart axes."""
-        return {SmithAxes.name: Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))}
-
-    def _gen_axes_spines(self, locations=None, offset=0.0, units="inches"):
-        """Generate the spines for the circular Smith chart axes."""
         spine = Spine.circular_spine(self, (0.5, 0.5), self._get_key("axes.radius"))
         spine.set_edgecolor(self._get_key("grid.major.color.x"))
         return {SmithAxes.name: spine}
