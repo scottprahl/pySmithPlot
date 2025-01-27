@@ -20,7 +20,7 @@ import numpy as np
 
 from pysmithchart import utils
 
-from .constants import S_PARAMETER, Z_PARAMETER, Y_PARAMETER, EPSILON, INF
+from .constants import S_PARAMETER, Z_PARAMETER, Y_PARAMETER, SC_EPSILON, SC_INFINITY
 from .formatters import RealFormatter, ImagFormatter
 from .locators import RealMaxNLocator, ImagMaxNLocator, SmithAutoMinorLocator
 from .moebius_transform import MoebiusTransform
@@ -264,8 +264,8 @@ class SmithAxes(Axes):
 
     name = "smith"
     _datatypes = [S_PARAMETER, Z_PARAMETER, Y_PARAMETER]
-    _inf = INF
-    _near_inf = 0.9 * INF
+    _inf = SC_INFINITY
+    _near_inf = 0.9 * SC_INFINITY
     _ax_lim_x = 2 * _inf
     _ax_lim_y = 2 * _inf
     _rcDefaultParams = {
@@ -1107,7 +1107,7 @@ class SmithAxes(Axes):
                 The upper half of the `yticks` array (non-negative values).
             """
             len_y = (len(yticks) - 1) // 2
-            if not (len(yticks) % 2 == 1 and (yticks[len_y:] + yticks[len_y::-1] < EPSILON).all()):
+            if not (len(yticks) % 2 == 1 and (yticks[len_y:] + yticks[len_y::-1] < SC_EPSILON).all()):
                 s = "Fancy minor grid is only supported for zero-symmetric imaginary grid. "
                 s += "--- e.g., ImagMaxNLocator"
                 raise ValueError(s)
@@ -1302,7 +1302,7 @@ class SmithAxes(Axes):
                         for tq, (qs, q0, q1), _ in self._majorarcs:
                             if tp == tq:
                                 overlaps = (
-                                    (abs(lines[:, 0] - qs) < EPSILON)
+                                    (abs(lines[:, 0] - qs) < SC_EPSILON)
                                     & (lines[:, 2] > q0)
                                     & (lines[:, 1] < q1)
                                 )
@@ -1311,7 +1311,7 @@ class SmithAxes(Axes):
                         lines = lines[np.lexsort((lines[:, 1], lines[:, 0]))]
                         ps, p0, p1 = lines[0]
                         for qs, q0, q1 in lines[1:]:
-                            if ps != qs or not np.isclose(p1, q0, atol=EPSILON):
+                            if ps != qs or not np.isclose(p1, q0, atol=SC_EPSILON):
                                 add_arc(ps, p0, p1, "minor", tp)
                                 ps, p0, p1 = (qs, q0, q1)
                             else:
@@ -1468,6 +1468,6 @@ class SmithAxes(Axes):
         else:
             assert 0 <= p0 < p1
             line = Line2D([p0, p1], 2 * [ps], **kwargs)
-            if abs(ps) > EPSILON:
+            if abs(ps) > SC_EPSILON:
                 line.get_path()._interpolation_steps = "y_gridline"
         return self.add_artist(line)

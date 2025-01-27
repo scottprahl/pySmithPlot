@@ -24,7 +24,7 @@ Functions:
 
 from collections.abc import Iterable
 import numpy as np
-from .constants import EPSILON
+from .constants import SC_EPSILON
 
 
 def cs(z, N=5):
@@ -130,7 +130,7 @@ def moebius_inv_z(*args, norm):
         The inverse Möbius-transformed complex number or array of complex numbers.
     """
     z = xy_to_z(*args)
-    z = np.where(z == 1, 1 - EPSILON, z)  # avoid division by 0
+    z = np.where(z == 1, 1 - SC_EPSILON, z)  # avoid division by 0
     return norm * (1 + z) / (1 - z)
 
 
@@ -237,7 +237,7 @@ def vswr_rotation(
         if imag is not None:
             check += 1
 
-            b = impedance / imag if imag != 0 else float("inf")
+            b = impedance / imag if imag != 0 else float("SC_INFINITY")
             c = np.sqrt(1 + b**2)
             ang_0 = np.arctan(b)
 

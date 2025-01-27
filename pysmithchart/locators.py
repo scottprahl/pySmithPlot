@@ -3,7 +3,7 @@
 from matplotlib.ticker import AutoMinorLocator, Locator
 import numpy as np
 
-from .constants import EPSILON
+from .constants import SC_EPSILON
 from .utils import ang_to_c
 
 
@@ -50,7 +50,7 @@ class RealMaxNLocator(Locator):
 
         Returns: A nicely rounded value.
         """
-        exp = np.ceil(np.log10(np.abs(num) + EPSILON))
+        exp = np.ceil(np.log10(np.abs(num) + SC_EPSILON))
         if exp < 1:
             exp += 1
         norm = 10 ** (-(exp - self.precision))
@@ -60,7 +60,7 @@ class RealMaxNLocator(Locator):
         elif num_normed > 50:
             norm /= 10
         if not 1 < num_normed % 10 < 9:
-            if abs(num_normed % 10 - 1) < EPSILON:
+            if abs(num_normed % 10 - 1) < SC_EPSILON:
                 num -= 0.5 / norm
             f_round = np.round
         else:

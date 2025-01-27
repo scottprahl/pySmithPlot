@@ -1,7 +1,6 @@
 """This module contains the implementation for parameter type."""
 
 from enum import Enum
-import numpy as np
 
 
 class ParameterType(Enum):
@@ -16,6 +15,5 @@ S_PARAMETER = ParameterType.S_PARAMETER
 Z_PARAMETER = ParameterType.Z_PARAMETER
 Y_PARAMETER = ParameterType.Y_PARAMETER
 
-INF = 1e9
-EPSILON = 1e-7
-TWO_PI = 2 * np.pi
+SC_INFINITY = 1e9
+SC_EPSILON = 1e-7

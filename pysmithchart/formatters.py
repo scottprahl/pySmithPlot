@@ -1,7 +1,7 @@
 """This module contains the implementation for formatters."""
 
 from matplotlib.ticker import Formatter
-from .constants import EPSILON
+from .constants import SC_EPSILON
 
 
 class RealFormatter(Formatter):
@@ -53,7 +53,7 @@ class RealFormatter(Formatter):
         Returns:
             str: The formatted tick value as a string, or `''` for values near zero.
         """
-        if x < EPSILON or x > self.axes._near_inf:
+        if x < SC_EPSILON or x > self.axes._near_inf:
             return ""
         return ("%f" % x).rstrip("0").rstrip(".")
 
@@ -95,6 +95,6 @@ class ImagFormatter(RealFormatter):
             return ""
         if x > self.axes._near_inf:
             return self.axes._get_key("symbol.infinity")
-        if abs(x) < EPSILON:
+        if abs(x) < SC_EPSILON:
             return "0"
         return ("%f" % x).rstrip("0").rstrip(".") + "j"
