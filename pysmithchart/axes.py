@@ -155,7 +155,7 @@ class SmithAxes(Axes):
             imaginary distances or single value for both.
             Accepts: (float, float) or float
 
-        grid.minor.enable: True
+        grid.minor.enable: False
             Enables the minor grid.
             Accepts: boolean
 
@@ -263,7 +263,6 @@ class SmithAxes(Axes):
     """
 
     name = "smith"
-    _datatypes = [S_PARAMETER, Z_PARAMETER, Y_PARAMETER]
     _inf = SC_INFINITY
     _near_inf = 0.9 * SC_INFINITY
     _ax_lim_x = 2 * _inf
@@ -294,7 +293,7 @@ class SmithAxes(Axes):
         "plot.marker.default": "o",
         "plot.marker.end": "^",
         "plot.default.interpolation": 5,
-        "plot.default.datatype": S_PARAMETER,
+        "plot.default.datatype": Z_PARAMETER,
         "grid.zorder": 1,
         "grid.locator.precision": 2,
         "grid.major.enable": True,
@@ -523,8 +522,10 @@ class SmithAxes(Axes):
         self._current_zorder = self._get_key("plot.zorder")
         self.xaxis.set_major_locator(RealMaxNLocator(self, self._get_key("grid.major.xmaxn")))
         self.yaxis.set_major_locator(ImagMaxNLocator(self, self._get_key("grid.major.ymaxn")))
+
         self.xaxis.set_minor_locator(SmithAutoMinorLocator(self._get_key("grid.minor.xauto")))
         self.yaxis.set_minor_locator(SmithAutoMinorLocator(self._get_key("grid.minor.yauto")))
+
         self.xaxis.set_ticks_position("none")
         self.yaxis.set_ticks_position("none")
         Axes.set_xlim(self, 0, self._ax_lim_x)
@@ -549,6 +550,7 @@ class SmithAxes(Axes):
                 tick.label1.set_horizontalalignment("center")
         self.yaxis.set_major_formatter(ImagFormatter(self))
         self.xaxis.set_major_formatter(RealFormatter(self))
+
         if self._get_key("axes.normalize") and self._get_key("axes.normalize.label"):
             x, y = utils.z_to_xy(self.moebius_inv_z(self._get_key("axes.normalize.label.position")))
             impedance = self._get_key("axes.impedance")
@@ -557,8 +559,11 @@ class SmithAxes(Axes):
             px = self._get_key("ytick.major.pad")
             py = px + 0.5 * box.get_fontsize()
             box.set_transform(self._yaxis_correction + Affine2D().translate(-px, -py))
+
         for grid in ["major", "minor"]:
-            self.grid(visible=self._get_key("grid.%s.enable" % grid), which=grid)
+            enable_tag = "grid.%s.enable" % grid
+            enable_key = self._get_key(enable_tag)
+            self.grid(visible=enable_key, which=grid)
 
     def _set_lim_and_transforms(self):
         """
@@ -950,29 +955,34 @@ class SmithAxes(Axes):
             >>> plt.show()
         """
         datatype = kwargs.pop("datatype", self._get_key("plot.default.datatype"))
-        if datatype not in self._datatypes:
+        if datatype not in [S_PARAMETER, Z_PARAMETER, Y_PARAMETER]:
             raise ValueError(
                 f"Invalid datatype: {datatype}. Must be S_PARAMETER, Z_PARAMETER, or Y_PARAMETER"
             )
+
         new_args = ()
         for arg in args:
             if not isinstance(arg, (str, np.ndarray)):
                 if isinstance(arg, Number):
-                    arg = np.array([arg])
+                    arg = np.array([arg], dtype=complex)
                 elif isinstance(arg, Iterable):
-                    arg = np.array(arg)
+                    arg = np.array(arg, dtype=complex)
+
             if isinstance(arg, np.ndarray) and arg.dtype in [complex, np.complex128]:
                 new_args += utils.z_to_xy(arg)
             else:
                 new_args += (arg,)
+
         if "zorder" not in kwargs:
             kwargs["zorder"] = self._current_zorder
             self._current_zorder += 0.001
+
         interpolate = kwargs.pop("interpolate", False)
         equipoints = kwargs.pop("equipoints", False)
         kwargs.setdefault("marker", self._get_key("plot.marker.default"))
         markerhack = kwargs.pop("markerhack", self._get_key("plot.marker.hack"))
         rotate_marker = kwargs.pop("rotate_marker", self._get_key("plot.marker.rotate"))
+
         if interpolate:
             if equipoints > 0:
                 raise ValueError("Interpolation is not available with equidistant markers")
@@ -986,18 +996,24 @@ class SmithAxes(Axes):
                 else:
                     mark *= interpolate + 1
                 kwargs["markevery"] = mark
+
         lines = Axes.plot(self, *new_args, **kwargs)
+
         for line in lines:
             cdata = utils.xy_to_z(line.get_data())
+
             if datatype == S_PARAMETER:
                 z = self.moebius_inv_z(cdata)
             elif datatype == Y_PARAMETER:
                 z = 1 / cdata
             else:
                 z = cdata
-            if self._normalize and datatype != S_PARAMETER:
+
+            if self._normalize and datatype == Z_PARAMETER:
                 z /= self._get_key("axes.impedance")
+
             line.set_data(utils.z_to_xy(z))
+
             if interpolate or equipoints:
                 z = self.moebius_z(*line.get_data())
                 if len(z) > 1:
@@ -1163,157 +1179,171 @@ class SmithAxes(Axes):
                 )
             )
 
-        def draw_nonfancy(grid):
-            if grid == "major":
-                xticks = self.xaxis.get_majorticklocs()
-                yticks = self.yaxis.get_majorticklocs()
-            else:
-                xticks = self.xaxis.get_minorticklocs()
-                yticks = self.yaxis.get_minorticklocs()
+        def draw_major_nonfancy():
+            xticks = self.xaxis.get_majorticklocs()
+            yticks = self.yaxis.get_majorticklocs()
             xticks = np.round(xticks, 7)
             yticks = np.round(yticks, 7)
             for xs in xticks:
                 if xs < self._near_inf:
-                    add_arc(xs, -self._near_inf, self._inf, grid, "real")
+                    add_arc(xs, -self._near_inf, self._inf, "major", "real")
             for ys in yticks:
                 if abs(ys) < self._near_inf:
-                    add_arc(ys, 0, self._inf, grid, "imag")
+                    add_arc(ys, 0, self._inf, "major", "imag")
+
+        def draw_minor_nonfancy():
+            xticks = self.xaxis.get_minor_locator()()
+            yticks = self.yaxis.get_minor_locator()()
+            xticks = np.round(xticks, 7)
+            yticks = np.round(yticks, 7)
+            for xs in xticks:
+                if xs < self._near_inf:
+                    add_arc(xs, -self._near_inf, self._inf, "minor", "real")
+            for ys in yticks:
+                if abs(ys) < self._near_inf:
+                    add_arc(ys, 0, self._inf, "minor", "imag")
+
+        def draw_major_fancy(threshold):
+            xticks = np.sort(self.xaxis.get_majorticklocs())
+            yticks = np.sort(self.yaxis.get_majorticklocs())
+            assert len(xticks) > 0 and len(yticks) > 0
+            yticks = check_fancy(yticks)
+            if threshold is None:
+                threshold = self._get_key("grid.major.fancy.threshold")
+            thr_x, thr_y = split_threshold(threshold)
+            add_arc(yticks[0], 0, self._inf, "major", "imag")
+            tmp_yticks = yticks.copy()
+            for xs in xticks:
+                k = 1
+                while k < len(tmp_yticks):
+                    y0, y1 = tmp_yticks[k - 1 : k + 1]
+                    if abs(self.moebius_z(xs, y0) - self.moebius_z(xs, y1)) < thr_x:
+                        add_arc(y1, 0, xs, "major", "imag")
+                        add_arc(-y1, 0, xs, "major", "imag")
+                        tmp_yticks = np.delete(tmp_yticks, k)
+                    else:
+                        k += 1
+            for i in range(1, len(yticks)):
+                y0, y1 = yticks[i - 1 : i + 1]
+                k = 1
+                while k < len(xticks):
+                    x0, x1 = xticks[k - 1 : k + 1]
+                    if abs(self.moebius_z(x0, y1) - self.moebius_z(x1, y1)) < thr_y:
+                        add_arc(x1, -y0, y0, "major", "real")
+                        xticks = np.delete(xticks, k)
+                    else:
+                        k += 1
+
+        def draw_minor_fancy(threshold, dividers):
+            xticks = np.sort(self.xaxis.get_majorticklocs())
+            yticks = np.sort(self.yaxis.get_majorticklocs())
+            assert len(xticks) > 0 and len(yticks) > 0
+            yticks = check_fancy(yticks)
+            if dividers is None:
+                dividers = self._get_key("grid.minor.fancy.dividers")
+            assert len(dividers) > 0
+            dividers = np.sort(dividers)
+            if threshold is None:
+                threshold = self._get_key("grid.minor.fancy.threshold")
+            thr_x, thr_y = split_threshold(threshold)
+            len_x, len_y = (len(xticks) - 1, len(yticks) - 1)
+            d_mat = np.ones((len_x, len_y, 2), dtype=int)
+            for i in range(len_x):
+                for k in range(len_y):
+                    x0, x1 = xticks[i : i + 2]
+                    y0, y1 = yticks[k : k + 2]
+                    xm = self.real_interp1d([x0, x1], 2)[1]
+                    ym = self.imag_interp1d([y0, y1], 2)[1]
+                    x_div = y_div = dividers[0]
+                    for div in dividers[1:]:
+                        if abs(self.moebius_z(x1 - (x1 - x0) / div, ym) - self.moebius_z(x1, ym)) > thr_x:
+                            x_div = div
+                        else:
+                            break
+                    for div in dividers[1:]:
+                        if abs(self.moebius_z(xm, y1) - self.moebius_z(xm, y1 - (y1 - y0) / div)) > thr_y:
+                            y_div = div
+                        else:
+                            break
+                    d_mat[i, k] = [x_div, y_div]
+            d_mat[:-1, 0, 0] = list(map(np.max, zip(d_mat[:-1, 0, 0], d_mat[1:, 0, 0])))
+            idx = np.searchsorted(xticks, self.moebius_inv_z(0)) + 1
+            idy = np.searchsorted(yticks, self.moebius_inv_z(1j).imag)
+            if idx > idy:
+                for d in range(idy):
+                    delta = idx - idy + d
+                    d_mat[delta, : d + 1] = d_mat[:delta, d] = d_mat[delta, 0]
+            else:
+                for d in range(idx):
+                    delta = idy - idx + d
+                    d_mat[: d + 1, delta] = d_mat[d, :delta] = d_mat[d, 0]
+            x_lines, y_lines = ([], [])
+            for i in range(len_x):
+                x0, x1 = xticks[i : i + 2]
+                for k in range(len_y):
+                    y0, y1 = yticks[k : k + 2]
+                    x_div, y_div = d_mat[i, k]
+                    for xs in np.linspace(x0, x1, x_div + 1)[1:]:
+                        x_lines.append([xs, y0, y1])
+                        x_lines.append([xs, -y1, -y0])
+                    for ys in np.linspace(y0, y1, y_div + 1)[1:]:
+                        y_lines.append([ys, x0, x1])
+                        y_lines.append([-ys, x0, x1])
+            x_lines = np.round(np.array(x_lines), 7)
+            y_lines = np.round(np.array(y_lines), 7)
+            for tp, lines in [("real", x_lines), ("imag", y_lines)]:
+                lines = np.array([[ps, min(p0, p1), max(p0, p1)] for ps, p0, p1 in lines])
+                for tq, (qs, q0, q1), _ in self._majorarcs:
+                    if tp == tq:
+                        overlaps = (
+                            (abs(lines[:, 0] - qs) < SC_EPSILON) & (lines[:, 2] > q0) & (lines[:, 1] < q1)
+                        )
+                        lines[overlaps] = np.nan
+                lines = lines[~np.isnan(lines[:, 0])]
+                lines = lines[np.lexsort((lines[:, 1], lines[:, 0]))]
+                ps, p0, p1 = lines[0]
+                for qs, q0, q1 in lines[1:]:
+                    if ps != qs or not np.isclose(p1, q0, atol=SC_EPSILON):
+                        add_arc(ps, p0, p1, "minor", tp)
+                        ps, p0, p1 = (qs, q0, q1)
+                    else:
+                        p1 = q1
 
         if axis is None:
             fancy_major = self._get_key("grid.major.fancy")
             fancy_minor = self._get_key("grid.minor.fancy")
         else:
             fancy_major = fancy_minor = axis
+            fancy_major = axis._get_key("grid.major.fancy")
+            fancy_minor = axis._get_key("grid.minor.fancy")
+
         if "axis" in kwargs and kwargs["axis"] != "both":
             raise ValueError("Only 'both' is a supported value for 'axis'")
+
+        # draw major grid lines
         if which in ["both", "major"]:
             for _, _, arc in self._majorarcs:
                 arc.remove()
             self._majorarcs = []
+
             if visible:
                 param = get_kwargs("major")
                 if fancy_major:
-                    xticks = np.sort(self.xaxis.get_majorticklocs())
-                    yticks = np.sort(self.yaxis.get_majorticklocs())
-                    assert len(xticks) > 0 and len(yticks) > 0
-                    yticks = check_fancy(yticks)
-                    if threshold is None:
-                        threshold = self._get_key("grid.major.fancy.threshold")
-                    thr_x, thr_y = split_threshold(threshold)
-                    add_arc(yticks[0], 0, self._inf, "major", "imag")
-                    tmp_yticks = yticks.copy()
-                    for xs in xticks:
-                        k = 1
-                        while k < len(tmp_yticks):
-                            y0, y1 = tmp_yticks[k - 1 : k + 1]
-                            if abs(self.moebius_z(xs, y0) - self.moebius_z(xs, y1)) < thr_x:
-                                add_arc(y1, 0, xs, "major", "imag")
-                                add_arc(-y1, 0, xs, "major", "imag")
-                                tmp_yticks = np.delete(tmp_yticks, k)
-                            else:
-                                k += 1
-                    for i in range(1, len(yticks)):
-                        y0, y1 = yticks[i - 1 : i + 1]
-                        k = 1
-                        while k < len(xticks):
-                            x0, x1 = xticks[k - 1 : k + 1]
-                            if abs(self.moebius_z(x0, y1) - self.moebius_z(x1, y1)) < thr_y:
-                                add_arc(x1, -y0, y0, "major", "real")
-                                xticks = np.delete(xticks, k)
-                            else:
-                                k += 1
+                    draw_major_fancy(threshold)
                 else:
-                    draw_nonfancy("major")
+                    draw_major_nonfancy()
+
         if which in ["both", "minor"]:
             for _, _, arc in self._minorarcs:
                 arc.remove()
             self._minorarcs = []
+
             if visible:
                 param = get_kwargs("minor")
                 if fancy_minor:
-                    xticks = np.sort(self.xaxis.get_majorticklocs())
-                    yticks = np.sort(self.yaxis.get_majorticklocs())
-                    assert len(xticks) > 0 and len(yticks) > 0
-                    yticks = check_fancy(yticks)
-                    if dividers is None:
-                        dividers = self._get_key("grid.minor.fancy.dividers")
-                    assert len(dividers) > 0
-                    dividers = np.sort(dividers)
-                    if threshold is None:
-                        threshold = self._get_key("grid.minor.fancy.threshold")
-                    thr_x, thr_y = split_threshold(threshold)
-                    len_x, len_y = (len(xticks) - 1, len(yticks) - 1)
-                    d_mat = np.ones((len_x, len_y, 2), dtype=int)
-                    for i in range(len_x):
-                        for k in range(len_y):
-                            x0, x1 = xticks[i : i + 2]
-                            y0, y1 = yticks[k : k + 2]
-                            xm = self.real_interp1d([x0, x1], 2)[1]
-                            ym = self.imag_interp1d([y0, y1], 2)[1]
-                            x_div = y_div = dividers[0]
-                            for div in dividers[1:]:
-                                if (
-                                    abs(self.moebius_z(x1 - (x1 - x0) / div, ym) - self.moebius_z(x1, ym))
-                                    > thr_x
-                                ):
-                                    x_div = div
-                                else:
-                                    break
-                            for div in dividers[1:]:
-                                if (
-                                    abs(self.moebius_z(xm, y1) - self.moebius_z(xm, y1 - (y1 - y0) / div))
-                                    > thr_y
-                                ):
-                                    y_div = div
-                                else:
-                                    break
-                            d_mat[i, k] = [x_div, y_div]
-                    d_mat[:-1, 0, 0] = list(map(np.max, zip(d_mat[:-1, 0, 0], d_mat[1:, 0, 0])))
-                    idx = np.searchsorted(xticks, self.moebius_inv_z(0)) + 1
-                    idy = np.searchsorted(yticks, self.moebius_inv_z(1j).imag)
-                    if idx > idy:
-                        for d in range(idy):
-                            delta = idx - idy + d
-                            d_mat[delta, : d + 1] = d_mat[:delta, d] = d_mat[delta, 0]
-                    else:
-                        for d in range(idx):
-                            delta = idy - idx + d
-                            d_mat[: d + 1, delta] = d_mat[d, :delta] = d_mat[d, 0]
-                    x_lines, y_lines = ([], [])
-                    for i in range(len_x):
-                        x0, x1 = xticks[i : i + 2]
-                        for k in range(len_y):
-                            y0, y1 = yticks[k : k + 2]
-                            x_div, y_div = d_mat[i, k]
-                            for xs in np.linspace(x0, x1, x_div + 1)[1:]:
-                                x_lines.append([xs, y0, y1])
-                                x_lines.append([xs, -y1, -y0])
-                            for ys in np.linspace(y0, y1, y_div + 1)[1:]:
-                                y_lines.append([ys, x0, x1])
-                                y_lines.append([-ys, x0, x1])
-                    x_lines = np.round(np.array(x_lines), 7)
-                    y_lines = np.round(np.array(y_lines), 7)
-                    for tp, lines in [("real", x_lines), ("imag", y_lines)]:
-                        lines = np.array([[ps, min(p0, p1), max(p0, p1)] for ps, p0, p1 in lines])
-                        for tq, (qs, q0, q1), _ in self._majorarcs:
-                            if tp == tq:
-                                overlaps = (
-                                    (abs(lines[:, 0] - qs) < SC_EPSILON)
-                                    & (lines[:, 2] > q0)
-                                    & (lines[:, 1] < q1)
-                                )
-                                lines[overlaps] = np.nan
-                        lines = lines[~np.isnan(lines[:, 0])]
-                        lines = lines[np.lexsort((lines[:, 1], lines[:, 0]))]
-                        ps, p0, p1 = lines[0]
-                        for qs, q0, q1 in lines[1:]:
-                            if ps != qs or not np.isclose(p1, q0, atol=SC_EPSILON):
-                                add_arc(ps, p0, p1, "minor", tp)
-                                ps, p0, p1 = (qs, q0, q1)
-                            else:
-                                p1 = q1
+                    draw_minor_fancy(threshold, dividers)
                 else:
-                    draw_nonfancy("minor")
+                    draw_minor_nonfancy()
 
     def hack_linedraw(self, line, rotate_marker):
         """
@@ -1388,23 +1418,27 @@ class SmithAxes(Axes):
                 """
                 line_vertices = self_line._get_transformed_path().get_fully_transformed_path().vertices
                 vertices = path.vertices
+
                 if len(vertices) == 1:
+                    # line with single point
                     line_set = [[to_marker_style(line.get_marker()), vertices]]
                 else:
+                    end_rot = to_marker_style(end)
                     if rotate_marker:
                         dx, dy = np.array(line_vertices[-1]) - np.array(line_vertices[-2])
-                        end_rot = to_marker_style(end)
                         end_rot._transform += Affine2D().rotate(np.arctan2(dy, dx) - np.pi / 2)
-                    else:
-                        end_rot = to_marker_style(end)
+
                     if len(vertices) == 2:
+                        # line with two points
                         line_set = [[start, vertices[0:1]], [end_rot, vertices[1:2]]]
                     else:
+                        # line with three or more points
                         line_set = [
                             [start, vertices[0:1]],
                             [to_marker_style(line.get_marker()), vertices[1:-1]],
                             [end_rot, vertices[-1:]],
                         ]
+
                 for marker, points in line_set:
                     marker = to_marker_style(marker)
                     transform = marker.get_transform() + Affine2D().scale(self_line.get_markersize())
