@@ -8,9 +8,9 @@ Modules:
     smithaxes: Defines the `SmithAxes` class, which implements the custom Smith chart projection.
 
 Constants:
-    S_PARAMETER: Scattering parameter (S-parameter) type, used for plotting reflection coefficients.
-    Z_PARAMETER: Impedance parameter (Z-parameter) type, used for plotting normalized impedances.
-    Y_PARAMETER: Admittance parameter (Y-parameter) type, used for plotting normalized admittances.
+    S_PARAMETER: Scattering parameter for plotting reflection coefficients.
+    Z_PARAMETER: Impedance parameter for plotting normalized impedances.
+    Y_PARAMETER: Admittance parameter for plotting normalized admittances.
 
 Public API:
     - SmithAxes: The custom projection class for Smith charts.
@@ -22,9 +22,9 @@ Example:
     Import the module and plot a reflection coefficient using the Smith chart projection:
 
     >>> import matplotlib.pyplot as plt
-    >>> from pysmithchart import Z_PARAMETER
+    >>> from pysmithchart import S_PARAMETER
     >>> plt.subplot(1, 1, 1, projection="smith")
-    >>> plt.plot([0.5 + 0.3j, -0.2 - 0.1j], 'o', datatype=Z_PARAMETER)
+    >>> plt.plot([0.5 + 0.3j, -0.2 - 0.1j], 'o', datatype=S_PARAMETER)
     >>> plt.show()
 """
 
