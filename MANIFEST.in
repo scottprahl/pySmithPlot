@@ -3,3 +3,4 @@ include LICENSE.txt
 include Makefile
 include tests/data/s11.csv
 include tests/data/s22.csv
+exclude release.txt
