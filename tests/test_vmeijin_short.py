@@ -50,7 +50,7 @@ def load_complex_data(file_path, step=100):
 
 def test_smith_chart_plot1(setup_environment):
     """Test for plotting data on a Smith chart using various configurations."""
-    s11, s22, chart_dir = setup_environment
+    _, _, chart_dir = setup_environment
 
     # Plot data
     plt.figure(figsize=(6, 6))

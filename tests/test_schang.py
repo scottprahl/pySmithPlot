@@ -62,7 +62,7 @@ def test_plot_points(chart_dir, points):
     plt.subplot(1, 1, 1, projection="smith")
     for point in points:
         plt.plot(point, marker="o", markersize=6, label=f"{point}")  # Plot each point
-    plt.title(f"Plot of Three Points: {point}")
+    plt.title("Plot of Three Points")
     plt.legend()
     plt.savefig(os.path.join(chart_dir, "schang_points.pdf"), format="pdf")
     plt.close()
