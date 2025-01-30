@@ -27,13 +27,36 @@ import numpy as np
 from .constants import SC_EPSILON
 
 
-def cs(z, N=5):
+def calc_gamma(Z_0, Z_L):
+    """Calculate the reflection coefficient from load impedance."""
+    zl = Z_L / Z_0
+    gamma = (zl - 1) / (1 + zl)
+    return gamma
+
+
+def calc_load(Z_0, gamma):
+    """Calculate the load impedance given the reflection coefficient."""
+    Z_L = Z_0 * (gamma + 1) / (1 - gamma)
+    return Z_L
+
+
+def cs_scalar(z, N=5):
     """Convert complex number to string for printing."""
     if z.imag < 0:
         form = "(%% .%df - %%.%dfj)" % (N, N)
     else:
         form = "(%% .%df + %%.%dfj)" % (N, N)
     return form % (z.real, abs(z.imag))
+
+
+def cs(z, N=5):
+    """Convert complex number to string for printing."""
+    if np.isscalar(z):
+        return cs_scalar(z, N)
+    s = ""
+    for zz in z:
+        s += cs_scalar(zz, N) + " "
+    return s
 
 
 def xy_to_z(*xy):
@@ -91,8 +114,54 @@ def xy_to_z(*xy):
 
 
 def z_to_xy(z):
-    """Convert complex to pair of real numbers."""
-    return z.real, z.imag
+    """
+    Converts input data to separate x (real) and y (imaginary) arrays.
+
+    Args:
+        z (array-like or scalar):
+            - If z is a real or complex number, returns its real and imaginary parts.
+            - If z is an array-like object of real or complex numbers, splits it into
+              two arrays: real (x) and imaginary (y).
+            - If z is already in a 2D array with shape (2, N), it assumes it is [x, y].
+
+    Returns:
+        tuple: Two arrays (x, y) representing the real and imaginary parts.
+    """
+    if isinstance(z, Iterable):
+        z = np.array(z)
+
+        # single 1D array
+        if len(z.shape) == 1:
+            if np.iscomplexobj(z):  # Complex numbers
+                x = np.real(z)
+                y = np.imag(z)
+            else:  # Real numbers
+                x = z
+                y = np.zeros_like(z)
+
+        # 2D array assume in the form [real, imag]
+        elif len(z.shape) == 2:  # 2D array
+            if z.shape[0] == 2:  # each row has two elements
+                x = z[0]
+                y = z[1]
+            else:
+                raise ValueError("2D input array must have shape (2, N) for [real, imag].")
+        else:
+            raise ValueError("Input array must be 1D or 2D.")
+    else:  # Scalar input
+        if np.iscomplex(z):  # Complex scalar
+            x = np.real(z)
+            y = np.imag(z)
+        else:  # Real scalar
+            x = np.real(z)
+            y = 0.0
+
+    return x, y
+
+
+# def z_to_xy(z):
+#     """Convert complex to pair of real numbers."""
+#     return z.real, z.imag
 
 
 def moebius_z(*args, norm):
