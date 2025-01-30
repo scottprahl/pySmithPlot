@@ -19,7 +19,7 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 
-from pysmithchart import Z_PARAMETER, S_PARAMETER
+from pysmithchart import S_PARAMETER
 
 
 @pytest.fixture
@@ -51,20 +51,20 @@ def s11_of_parallel_cap_res(freq, z0=50):
 
 
 @pytest.mark.parametrize(
-    "point",
+    "points",
     [
-        200 + 100j,
-        50.0,
-        50 - 10j,
+        [200 + 100j, 50.0, 50 - 10j],
     ],
 )
-def test_plot_point(chart_dir, point):
+def test_plot_points(chart_dir, points):
     """Test plotting a single point on the Smith chart."""
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(point, datatype=Z_PARAMETER)
-    plt.title(f"Plot of a Single Point: {point}")
-    plt.savefig(os.path.join(chart_dir, "schang_point.pdf"), format="pdf")
+    for point in points:
+        plt.plot(point, marker="o", markersize=6, label=f"{point}")  # Plot each point
+    plt.title(f"Plot of Three Points: {point}")
+    plt.legend()
+    plt.savefig(os.path.join(chart_dir, "schang_points.pdf"), format="pdf")
     plt.close()
 
 
@@ -76,7 +76,7 @@ def test_plot_s_param(chart_dir):
     plt.subplot(1, 1, 1, projection="smith")
     plt.plot(s11, markevery=1, datatype=S_PARAMETER)
     plt.title("S-Parameters of a Capacitor")
-    plt.savefig(os.path.join(chart_dir, "schang_s_param.pdf"), format="pdf")
+    plt.savefig(os.path.join(chart_dir, "schang_cap.pdf"), format="pdf")
     plt.close()
 
 
@@ -108,7 +108,7 @@ def test_plot_normalized_axes(chart_dir):
             axes_impedance=impedance,
             axes_normalize=do_normalize_axes,
         )
-        plt.plot(s11)
+        plt.plot(s11, datatype=S_PARAMETER)
         plt.title(f"Impedance: {impedance} Ω — Normalized: {do_normalize_axes}")
 
     plt.suptitle("Normalized vs. Non-Normalized Axes")
@@ -150,7 +150,7 @@ def test_plot_grid_styles(chart_dir):
         )
         major_str = "fancy" if major_fancy else "standard"
         minor_str = "off" if not minor_enable else ("fancy" if minor_fancy else "standard")
-        plt.plot(s11)
+        plt.plot(s11, datatype=S_PARAMETER)
         plt.title(f"Major Grid: {major_str}, Minor Grid: {minor_str}")
 
     plt.suptitle("Grid Style Variations")

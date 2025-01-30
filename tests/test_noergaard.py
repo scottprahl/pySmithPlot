@@ -6,7 +6,7 @@ This file contains unit tests to validate the behavior of the `pysmithchart` lib
 Specifically, it includes tests for plotting elements like VSWR (Voltage Standing
 Wave Ratio) circles on the Smith chart and saving them as PDF files.
 
-This is adapted from https://github.com/soerenbnoergaard/pySmithPlot
+This is heavily modified from https://github.com/soerenbnoergaard/pySmithPlot
 """
 
 import os
@@ -14,7 +14,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytest
 
-from pysmithchart import Z_PARAMETER
+from pysmithchart import S_PARAMETER, Y_PARAMETER
+from pysmithchart.utils import calc_gamma, calc_load
 
 
 @pytest.fixture
@@ -34,22 +35,101 @@ def chart_dir(tmpdir):
     return local_chart_dir
 
 
-def test_vswr_circle(chart_dir):
+def test_vswr_circle_z(chart_dir):
     """Test plotting a VSWR circle on the Smith chart."""
     # Create VSWR circle
-    G = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 100))
-    ZL = -(G + 1) / (G - 1)
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+    ZL = -(Gamma + 1) / (Gamma - 1)
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
 
-    plt.plot(ZL, "k", datatype=Z_PARAMETER, label="VSWR Circle")
-    plt.plot(1 + 0j, "b", datatype=Z_PARAMETER, marker="o", label="$1+0j$")
-    plt.plot(1 + 1j, "r", datatype=Z_PARAMETER, marker="o", label="$1+1j$")
-    plt.plot(0.5 - 0.5j, "g", datatype=Z_PARAMETER, marker="o", label="$0.5-0.5j$")
+    plt.plot(ZL, "k", label="VSWR Circle")
+    plt.plot(1 + 0j, "b", marker="o", label="$1+0j$")
+    plt.plot(1 + 1j, "r", marker="o", label="$1+1j$")
+    plt.plot(0.5 - 0.5j, "g", marker="o", label="$0.5-0.5j$")
 
+    plt.title("Plotting using Z-Parameters")
     plt.legend()
-    plt.tight_layout()
-    output_path = os.path.join(chart_dir, "vswr_circle.pdf")
+    output_path = os.path.join(chart_dir, "vswr_circle_z.pdf")
+    plt.savefig(output_path, format="pdf")
+    plt.close()
+
+
+def test_vswr_circle_s(chart_dir):
+    """Test plotting a VSWR circle on the Smith chart."""
+    Z0 = 50
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1, projection="smith")
+
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+    plt.plot(Gamma, "k", datatype=S_PARAMETER, label="VSWR Circle")
+
+    ZL = Z0 * (1 + 0j)
+    Gamma = calc_gamma(Z0, ZL)
+    plt.plot(Gamma, "b", datatype=S_PARAMETER, marker="o", label="$1+0j$")
+
+    ZL = Z0 * (0.5 - 0.5j)
+    Gamma = calc_gamma(Z0, ZL)
+    plt.plot(Gamma, "g", datatype=S_PARAMETER, marker="o", label="$0.5-0.5j$")
+
+    ZL = Z0 * (1 + 1j)
+    Gamma = calc_gamma(Z0, ZL)
+    plt.plot(Gamma, "r", datatype=S_PARAMETER, marker="o", label="$1+1j$")
+
+    plt.title("Plotting using S-Parameters")
+    plt.legend()
+    output_path = os.path.join(chart_dir, "vswr_circle_s.pdf")
+    plt.savefig(output_path, format="pdf")
+    plt.close()
+
+
+def test_vswr_circle_y(chart_dir):
+    """Test plotting VSWR circle using normalized admittances."""
+    Z0 = 1
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1, projection="smith")
+
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+    ZL = calc_load(Z0, Gamma)  # normalized impedance
+    YL = 1 / ZL
+    plt.plot(YL, "k", datatype=Y_PARAMETER, label="VSWR Circle")
+
+    ZL = 1 + 0j
+    YL = 1 / ZL
+    plt.plot(YL, "b", datatype=Y_PARAMETER, marker="o", label="$1+0j$")
+
+    ZL = 0.5 - 0.5j
+    YL = 1 / ZL
+    plt.plot(YL, "g", datatype=Y_PARAMETER, marker="o", label="$0.5-0.5j$")
+
+    ZL = 1 + 1j
+    YL = 1 / ZL
+    plt.plot(YL, "r", datatype=Y_PARAMETER, marker="o", label="$1+1j$")
+
+    plt.title("Plotting using Y-Parameters")
+    plt.legend()
+    output_path = os.path.join(chart_dir, "vswr_circle_y.pdf")
+    plt.savefig(output_path, format="pdf")
+    plt.close()
+
+
+def test_vswr_circle_mixed(chart_dir):
+    """Test plotting a VSWR circle on the Smith chart."""
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
+
+    plt.plot(Gamma, "k", datatype=S_PARAMETER, label="VSWR Circle")
+    plt.plot(1 + 0j, "b", marker="o", label="$1+0j$")
+    plt.plot(1 + 1j, "r", marker="o", label="$1+1j$")
+    plt.plot(1 / (0.5 - 0.5j), "g", datatype=Y_PARAMETER, marker="o", label="$0.5-0.5j$")
+
+    plt.title("Plotting using Mixed-Parameters")
+    plt.legend()
+    output_path = os.path.join(chart_dir, "vswr_circle_mixed.pdf")
     plt.savefig(output_path, format="pdf")
     plt.close()

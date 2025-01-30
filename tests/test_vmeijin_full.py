@@ -111,14 +111,14 @@ def test_grid_styles(setup_environment):
                         i,
                         projection="smith",
                         grid_major_fancy=major_fancy,
-                        grid_minor_enable=minor,
+                        grid_minor_enable=minor or minor_fancy,
                         grid_minor_fancy=minor_fancy,
                     )
                     major_str = "fancy" if major_fancy else "standard"
                     minor_str = "off" if not minor else "fancy" if minor_fancy else "standard"
                     plot_example(f"Major: {major_str} - Minor: {minor_str}", sp_data, z_data)
 
-    save_figure(chart_dir, "grid_styles")
+    save_figure(chart_dir, "full_grid_styles")
 
 
 def test_fancy_grids(setup_environment):
@@ -147,7 +147,7 @@ def test_fancy_grids(setup_environment):
         )
         plot_example(f"Minor Threshold={threshold}", sp_data, z_data)
 
-    save_figure(chart_dir, "fancy_grids")
+    save_figure(chart_dir, "full_fancy_grids")
 
 
 def test_grid_locators(setup_environment):
@@ -168,7 +168,7 @@ def test_grid_locators(setup_environment):
         plt.subplot(2, 4, i, projection="smith", grid_major_ymaxn=num)
         plot_example(f"Max imaginary steps: {num}", sp_data, z_data)
 
-    save_figure(chart_dir, "grid_locators")
+    save_figure(chart_dir, "full_grid_locators")
 
 
 def test_normalize(setup_environment):
@@ -192,7 +192,7 @@ def test_normalize(setup_environment):
             )
             plot_example(f"Impedance: {impedance} Ω — Normalize: {normalize}", sp_data, z_data)
 
-    save_figure(chart_dir, "normalize")
+    save_figure(chart_dir, "full_normalize")
 
 
 def test_markers(setup_environment):
@@ -239,7 +239,7 @@ def test_markers(setup_environment):
         s += f"EndMarker: {endmarker} - Rotate: {rotate_marker}"
         plot_example(s, sp_data=np.array([50]), z_data=np.array([25]), markersize=10)
 
-    save_figure(chart_dir, "markers")
+    save_figure(chart_dir, "full_markers")
 
 
 def test_interpolation(setup_environment):
@@ -266,7 +266,7 @@ def test_interpolation(setup_environment):
             equipoints=equipoints,
         )
 
-    save_figure(chart_dir, "interpolation")
+    save_figure(chart_dir, "full_interpolation")
 
 
 def test_miscellaneous(setup_environment):
@@ -292,4 +292,4 @@ def test_miscellaneous(setup_environment):
     )
     plot_example(f"Minor fancy dividers={divs}", sp_data, z_data)
 
-    save_figure(chart_dir, "miscellaneous")
+    save_figure(chart_dir, "full_miscellaneous")
