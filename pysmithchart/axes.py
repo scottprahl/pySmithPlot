@@ -530,7 +530,7 @@ class SmithAxes(Axes):
         self.yaxis.set_ticks_position("none")
         Axes.set_xlim(self, 0, self._ax_lim_x)
         Axes.set_ylim(self, -self._ax_lim_y, self._ax_lim_y)
-        for label in self.get_xticklabels():
+        for label in self.get_xticklabels():  # pylint: disable=not-callable
             label.set_verticalalignment("center")
             label.set_horizontalalignment("center")
             label.set_rotation_mode("anchor")
@@ -657,7 +657,7 @@ class SmithAxes(Axes):
         """
         if len(args) == 0 or args[0] != "linear":
             raise NotImplementedError("Only 'linear' scale is supported for the x-axis.")
-        Axes.set_xscale(self, *args, **kwargs)
+        Axes.set_xscale(self, *args, **kwargs)  # pylint: disable=not-callable
 
     def set_yscale(self, *args, **kwargs):
         """
@@ -669,7 +669,7 @@ class SmithAxes(Axes):
         """
         if len(args) == 0 or args[0] != "linear":
             raise NotImplementedError("Only 'linear' scale is supported for the y-axis.")
-        Axes.set_yscale(self, *args, **kwargs)
+        Axes.set_yscale(self, *args, **kwargs)  # pylint: disable=not-callable
 
     def set_xlim(self, *args, **kwargs):
         """
@@ -678,6 +678,7 @@ class SmithAxes(Axes):
         The x-axis limits for the Smith chart are fixed to `(0, infinity)` and cannot
         be modified. Any arguments passed to this method are ignored.
         """
+        _ = (args, kwargs)  # Suppress "unused argument" warning
         Axes.set_xlim(self, 0, self._ax_lim_x)
 
     def set_ylim(self, *args, **kwargs):
@@ -687,6 +688,7 @@ class SmithAxes(Axes):
         The y-axis limits for the Smith chart are fixed to `(-infinity, infinity)` and cannot
         be modified. Any arguments passed to this method are ignored.
         """
+        _ = (args, kwargs)  # Suppress "unused argument" warning
         Axes.set_ylim(self, -self._ax_lim_y, self._ax_lim_y)
 
     def format_coord(self, x, y):
@@ -1017,7 +1019,7 @@ class SmithAxes(Axes):
             if interpolate or equipoints:
                 z = self.moebius_z(*line.get_data())
                 if len(z) > 1:
-                    spline, t0 = splprep(utils.z_to_xy(z), s=0)
+                    spline, t0 = splprep(utils.z_to_xy(z), s=0)  # pylint: disable=unbalanced-tuple-unpacking
                     ilen = (interpolate + 1) * (len(t0) - 1) + 1
                     if equipoints == 1:
                         t = np.linspace(0, 1, ilen)
@@ -1314,8 +1316,6 @@ class SmithAxes(Axes):
             fancy_minor = self._get_key("grid.minor.fancy")
         else:
             fancy_major = fancy_minor = axis
-            fancy_major = axis._get_key("grid.major.fancy")
-            fancy_minor = axis._get_key("grid.minor.fancy")
 
         if "axis" in kwargs and kwargs["axis"] != "both":
             raise ValueError("Only 'both' is a supported value for 'axis'")
@@ -1416,7 +1416,9 @@ class SmithAxes(Axes):
                     trans: Transformation for the path.
                     rgbFace: Fill color for the marker.
                 """
+                # pylint: disable=protected-access
                 line_vertices = self_line._get_transformed_path().get_fully_transformed_path().vertices
+                # pylint: enable=protected-access
                 vertices = path.vertices
 
                 if len(vertices) == 1:
@@ -1494,10 +1496,10 @@ class SmithAxes(Axes):
         if arc_type == "real":
             assert ps >= 0
             line = Line2D(2 * [ps], [p0, p1], **kwargs)
-            line.get_path()._interpolation_steps = "x_gridline"
+            line.get_path()._interpolation_steps = "x_gridline" # pylint: disable=protected-access
         else:
             assert 0 <= p0 < p1
             line = Line2D([p0, p1], 2 * [ps], **kwargs)
             if abs(ps) > SC_EPSILON:
-                line.get_path()._interpolation_steps = "y_gridline"
+                line.get_path()._interpolation_steps = "y_gridline"  # pylint: disable=protected-access
         return self.add_artist(line)

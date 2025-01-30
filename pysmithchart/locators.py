@@ -175,6 +175,13 @@ class SmithAutoMinorLocator(AutoMinorLocator):
         super().__init__(n=n)
         self._ticks = None
 
+    def tick_values(self, vmin, vmax):
+        """
+        Call parent to find tick values.
+
+        This doesn't get used.
+        """
+
     def __call__(self):
         """Compute and return minor tick positions."""
         locs = self.axis.get_majorticklocs()

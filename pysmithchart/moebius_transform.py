@@ -81,7 +81,7 @@ class MoebiusTransform(BaseMoebiusTransform):
         """
         vertices = path.vertices
         codes = path.codes
-        linetype = path._interpolation_steps
+        linetype = path._interpolation_steps  # pylint: disable=protected-access
         if linetype in ["x_gridline", "y_gridline"]:
             assert len(vertices) == 2
             x, y = np.array(list(zip(*vertices)))
@@ -91,10 +91,10 @@ class MoebiusTransform(BaseMoebiusTransform):
                 zm = 0.5 * (1 + self.axes.moebius_z(x[0]))
             else:
                 assert y[0] == y[1]
-                if self.axes._normalize:
+                if self.axes._normalize:  # pylint: disable=protected-access
                     scale = 1j
                 else:
-                    scale = 1j * self.axes._get_key("axes.impedance")
+                    scale = 1j * self.axes._get_key("axes.impedance")  # pylint: disable=protected-access
                 zm = 1 + scale / y[0]
             d = 2 * abs(zm - 1)
             ang0, ang1 = np.angle(z - zm, deg=True) % 360
@@ -109,7 +109,7 @@ class MoebiusTransform(BaseMoebiusTransform):
                 theta2=ang1,
                 transform=self.axes.transMoebius,
             )
-            arc._path = Path.arc(ang0, ang1)
+            arc._path = Path.arc(ang0, ang1)  # pylint: disable=protected-access
             arc_path = arc.get_patch_transform().transform_path(arc.get_path())
             if reverse:
                 new_vertices = arc_path.vertices[::-1]
