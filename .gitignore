@@ -1,4 +1,4 @@
-charts/*
+charts/
 .DS_Store
 tests/.DS_Store
 
@@ -7,5 +7,10 @@ docs/_build/
 
 # IPython Notebook
 .ipynb_checkpoints
+
+pysmithchart/__pycache__/
+tests/__pycache__/
+tests/charts/
+todo.txt
 
 
