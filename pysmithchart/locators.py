@@ -150,8 +150,7 @@ class SmithAutoMinorLocator(AutoMinorLocator):
     Automatic minor tick locator for Smith chart axes.
 
     This locator generates evenly spaced minor ticks between major tick values,
-    specifically for use with `SmithAxes`. The number of minor ticks between
-    major ticks can be customized.
+    specifically for use with `SmithAxes`.
 
     Attributes:
         ndivs (int): The number of intermediate ticks between major tick intervals.
@@ -176,34 +175,18 @@ class SmithAutoMinorLocator(AutoMinorLocator):
         super().__init__(n=n)
         self._ticks = None
 
-    def tick_values(self, vmin, vmax):
-        """
-        Calculate minor tick positions within the range [vmin, vmax].
-
-        This method overrides `tick_values` from `AutoMinorLocator` to compute minor
-        ticks by interpolating between major tick values.
-
-        Args:
-            vmin (float): The minimum data value.
-            vmax (float): The maximum data value.
-
-        Returns:
-            numpy.ndarray: Array of minor tick positions between vmin and vmax.
-        """
-        major_ticks = self.axis.get_majorticklocs()
-        minor_ticks = []
-        for p0, p1 in zip(major_ticks[:-1], major_ticks[1:]):
-            minor_ticks.extend(np.linspace(p0, p1, self.ndivs + 1)[1:-1])
-        return np.array([tick for tick in minor_ticks if vmin <= tick <= vmax])
-
     def __call__(self):
-        """
-        Compute or return cached minor tick values.
+        """Compute and return minor tick positions."""
+        locs = self.axis.get_majorticklocs()
 
-        Returns:
-            numpy.ndarray: Array of minor tick positions.
-        """
-        if self._ticks is None:
-            vmin, vmax = self.axis.get_view_interval()
-            self._ticks = self.tick_values(vmin, vmax)
+        if self._ticks is not None:
+            return self._ticks
+
+        self._ticks = np.hstack(
+            [np.linspace(p0, p1, self.ndivs + 1)[1:-1] for p0, p1 in zip(locs[:-1], locs[1:])]
+        )
+        return self._ticks  # Ensures Matplotlib receives the computed ticks
+
+    def get_ticklocs(self):
+        """Return the computed minor tick locations without filtering."""
         return self._ticks
