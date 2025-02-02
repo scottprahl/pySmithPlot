@@ -580,8 +580,31 @@ class SmithAxes(Axes):
                     fontsize,
                     trans,
                 )
+                try:
+                    n_points = len(orig_handle.get_xdata())
+                except Exception:
+                    n_points = legend.numpoints
+
+                proxy_line = legline[0]
+                # Grab the proxy data arrays.
+                proxy_xdata = list(proxy_line.get_xdata())
+                proxy_ydata = list(proxy_line.get_ydata())
+
+                # Adjust the proxy so that its number of points reflects the
+                # actual number of points in the original line.
+                if n_points == 1 and len(proxy_xdata) > 1:
+                    # If only one point was drawn, pass an array of length 1.
+                    proxy_line.set_xdata(proxy_xdata[:1])
+                    proxy_line.set_ydata(proxy_ydata[:1])
+                elif n_points == 2 and len(proxy_xdata) > 2:
+                    # If two points were drawn, pass an array of length 2.
+                    proxy_line.set_xdata(proxy_xdata[:2])
+                    proxy_line.set_ydata(proxy_ydata[:2])
+
+                # Apply the hacked line drawing if needed.
                 if hasattr(orig_handle, "markers_hacked"):
-                    this_axes.hack_linedraw(legline[0], True)
+                    legend.axes.hack_linedraw(proxy_line, rotate_marker=True)
+
                 return legline
 
         handles, labels = self.get_legend_handles_labels()
