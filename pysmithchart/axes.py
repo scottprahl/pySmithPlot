@@ -1,10 +1,11 @@
-"""This module contains the implementation for smith axes."""
+"""This module contains the implementation for the SmithAxes class."""
 
-from collections.abc import Iterable
 import copy
+from collections.abc import Iterable
 from numbers import Number
 from types import MethodType
 
+import numpy as np
 import matplotlib as mp
 from matplotlib.axes import Axes
 from matplotlib.cbook import simple_linear_interpolation as linear_interpolation
@@ -16,313 +17,37 @@ from matplotlib.path import Path
 from matplotlib.spines import Spine
 from matplotlib.transforms import Affine2D, BboxTransformTo
 from scipy.interpolate import splprep, splev
-import numpy as np
 
-from pysmithchart import utils, Z_PARAMETER, Y_PARAMETER, S_PARAMETER
-
-from .constants import *
-from .formatters import RealFormatter, ImagFormatter
-from .locators import RealMaxNLocator, ImagMaxNLocator, SmithAutoMinorLocator
-from .moebius_transform import MoebiusTransform
-from .polar_transform import PolarTranslate
+from pysmithchart import Z_PARAMETER, Y_PARAMETER, S_PARAMETER
+from pysmithchart import utils
+from pysmithchart.constants import SC_DEFAULT_PARAMS, RC_DEFAULT_PARAMS
+from pysmithchart.constants import SC_EPSILON, SC_INFINITY, SC_NEAR_INFINITY, SC_TWICE_INFINITY
+from pysmithchart.formatters import RealFormatter, ImagFormatter
+from pysmithchart.locators import RealMaxNLocator, ImagMaxNLocator, SmithAutoMinorLocator
+from pysmithchart.moebius_transform import MoebiusTransform
+from pysmithchart.polar_transform import PolarTranslate
 
 
 class SmithAxes(Axes):
     """
-    An implementation of :class:`matplotlib.axes.Axes` for Smith charts.
+    A subclass of :class:`matplotlib.axes.Axes` specialized for rendering Smith Charts.
 
-    The :class:`SmithAxes` provides an implementation of :class:`matplotlib.axes.Axes`
-    for drawing a full automatic Smith Chart it also provides own implementations for
+    This class implements a fully automatic Smith Chart with support for impedance
+    normalization, custom grid configurations, and flexible marker handling. Default
+    parameters (e.g., grid settings, marker styles, and plot defaults) are defined in
+    :mod:`pysmithchart.constants`.
 
-    Note: Parameter changes are not always immediate (e.g. changes to the
-    grid). It is not recommended to modify parameter after adding anything to
-    the plot. For a reset call :meth:`clear`.
-
-    Example:
-            update_scParams({grid.major: True})
-            update_scParams(grid_major=True)
-
-        Valid parameters with default values and description:
-
-        plot.zorder: 5
-            Zorder of plotted lines.
-            Accepts: integer
-
-        plot.marker.hack: True
-            Enables the replacement of start and endmarkers.
-            Accepts: boolean
-            Note: Uses ugly code injection and may causes unexpected behavior.
-
-        plot.marker.rotate: True
-            Rotates the endmarker in the direction of its line.
-            Accepts: boolean
-            Note: needs plot.marker.hack=True
-
-        plot.marker.start: 's',
-            Marker for the first point of a line, if it has more than 1 point.
-            Accepts: None or see matplotlib.markers.MarkerStyle()
-            Note: needs plot.marker.hack=True
-
-        plot.marker.default: 'o'
-            Marker used for linepoints.
-            Accepts: None or see matplotlib.markers.MarkerStyle()
-
-        plot.marker.end: '^',
-            Marker for the last point of a line, if it has more than 1 point.
-            Accepts: None or see matplotlib.markers.MarkerStyle()
-            Note: needs plot.marker.hack=True
-
-        plot.default.interpolation: 5
-            Default number of interpolated steps between two points of a
-            line, if interpolation is used.
-            Accepts: integer
-
-        plot.default.datatype: S_PARAMETER
-            Default datatype for plots.
-            Accepts: SmithAxes.[S_PARAMETER,Z_PARAMETER,Y_PARAMETER]
-
-        grid.zorder : 1
-            Zorder of the gridlines.
-            Accepts: integer
-            Note: may not work as expected
-
-        grid.locator.precision: 2
-            Sets the number of significant decimals per decade for the
-            Real and Imag MaxNLocators. Example with precision 2:
-                1.12 -> 1.1, 22.5 -> 22, 135 -> 130, ...
-            Accepts: integer
-            Note: value is an orientation, several exceptions are implemented
-
-        grid.major.enable: True
-            Enables the major grid.
-            Accepts: boolean
-
-        grid.major.linestyle: 'solid'
-            Major gridline style.
-            Accepts: see matplotlib.patches.Patch.set_linestyle()
-
-        grid.major.linewidth: 1
-            Major gridline width.
-            Accepts: float
-
-        grid.major.color: '0.2'
-            Major gridline color.
-            Accepts: matplotlib color
-            Note: changes both real x and imag y major grid lines.
-
-        grid.major.color.x: '0.2'
-            Major real gridline color
-            Accepts: matplotlib color
-            Note: Major real valued grid lines.
-
-        grid.major.color.y: '0.2'
-            Major imag gridline color
-            Accepts: matplotlib color
-            Note: Major imaginary valued grid lines.
-
-        grid.major.xmaxn: 10
-            Maximum number of spacing steps for the real axis.
-            Accepts: integer
-
-        grid.major.ymaxn: 16
-            Maximum number of spacing steps for the imaginary axis.
-            Accepts: integer
-
-        grid.major.fancy: True
-            Draws a fancy major grid instead of the standard one.
-            Accepts: boolean
-
-        grid.major.fancy.threshold: (100, 50)
-            Minimum distance times 1000 between two gridlines relative to
-            total plot size 2x2. Either tuple for individual real and
-            imaginary distances or single value for both.
-            Accepts: (float, float) or float
-
-        grid.minor.enable: False
-            Enables the minor grid.
-            Accepts: boolean
-
-        grid.minor.capstyle: 'round'
-            Minor dashes capstyle
-            Accepts: 'round', 'butt', 'miter', 'projecting'
-
-        grid.minor.dashes: (0.2, 2)
-            Minor gridline dash style.
-            Accepts: tuple
-
-        grid.minor.linewidth: 0.75
-            Minor gridline width.
-            Accepts: float
-
-        grid.minor.color: 0.4
-            Minor gridline color.
-            Accepts: matplotlib color
-
-        grid.minor.color.x: '0.2'
-            Minor real gridline color
-            Accepts: matplotlib color
-
-        grid.minor.color.y: '0.2'
-            Minor imag gridline color
-            Accepts: matplotlib color
-
-        grid.minor.xauto: 4
-            Maximum number of spacing steps for the real axis.
-            Accepts: integer
-
-        grid.minor.yauto: 4
-            Maximum number of spacing steps for the imaginary axis.
-            Accepts: integer
-
-        grid.minor.fancy: True
-            Draws a fancy minor grid instead the standard one.
-            Accepts: boolean
-
-        grid.minor.fancy.dividers: [1, 2, 3, 5, 10, 20]
-            Divisions for the fancy minor grid, which are selected by
-            comparing the distance of gridlines with the threshold value.
-            Accepts: list of integers
-
-        grid.minor.fancy.threshold: 25
-            Minimum distance for using the next bigger divider. Value times
-            1000 relative to total plot size 2.
-            Accepts: float
-
-        axes.xlabel.rotation: 90
-           Rotation of the real axis labels in degree.
-           Accepts: float
-
-        axes.xlabel.fancybox: {"boxstyle": "round4,pad=0.3,rounding_size=0.2",
-                                           "facecolor": 'w',
-                                           "edgecolor": "w",
-                                           "mutation_aspect": 0.75,
-                                           "alpha": 1},
-            FancyBboxPatch parameters for the x-label background box.
-            Accepts: dictionary with rectprops
-
-        axes.ylabel.correction: (-1, 0, 0)
-            Correction in x, y, and radial direction for the labels of the imaginary axis.
-            Usually needs to be adapted when fontsize changes 'font.size'.
-            Accepts: (float, float, float)
-
-        axes.radius: 0.44
-            Radius of the plotting area. Usually needs to be adapted to
-            the size of the figure.
-            Accepts: float
-
-        axes.impedance: 50
-            Defines the reference impedance for normalisation.
-            Accepts: float
-
-        axes.normalize: True
-            If True, the Smith Chart is normalized to the reference impedance.
-            Accepts: boolean
-
-        axes.normalize.label: True
-            If 'axes.normalize' is True, a label like 'Z_0: 50 Ω' is created
-            Accepts: boolean
-
-        axes.normalize.label.position: -1-1j
-            Position of normalization label, default is lower left corner
-            Accepts: complex number (-1-1j is bottom left, 1+1j it top right)
-
-        symbol.infinity: "∞ "
-            Symbol string for infinity.
-            Accepts: string
-
-            Note: Without the trailing space the label might get cut off.
-
-        symbol.infinity.correction: 8
-            Correction of size for the infinity symbol, because normal symbol
-            seems smaller than other letters.
-            Accepts: float
-
-        symbol.ohm "Ω"
-            Symbol string for the resistance unit (usually a large Omega).
-            Accepts: string
-
-    Note: The keywords are processed after the dictionary and override
-    possible double entries.
+    Note:
+        Parameter changes (such as grid updates) may not take effect immediately.
+        To reset the chart, use the :meth:`clear` method.
     """
 
     name = "smith"
 
-    _rcDefaultParams = {
-        "axes.axisbelow": True,
-        "font.size": 12,
-        "legend.fontsize": 12,
-        "legend.fancybox": False,
-        "legend.markerscale": 1,
-        "legend.numpoints": 1,
-        "legend.shadow": False,
-        "lines.linestyle": "-",
-        "lines.linewidth": 2,
-        "lines.markeredgewidth": 1,
-        "lines.markersize": 7,
-        "xtick.labelsize": 12,
-        "xtick.major.pad": 0,
-        "ytick.labelsize": 12,
-        "ytick.major.pad": 4,
-    }
-
-    scDefaultParams = {
-        "axes.xlabel.rotation": 90,
-        "axes.xlabel.fancybox": {
-            "boxstyle": "round,pad=0.2,rounding_size=0.2",
-            "facecolor": "w",
-            "edgecolor": "w",
-            "mutation_aspect": 0.75,
-            "alpha": 1,
-        },
-        "axes.impedance": 50,
-        "axes.radius": 0.43,
-        "axes.normalize.label.position": -1 - 1j,
-        "axes.normalize": True,
-        "axes.normalize.label": True,
-        "axes.ylabel.correction": (-1.5, 0, 0),
-        "grid.zorder": 1,
-        "grid.locator.precision": 2,
-        "grid.major.color": "0.2",
-        "grid.major.color.x": "0.2",
-        "grid.major.color.y": "0.2",
-        "grid.major.enable": True,
-        "grid.major.fancy": True,
-        "grid.major.fancy.threshold": (100, 50),
-        "grid.major.linestyle": "-",
-        "grid.major.linewidth": 1,
-        "grid.major.xmaxn": 10,
-        "grid.major.ymaxn": 16,
-        "grid.minor.enable": False,
-        "grid.minor.linestyle": ":",
-        "grid.minor.capstyle": "round",
-        "grid.minor.dashes": [0.2, 2],
-        "grid.minor.linewidth": 0.75,
-        "grid.minor.color": "0.4",
-        "grid.minor.color.x": "0.4",
-        "grid.minor.color.y": "0.4",
-        "grid.minor.xauto": 4,
-        "grid.minor.yauto": 4,
-        "grid.minor.fancy": True,
-        "grid.minor.fancy.dividers": [1, 2, 3, 5, 10, 20],
-        "grid.minor.fancy.threshold": 35,
-        "init.updaterc": True,
-        "plot.marker.default": "o",
-        "plot.marker.end": "^",
-        "plot.marker.hack": False,
-        "plot.marker.rotate": True,
-        "plot.marker.start": "s",
-        "plot.default.datatype": Z_PARAMETER,
-        "plot.default.interpolation": 5,
-        "plot.zorder": 4,
-        "symbol.infinity": "∞ ",
-        "symbol.infinity.correction": 8,
-        "symbol.ohm": "Ω",
-    }
-
     @classmethod
     def get_rc_params(cls):
         """Gets the default values for matplotlib parameters."""
-        return cls._rcDefaultParams.copy()
+        return RC_DEFAULT_PARAMS.copy()
 
     def update_scParams(self, sc_dict=None, reset=False, **kwargs):
         """
@@ -337,7 +62,8 @@ class SmithAxes(Axes):
             KeyError: If an invalid parameter key is provided (unless `filter_dict` is True).
         """
         if reset:
-            self.scParams = copy.deepcopy(SmithAxes.scDefaultParams)
+            self.scParams = copy.deepcopy(SC_DEFAULT_PARAMS)
+
         if sc_dict is not None:
             for key, value in sc_dict.items():
                 if key in self.scParams:
@@ -431,15 +157,15 @@ class SmithAxes(Axes):
         self._impedance = None
         self._normalize = None
         self._current_zorder = None
-        self.scParams = copy.deepcopy(SmithAxes.scDefaultParams)
+        self.scParams = copy.deepcopy(SC_DEFAULT_PARAMS)
         axes_kwargs = {}
         for key in kwargs.copy():
             key_dot = key.replace("_", ".")
-            if not (key_dot in self.scParams or key_dot in self._rcDefaultParams):
+            if not (key_dot in self.scParams or key_dot in RC_DEFAULT_PARAMS):
                 axes_kwargs[key] = kwargs.pop(key_dot)
         self.update_scParams(**kwargs)
         if self._get_key("init.updaterc"):
-            for key, value in self._rcDefaultParams.items():
+            for key, value in RC_DEFAULT_PARAMS.items():
                 if mp.rcParams[key] == mp.rcParamsDefault[key]:
                     mp.rcParams[key] = value
         Axes.__init__(self, *args, **axes_kwargs)
@@ -578,9 +304,7 @@ class SmithAxes(Axes):
         self.transAxes = BboxTransformTo(self.bbox)
         self.transMoebius = self.transAffine + self.transAxes
         self.transData = self.transProjection + self.transMoebius
-        self._xaxis_pretransform = (
-            Affine2D().scale(1, 2 * SC_TWICE_INFINITY).translate(0, -SC_TWICE_INFINITY)
-        )
+        self._xaxis_pretransform = Affine2D().scale(1, 2 * SC_TWICE_INFINITY).translate(0, -SC_TWICE_INFINITY)
         self._xaxis_transform = self._xaxis_pretransform + self.transData
         self._xaxis_text1_transform = Affine2D().scale(1.0, 0.0) + self.transData
         self._yaxis_stretch = Affine2D().scale(SC_TWICE_INFINITY, 1.0)
@@ -797,43 +521,55 @@ class SmithAxes(Axes):
         i_angs = linear_interpolation(angs, steps)
         return np.imag(self.moebius_inv_z(utils.ang_to_c(i_angs)))
 
-        def legend(self, *args, **kwargs):
+    def legend(self, *args, **kwargs):
+        """
+        Create and display a legend for the Smith chart, filtering duplicate entries.
+
+        This method customizes the legend behavior to ensure unique entries are displayed
+        and applies a specialized handler for lines with custom markers. It also filters out
+        duplicate legend labels, keeping only the first occurrence.
+
+        Args:
+            *args:
+                Positional arguments passed directly to `matplotlib.axes.Axes.legend`.
+            **kwargs:
+                Keyword arguments for configuring the legend. Includes all standard arguments
+                supported by `matplotlib.axes.Axes.legend`, such as:
+                    - loc: Location of the legend (e.g., 'upper right', 'lower left').
+                    - fontsize: Font size for the legend text.
+                    - ncol: Number of columns in the legend.
+                    - title: Title for the legend.
+                See the Matplotlib documentation for more details.
+
+        Returns:
+            matplotlib.legend.Legend:
+                The legend instance created for the Smith chart.
+        """
+        this_axes = self
+
+        class SmithHandlerLine2D(HandlerLine2D):
             """
-            Create and display a legend for the Smith chart, filtering duplicate entries.
-    
-            This method customizes the legend behavior to ensure unique entries are displayed
-            and applies a specialized handler for lines with custom markers. It also filters out
-            duplicate legend labels, keeping only the first occurrence.
-    
-            Args:
-                *args:
-                    Positional arguments passed directly to `matplotlib.axes.Axes.legend`.
-                **kwargs:
-                    Keyword arguments for configuring the legend. Includes all standard arguments
-                    supported by `matplotlib.axes.Axes.legend`, such as:
-                        - loc: Location of the legend (e.g., 'upper right', 'lower left').
-                        - fontsize: Font size for the legend text.
-                        - ncol: Number of columns in the legend.
-                        - title: Title for the legend.
-                    See the Matplotlib documentation for more details.
-    
-            Returns:
-                matplotlib.legend.Legend:
-                    The legend instance created for the Smith chart.
+            Custom legend handler for `Line2D` objects in Smith charts.
+
+            This class extends `matplotlib.legend_handler.HandlerLine2D` to provide
+            customized rendering of legend entries for `Line2D` objects, especially
+            those with marker modifications in Smith charts. It ensures that custom
+            markers, such as start and end markers, are rendered correctly in the legend.
             """
-            this_axes = self
-    
-            class SmithHandlerLine2D(HandlerLine2D):
-                """
-                Custom legend handler for `Line2D` objects in Smith charts.
-    
-                This class extends `matplotlib.legend_handler.HandlerLine2D` to provide
-                customized rendering of legend entries for `Line2D` objects, especially
-                those with marker modifications in Smith charts. It ensures that custom
-                markers, such as start and end markers, are rendered correctly in the legend.
-                """
-    
-                def create_artists(
+
+            def create_artists(
+                self,
+                legend,
+                orig_handle,
+                xdescent,
+                ydescent,
+                width,
+                height,
+                fontsize,
+                trans,
+            ):
+                """Creates the legend artist applying custom markers."""
+                legline = HandlerLine2D.create_artists(
                     self,
                     legend,
                     orig_handle,
@@ -843,39 +579,27 @@ class SmithAxes(Axes):
                     height,
                     fontsize,
                     trans,
-                ):
-                    """Creates the legend artist applying custom markers."""
-                    legline = HandlerLine2D.create_artists(
-                        self,
-                        legend,
-                        orig_handle,
-                        xdescent,
-                        ydescent,
-                        width,
-                        height,
-                        fontsize,
-                        trans,
-                    )
-                    if hasattr(orig_handle, "markers_hacked"):
-                        this_axes.hack_linedraw(legline[0], True)
-                    return legline
-    
-            handles, labels = self.get_legend_handles_labels()
-            seen_labels = set()
-            unique_handles = []
-            unique_labels = []
-            for handle, label in zip(handles, labels):
-                if label not in seen_labels:
-                    seen_labels.add(label)
-                    unique_handles.append(handle)
-                    unique_labels.append(label)
-            return Axes.legend(
-                self,
-                unique_handles,
-                unique_labels,
-                handler_map={Line2D: SmithHandlerLine2D()},
-                **kwargs,
-            )
+                )
+                if hasattr(orig_handle, "markers_hacked"):
+                    this_axes.hack_linedraw(legline[0], True)
+                return legline
+
+        handles, labels = self.get_legend_handles_labels()
+        seen_labels = set()
+        unique_handles = []
+        unique_labels = []
+        for handle, label in zip(handles, labels):
+            if label not in seen_labels:
+                seen_labels.add(label)
+                unique_handles.append(handle)
+                unique_labels.append(label)
+        return Axes.legend(
+            self,
+            unique_handles,
+            unique_labels,
+            handler_map={Line2D: SmithHandlerLine2D()},
+            **kwargs,
+        )
 
     def plot(self, *args, **kwargs):
         """
