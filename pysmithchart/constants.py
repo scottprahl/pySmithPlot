@@ -16,7 +16,7 @@ Numerical Constants:
     SC_EPSILON: Tolerance for numerical comparisons (1e-7).
     SC_INFINITY: Value representing "infinity" (1e9).
     SC_NEAR_INFINITY: 90% of SC_INFINITY.
-    SC_TWICE_INFINITY: Twice the SC_INFINITY value.
+    SC_TWICE_INFINITY: Twice SC_INFINITY.
 
 Matplotlib Default Parameters (RC_DEFAULT_PARAMS):
     axes.axisbelow        : True
@@ -24,7 +24,7 @@ Matplotlib Default Parameters (RC_DEFAULT_PARAMS):
     legend.fontsize       : 12
     legend.fancybox       : False
     legend.markerscale    : 1
-    legend.numpoints      : 1
+    legend.numpoints      : 3
     legend.shadow         : False
     lines.linestyle       : "-"
     lines.linewidth       : 2
@@ -140,15 +140,15 @@ RC_DEFAULT_PARAMS = {
     "legend.fontsize": 12,
     "legend.fancybox": False,
     "legend.markerscale": 1,
-    "legend.numpoints": 1,
+    "legend.numpoints": 3,
     "legend.shadow": False,
     "lines.linestyle": "-",
     "lines.linewidth": 2,
     "lines.markeredgewidth": 1,
-    "lines.markersize": 7,
-    "xtick.labelsize": 12,
+    "lines.markersize": 5,
+    "xtick.labelsize": 10,
     "xtick.major.pad": 0,
-    "ytick.labelsize": 12,
+    "ytick.labelsize": 10,
     "ytick.major.pad": 4,
 }
 
@@ -205,7 +205,7 @@ SC_DEFAULT_PARAMS = {
     "plot.marker.default": "o",
     "plot.marker.start": "s",
     "plot.marker.end": "^",
-    "plot.marker.hack": False,  # Note: Uses code injection and may produce unexpected behavior.
+    "plot.marker.hack": True,  # Note: Uses code injection and may produce unexpected behavior.
     "plot.marker.rotate": True,
     "plot.default.datatype": Z_PARAMETER,
     "plot.default.interpolation": 5,
