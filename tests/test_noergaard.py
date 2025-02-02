@@ -38,13 +38,13 @@ def chart_dir(tmpdir):
 def test_vswr_circle_z(chart_dir):
     """Test plotting a VSWR circle on the Smith chart."""
     # Create VSWR circle
-    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 40))
     ZL = -(Gamma + 1) / (Gamma - 1)
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
 
-    plt.plot(ZL, "k", label="VSWR Circle")
+    plt.plot(ZL[:-1], "k", ls='', label="VSWR Circle")
     plt.plot(1 + 0j, "b", marker="o", label="$1+0j$")
     plt.plot(1 + 1j, "r", marker="o", label="$1+1j$")
     plt.plot(0.5 - 0.5j, "g", marker="o", label="$0.5-0.5j$")
@@ -63,8 +63,8 @@ def test_vswr_circle_s(chart_dir):
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
 
-    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
-    plt.plot(Gamma, "k", datatype=S_PARAMETER, label="VSWR Circle")
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 40))
+    plt.plot(Gamma[:-1], "k", datatype=S_PARAMETER, label="VSWR Circle")
 
     ZL = Z0 * (1 + 0j)
     Gamma = calc_gamma(Z0, ZL)
@@ -92,10 +92,10 @@ def test_vswr_circle_y(chart_dir):
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
 
-    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 40))
     ZL = calc_load(Z0, Gamma)  # normalized impedance
     YL = 1 / ZL
-    plt.plot(YL, "k", datatype=Y_PARAMETER, label="VSWR Circle")
+    plt.plot(YL[:-1], "k", datatype=Y_PARAMETER, label="VSWR Circle")
 
     ZL = 1 + 0j
     YL = 1 / ZL
@@ -118,12 +118,12 @@ def test_vswr_circle_y(chart_dir):
 
 def test_vswr_circle_mixed(chart_dir):
     """Test plotting a VSWR circle on the Smith chart."""
-    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 50))
+    Gamma = 0.5 * np.exp(2j * np.pi * np.linspace(0, 1, 40))
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
 
-    plt.plot(Gamma, "k", datatype=S_PARAMETER, label="VSWR Circle")
+    plt.plot(Gamma[:-1], "k", datatype=S_PARAMETER, label="VSWR Circle")
     plt.plot(1 + 0j, "b", marker="o", label="$1+0j$")
     plt.plot(1 + 1j, "r", marker="o", label="$1+1j$")
     plt.plot(1 / (0.5 - 0.5j), "g", datatype=Y_PARAMETER, marker="o", label="$0.5-0.5j$")
