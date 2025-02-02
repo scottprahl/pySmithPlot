@@ -29,8 +29,12 @@ Example:
 """
 
 from matplotlib.projections import register_projection
-from .axes import SmithAxes
+
+# Import constants FIRST
 from .constants import S_PARAMETER, Z_PARAMETER, Y_PARAMETER
+
+# Now import axes AFTER constants
+from .axes import SmithAxes
 
 # Register the Smith projection
 register_projection(SmithAxes)

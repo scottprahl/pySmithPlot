@@ -77,7 +77,7 @@ def test_plot_single_scalar(chart_dir):
     ZL = 75 + 50j
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith")
-    plt.plot(ZL, color="b", marker="o", markersize=4, label="75+50j")
+    plt.plot(ZL, "b", linestyle=None, markersize=4, label="75+50j")
     plt.title("75 + 50j as data")
     plt.legend()
 

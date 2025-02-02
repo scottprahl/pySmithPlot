@@ -3,7 +3,7 @@
 from matplotlib.ticker import AutoMinorLocator, Locator
 import numpy as np
 
-from .constants import SC_EPSILON
+from .constants import SC_EPSILON, SC_INFINITY
 from .utils import ang_to_c
 
 
@@ -34,7 +34,7 @@ class RealMaxNLocator(Locator):
     def __call__(self):
         """Compute or return cached tick values."""
         if self.ticks is None:
-            self.ticks = self.tick_values(0, self.axes._inf)
+            self.ticks = self.tick_values(0, SC_INFINITY)
         return self.ticks
 
     def nice_round(self, num, down=True):
@@ -128,7 +128,7 @@ class ImagMaxNLocator(RealMaxNLocator):
     def __call__(self):
         """Compute or return cached tick values for the imaginary axis."""
         if self.ticks is None:
-            tmp = self.tick_values(0, self.axes._inf)
+            tmp = self.tick_values(0, SC_INFINITY)
             self.ticks = np.concatenate((-tmp[:0:-1], tmp))
         return self.ticks
 
