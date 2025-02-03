@@ -8,7 +8,7 @@ default:
 
 html:
 	$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
-	open docs/_build/index.html
+#	open docs/_build/index.html
 
 notecheck:
 	make clean
@@ -69,6 +69,9 @@ clean:
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
 	rm -rf tests/charts
+	rm -rf docs/_build
+	rm -rf docs/api
+	rm -rf docs/.DS_Store
 
 realclean:
 	make clean
