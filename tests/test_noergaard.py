@@ -44,7 +44,7 @@ def test_vswr_circle_z(chart_dir):
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1, projection="smith", axes_impedance=1)
 
-    plt.plot(ZL[:-1], "k", ls='', label="VSWR Circle")
+    plt.plot(ZL[:-1], "k", ls="", label="VSWR Circle")
     plt.plot(1 + 0j, "b", marker="o", label="$1+0j$")
     plt.plot(1 + 1j, "r", marker="o", label="$1+1j$")
     plt.plot(0.5 - 0.5j, "g", marker="o", label="$0.5-0.5j$")
