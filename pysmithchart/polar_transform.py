@@ -9,19 +9,17 @@ class BasePolarTransform(Transform):
     """Abstract class to work around circular imports.
 
     Attributes:
-        input_dims (int): The number of input dimensions (always 2).
-        output_dims (int): The number of output dimensions (always 2).
-        is_separable (bool): Whether the transform is separable (always False).
         axes (SmithAxes): The parent `SmithAxes` instance.
         pad (float): The radial distance to translate points inward toward the center.
         font_size (float): The font size used to calculate additional y-axis translation.
     """
 
-    input_dims = 2  # The number of input dimensions (e.g., x, y)
-    output_dims = 2  # The number of output dimensions
-    is_separable = (
-        False  # Indicates whether the transform can be separated into independent x and y operations
-    )
+    #: The number of input dimensions (always 2).
+    input_dims = 2
+    #: The number of output dimensions (always 2).
+    output_dims = 2
+    #: Whether the transform is separable (always False).
+    is_separable = False
 
     def __init__(self, axes, pad, font_size, *args, **kwargs):
         """Initialize the inverse polar translation transformation."""

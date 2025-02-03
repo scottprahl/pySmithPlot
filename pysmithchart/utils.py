@@ -65,13 +65,17 @@ def xy_to_z(*xy):
 
     Args:
         *xy (tuple):
+
             - If a single argument is passed:
+
                 - If the argument is a complex number or an array-like of complex numbers,
                   it is returned as-is.
                 - If the argument is an iterable with two rows (e.g., shape `(2, N)`), it
                   is interpreted as real and imaginary parts, and a complex array is returned.
                 - If the argument has more than two dimensions, a `ValueError` is raised.
+
             - If two arguments are passed:
+
                 - The first argument represents the real part (`x`), and the second
                   represents the imaginary part (`y`).
                 - Both arguments must be scalars or iterable objects of the same size.
@@ -119,6 +123,7 @@ def z_to_xy(z):
 
     Args:
         z (array-like or scalar):
+
             - If z is a real or complex number, returns its real and imaginary parts.
             - If z is an array-like object of real or complex numbers, splits it into
               two arrays: real (x) and imaginary (y).
@@ -169,11 +174,14 @@ def moebius_z(*args, norm):
     Computes the Möbius transformation, typically used in Smith chart computations.
 
     Args:
-        *args (tuple): Input arguments passed to the `xy_to_z` function.
+        *args (tuple): Input arguments passed to the `xy_to_z` function. Refer to `xy_to_z`
+        for detailed input handling.
+
             - A single complex number or an iterable representing complex values.
             - Two arguments representing the real and imaginary parts of a complex number
               or array of complex numbers.
-            Refer to `xy_to_z` for detailed input handling.
+
+
         norm (float): Normalization used in the Möbius transformation, typically 50Ω.
 
     Returns:
@@ -188,11 +196,13 @@ def moebius_inv_z(*args, norm):
     Computes the inverse Möbius transformation, typically used in Smith chart computations.
 
     Args:
-        *args (tuple): Input arguments passed to the `xy_to_z` function.
+        *args (tuple): Input arguments passed to the `xy_to_z` function. Refer to `xy_to_z`
+        for detailed input handling.
+
             - A single complex number or an iterable representing complex values.
             - Two arguments representing the real and imaginary parts of a complex number
               or array of complex numbers.
-            Refer to `xy_to_z` for detailed input handling.
+
         norm (float): Normalization used in the inverse Möbius transformation, typically 50Ω.
 
     Returns:

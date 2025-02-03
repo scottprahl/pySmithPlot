@@ -65,6 +65,7 @@ class ImagFormatter(RealFormatter):
     This formatter formats tick values for the imaginary axis by printing numbers
     as floats, removing trailing zeros and unnecessary decimal points, and appending
     "j" to indicate imaginary values. Special cases include:
+
         - `''` (empty string) for negative infinity.
         - `'symbol.infinity'` from `scParams` for positive infinity.
         - `'0'` for values near zero, ensuring `-0` is not displayed.

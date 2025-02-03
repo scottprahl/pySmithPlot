@@ -1,6 +1,5 @@
 """
-Constants and Default Parameters for Smith Chart Plotting
-===========================================================
+Constants and Default Parameters for Smith Chart Plotting.
 
 This module provides parameter type definitions and a comprehensive set of
 constants used for configuring Smith Chart plots with matplotlib. These
@@ -94,37 +93,12 @@ Additional Parameter:
 """
 
 # =============================================================================
-# Standard Library Imports
-# =============================================================================
-from enum import Enum
-
-
-# =============================================================================
-# Parameter Type Definitions
-# =============================================================================
-class ParameterType(Enum):
-    """Enumeration for Smith Chart parameter types.
-
-    Attributes:
-        S_PARAMETER (str): Represents S-parameters.
-        Z_PARAMETER (str): Represents Z-parameters.
-        Y_PARAMETER (str): Represents Y-parameters.
-    """
-
-    S_PARAMETER = "S"
-    Z_PARAMETER = "Z"
-    Y_PARAMETER = "Y"
-
-
-# Convenience aliases for parameter types
-S_PARAMETER = ParameterType.S_PARAMETER
-Z_PARAMETER = ParameterType.Z_PARAMETER
-Y_PARAMETER = ParameterType.Y_PARAMETER
-
-
-# =============================================================================
 # Numerical Constants
 # =============================================================================
+S_PARAMETER = "S"
+Z_PARAMETER = "Z"
+Y_PARAMETER = "Y"
+
 SC_EPSILON = 1e-7
 SC_INFINITY = 1e9
 SC_NEAR_INFINITY = 0.9 * SC_INFINITY

@@ -423,26 +423,32 @@ class SmithAxes(Axes):
         """
         Apply a Möbius transformation to the input values.
 
-        This function uses the `utils.moebius_z` method to compute the Möbius transformation:
-        `w = 1 - 2 * norm / (z + norm)`. The transformation can handle a single complex value or
-        a combination of real and imaginary parts provided as separate arguments. The normalization
-        value can be specified or determined automatically based on the instance's settings.
+        This function uses the ``utils.moebius_z`` method to compute the Möbius
+        transformation: ``w = 1 - 2 * norm / (z + norm)``. The transformation can
+        handle a single complex value or a combination of real and imaginary parts
+        provided as separate arguments. The normalization value can be specified or
+        determined automatically based on the instance's settings.
 
         Args:
+
             *args:
-                Input arguments passed to `utils.moebius_z`. These can include:
-                - A single complex number or numpy.ndarray with `dtype=complex`.
-                - Two arguments representing the real and imaginary parts of a complex number
-                  or array of complex numbers (floats or arrays of floats).
+                Input arguments passed to ``utils.moebius_z``. These can include:
+
+                - A single complex number or numpy.ndarray with ``dtype=complex``.
+                - Two arguments representing the real and imaginary parts of a complex
+                  number or array of complex numbers (floats or arrays of floats).
+
             normalize (bool or None, optional):
-                If `True`, normalizes the values to `self._impedance`.
-                If `None`, uses the instance attribute `self._normalize` to determine behavior.
-                If `False`, no normalization is applied.
+                If ``True``, normalizes the values to ``self._impedance``.
+                If ``None``, uses the instance attribute ``self._normalize`` to determine
+                behavior.
+                If ``False``, no normalization is applied.
 
         Returns:
+
             complex or numpy.ndarray:
-                The Möbius-transformed value(s), returned as a complex number or an array of
-                complex numbers, depending on the input.
+                The Möbius-transformed value(s), returned as a complex number or an array
+                of complex numbers, depending on the input.
         """
         if normalize is not None:
             print("moebius normalize=", normalize)
@@ -463,15 +469,18 @@ class SmithAxes(Axes):
         by the axes scale or normalization settings. The transformation is
         applied to complex numbers or real/imaginary pairs.
 
-         Normalization is applied using the impedance (`self._impedance`) if enabled.
-         This method uses the `utils.moebius_inv_z` utility for calculations.
+        Normalization is applied using the impedance (`self._impedance`) if enabled.
+        This method uses the `utils.moebius_inv_z` utility for calculations.
 
         Args:
+
             *args:
                 Input data to transform, either as:
+
                 - `z` (complex): A complex number or `numpy.ndarray` with `dtype=complex`.
                 - `x, y` (float): Real and imaginary parts, either as floats or
                   `numpy.ndarray` values with non-complex `dtype`.
+
             normalize (bool or None, optional):
                 Specifies whether to normalize the transformation:
                 - `True`: Normalize values to `self._impedance`.
@@ -530,22 +539,25 @@ class SmithAxes(Axes):
         duplicate legend labels, keeping only the first occurrence.
 
         Args:
+
             *args:
                 Positional arguments passed directly to `matplotlib.axes.Axes.legend`.
+
             **kwargs:
                 Keyword arguments for configuring the legend. Includes all standard arguments
                 supported by `matplotlib.axes.Axes.legend`, such as:
-                    - loc: Location of the legend (e.g., 'upper right', 'lower left').
-                    - fontsize: Font size for the legend text.
-                    - ncol: Number of columns in the legend.
-                    - title: Title for the legend.
+
+                - loc: Location of the legend (e.g., 'upper right', 'lower left').
+                - fontsize: Font size for the legend text.
+                - ncol: Number of columns in the legend.
+                - title: Title for the legend.
+
                 See the Matplotlib documentation for more details.
 
         Returns:
             matplotlib.legend.Legend:
                 The legend instance created for the Smith chart.
         """
-        this_axes = self
 
         class SmithHandlerLine2D(HandlerLine2D):
             """

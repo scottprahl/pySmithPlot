@@ -11,17 +11,13 @@ from .utils import z_to_xy
 
 
 class BaseMoebiusTransform(Transform):
-    """Abstract class to work around circular imports.
+    """Abstract class to work around circular imports."""
 
-    Attributes:
-        input_dims (int): The number of input dimensions (always 2).
-        output_dims (int): The number of output dimensions (always 2).
-        is_separable (bool): Whether the transform is separable (always False).
-        axes (SmithAxes): The Smith chart axes to which the transformation applies.
-    """
-
+    #: The number of input dimensions (always 2).
     input_dims = 2
+    #: The number of output dimensions (always 2).
     output_dims = 2
+    #: Whether the transform is separable (always False).
     is_separable = False
 
     def __init__(self, axes, *args, **kwargs):
@@ -41,7 +37,6 @@ class MoebiusTransform(BaseMoebiusTransform):
     This class implements the Möbius transformation required to map Cartesian
     coordinates to the Smith chart's complex data space. It supports point transformations
     and path transformations for visualizing data on the Smith chart.
-
     """
 
     def transform_non_affine(self, values):
