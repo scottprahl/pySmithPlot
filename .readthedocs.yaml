@@ -1,14 +1,13 @@
 version: 2
 
 build:
-  os: "ubuntu-22.04"  # or "ubuntu-20.04"
+  os: "ubuntu-22.04"  # or another supported OS image
   tools:
-    python: "3.11"    # sets Python version
+    python: "3.11"    # or your desired Python version
 
 sphinx:
   configuration: docs/conf.py
 
 python:
-  system_packages: false
   install:
     - requirements: docs/requirements.txt
