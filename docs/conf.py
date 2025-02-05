@@ -60,3 +60,11 @@ nbsphinx_allow_errors = True
 html_theme = "sphinx_rtd_theme"
 html_scaled_image_link = False
 html_sourcelink_suffix = ""
+
+# -- suppress mpltype error in matplotlib--------------------------------------
+from docutils.parsers.rst import roles
+
+def dummy_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
+    return [], []
+
+roles.register_local_role('mpltype', dummy_role)
