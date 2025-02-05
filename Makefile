@@ -12,7 +12,7 @@ html:
 
 notecheck:
 	make clean
-	python -m pytest --verbose --notebooks tests/test_all_notebooks.py
+	python -m pytest --verbose tests/test_all_notebooks.py
 	rm -rf __pycache__
 
 rstcheck:
@@ -48,7 +48,7 @@ rcheck:
 	make test
 	python -m build
 	make html
-#	make notecheck
+	make notecheck
 
 test:
 	pytest -v tests/test_xy_to_z.py
