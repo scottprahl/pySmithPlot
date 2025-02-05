@@ -26,10 +26,17 @@
    :target: https://pypi.org/project/pysmithchart/
    :alt: Downloads
 
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: code style: black
+
+
 pysmithchart
 ============
 
-|pypi| |github| |conda| |license| |test| |docs| |downloads|
+|pypi| |github| |conda| |downloads|
+
+|license| |test| |docs| |black|
 
 Overview
 --------
@@ -156,5 +163,5 @@ to the full documentation at `pysmithchart.readthedocs.io <https://pysmithchart.
 License
 -------
 
-pysmithchart is licensed under the terms of the BSD license. See the
-:download:`LICENSE file <LICENSE.txt>` for details.
+pysmithchart is distributed under the 
+`BSD LICENSE <https://raw.githubusercontent.com/scottprahl/pysmithchart/main/LICENSE.txt>`.
