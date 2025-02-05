@@ -15,21 +15,3 @@ python:
   install:
     - method: pip
       package: pysmithchart
-  install:
-    - method: pip
-      package: matplotlib
-  install:
-    - method: pip
-      package: scipy
-  install:
-    - method: pip
-      package: numpy
-  install:
-    - method: pip
-      package: sphinx
-  install:
-    - method: pip
-      package: nbsphinx
-  install:
-    - method: pip
-      package: sphinx_rtd_theme
