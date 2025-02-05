@@ -4,8 +4,8 @@ tests/.DS_Store
 
 # Sphinx documentation
 docs/_build/
+docs/api/
 
-# IPython Notebook
 .ipynb_checkpoints
 
 pysmithchart/__pycache__/
@@ -13,4 +13,4 @@ tests/__pycache__/
 tests/charts/
 todo.txt
 
-
+pysmithchart.egg-info/
