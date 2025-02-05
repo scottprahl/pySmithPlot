@@ -12,7 +12,7 @@ Releasing a new version
   git push
 
 # create release tag on github
-  git tag v0.4.4
+  git tag v0.3.0
   git push origin v0.4.4
 
 # manually publish release at
