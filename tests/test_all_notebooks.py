@@ -25,7 +25,6 @@ The original can be located at:
     https://github.com/alchemyst/Dynamics-and-Control/test_all_notebooks.py
 """
 
-import os
 from pathlib import Path
 
 import pytest
@@ -51,8 +50,9 @@ def load_ignore_patterns(ignore_file: Path) -> list:
 
 def collect_notebooks(search_path: Path, ignore_patterns: list) -> list:
     """
-    Recursively collect all Jupyter notebooks in the search_path that are not
-    in hidden directories and do not match any ignore patterns.
+    Recursively collect all Jupyter notebooks in the search_path.
+
+    Avoid files in hidden directories and do not match any ignore patterns.
 
     Parameters:
         search_path: Path in which to search for .ipynb files.
@@ -65,7 +65,7 @@ def collect_notebooks(search_path: Path, ignore_patterns: list) -> list:
     # Using rglob to recursively search for .ipynb files
     for notebook in search_path.rglob("*.ipynb"):
         # Skip if any parent directory is hidden (starts with '.')
-        if any(part.startswith('.') for part in notebook.parts):
+        if any(part.startswith(".") for part in notebook.parts):
             continue
         # Skip if the notebook matches any of the ignore patterns
         if any(notebook.match(pattern) for pattern in ignore_patterns):
