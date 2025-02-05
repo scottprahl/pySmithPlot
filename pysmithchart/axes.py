@@ -27,6 +27,7 @@ from pysmithchart.locators import RealMaxNLocator, ImagMaxNLocator, SmithAutoMin
 from pysmithchart.moebius_transform import MoebiusTransform
 from pysmithchart.polar_transform import PolarTranslate
 
+__all__ = ['SmithAxes']
 
 class SmithAxes(Axes):
     """

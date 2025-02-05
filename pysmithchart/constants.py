@@ -77,8 +77,7 @@ Plot Settings:
     plot.marker.default (str): Default marker for line points.
     plot.marker.start (str): Marker for the first point (requires marker hack).
     plot.marker.end (str): Marker for the last point (requires marker hack).
-    plot.marker.hack (bool): Enable the marker hack.
-        Note: This uses code injection and may produce unexpected behavior.
+    plot.marker.hack (bool): Enable the marker hack that uses code injection.
     plot.marker.rotate (bool): Rotate the end marker in the direction of the line.
     plot.default.datatype: Default datatype for plots (S, Z, or Y parameter).
     plot.default.interpolation (int): Number of interpolated steps between points.
@@ -125,6 +124,7 @@ RC_DEFAULT_PARAMS = {
     "ytick.labelsize": 10,
     "ytick.major.pad": 4,
 }
+
 
 
 # =============================================================================
@@ -190,3 +190,12 @@ SC_DEFAULT_PARAMS = {
     "symbol.infinity.correction": 8,
     "symbol.ohm": "Ω",
 }
+
+__all__ = [
+    "SC_EPSILON",
+    "SC_INFINITY",
+    "SC_NEAR_INFINITY",
+    "SC_TWICE_INFINITY",
+    "RC_DEFAULT_PARAMS",
+    "SC_DEFAULT_PARAMS",
+]
