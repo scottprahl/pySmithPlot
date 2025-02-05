@@ -64,6 +64,8 @@ Key Capabilities
 - **Full Matplotlib Integration:** Use matplotlib’s standard API along with extra keywords
   for specialized Smith chart plotting.
 
+Full docs are available at https://pysmithchart.readthedocs.io
+
 Installation
 ------------
 
