@@ -6,6 +6,7 @@ import numpy as np
 
 __all__ = ["PolarTranslate", "PolarTranslateInverse"]
 
+
 class BasePolarTransform(Transform):
     """Abstract class to work around circular imports.
 

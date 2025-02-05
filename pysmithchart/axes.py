@@ -27,7 +27,8 @@ from pysmithchart.locators import RealMaxNLocator, ImagMaxNLocator, SmithAutoMin
 from pysmithchart.moebius_transform import MoebiusTransform
 from pysmithchart.polar_transform import PolarTranslate
 
-__all__ = ['SmithAxes']
+__all__ = ["SmithAxes"]
+
 
 class SmithAxes(Axes):
     """
@@ -431,7 +432,6 @@ class SmithAxes(Axes):
         determined automatically based on the instance's settings.
 
         Args:
-
             *args:
                 Input arguments passed to ``utils.moebius_z``. These can include:
 
@@ -446,7 +446,6 @@ class SmithAxes(Axes):
                 If ``False``, no normalization is applied.
 
         Returns:
-
             complex or numpy.ndarray:
                 The Möbius-transformed value(s), returned as a complex number or an array
                 of complex numbers, depending on the input.
@@ -474,7 +473,6 @@ class SmithAxes(Axes):
         This method uses the `utils.moebius_inv_z` utility for calculations.
 
         Args:
-
             *args:
                 Input data to transform, either as:
 
@@ -540,7 +538,6 @@ class SmithAxes(Axes):
         duplicate legend labels, keeping only the first occurrence.
 
         Args:
-
             *args:
                 Positional arguments passed directly to `matplotlib.axes.Axes.legend`.
 

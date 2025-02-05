@@ -64,7 +64,9 @@ html_sourcelink_suffix = ""
 # -- suppress mpltype error in matplotlib--------------------------------------
 from docutils.parsers.rst import roles
 
+
 def dummy_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
     return [], []
 
-roles.register_local_role('mpltype', dummy_role)
+
+roles.register_local_role("mpltype", dummy_role)

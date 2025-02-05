@@ -5,6 +5,7 @@ from .constants import SC_EPSILON, SC_NEAR_INFINITY
 
 __all__ = ["RealFormatter", "ImagFormatter"]
 
+
 class RealFormatter(Formatter):
     """
     Formatter for the real axis of a Smith chart.

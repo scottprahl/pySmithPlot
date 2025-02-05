@@ -8,6 +8,7 @@ from .utils import ang_to_c
 
 __all__ = ["RealMaxNLocator", "ImagMaxNLocator", "SmithAutoMinorLocator"]
 
+
 class RealMaxNLocator(Locator):
     """
     A locator for the real axis on the Smith chart.

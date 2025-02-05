@@ -4,28 +4,28 @@ This module provides utility functions for computations related to Smith charts.
 Functions:
     cs(z, N=5):
         Converts a complex number to a formatted string for printing.
-        
+
     xy_to_z(xy):
         Converts real and imaginary components or a complex number to a complex scalar or array.
-        
+
     z_to_xy(z):
         Splits a complex number into its real and imaginary components.
-        
+
     moebius_inv_z(args, norm):
         Computes the inverse Möbius transformation, typically used in Smith chart computations.
-        
+
     ang_to_c(ang, radius=1):
         Converts an angle to a complex number on a circle with the specified radius.
-        
+
     lambda_to_rad(lmb):
         Converts a wavelength fraction to radians.
-        
+
     rad_to_lambda(rad):
         Converts an angle in radians to a wavelength fraction.
-        
+
     split_complex(z):
         Splits a complex number into its real and imaginary components.
-        
+
     vswr_rotation(x, y, ...):
         Rotates a point on the Smith chart to a specified destination or orientation.
 """

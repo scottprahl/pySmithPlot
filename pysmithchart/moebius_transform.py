@@ -11,6 +11,7 @@ from .utils import z_to_xy
 
 __all__ = ["MoebiusTransform", "InvertedMoebiusTransform"]
 
+
 class BaseMoebiusTransform(Transform):
     """Abstract class to work around circular imports."""
 
