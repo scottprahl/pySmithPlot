@@ -1,6 +1,7 @@
 include CHANGELOG.rst
 include LICENSE.txt
 include Makefile
-include tests/data/s11.csv
-include tests/data/s22.csv
+exclude tests/*
+exclude tests/data/*
+exclude docs/*
 exclude release.txt
