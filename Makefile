@@ -71,7 +71,6 @@ clean:
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
 	rm -rf tests/charts
-	rm -rf docs/_build
 	rm -rf docs/api
 	rm -rf docs/.DS_Store
 
