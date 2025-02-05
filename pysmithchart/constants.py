@@ -179,7 +179,7 @@ SC_DEFAULT_PARAMS = {
     "plot.marker.default": "o",
     "plot.marker.start": "s",
     "plot.marker.end": "^",
-    "plot.marker.hack": True,  # Note: Uses code injection and may produce unexpected behavior.
+    "plot.marker.hack": False,  # Note: Uses code injection and may produce unexpected behavior.
     "plot.marker.rotate": True,
     "plot.default.datatype": Z_PARAMETER,
     "plot.default.interpolation": 5,
