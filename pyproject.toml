@@ -6,7 +6,7 @@ authors = [
     { name = "Scott Prahl", email = "scott.prahl@oit.edu" }
 ]
 description = "A Python library extending Matplotlib to generate Smith Charts."
-readme = "README.md"
+readme = "README.rst"
 license = { text = "BSD" }
 dependencies = [
     "matplotlib >= 3.7.0",
