@@ -83,17 +83,25 @@ This example creates a Smith chart and plots a simple reflection coefficient:
 
 .. code-block:: python
 
+    import numpy as np
     import matplotlib.pyplot as plt
     from pysmithchart import S_PARAMETER
 
-    # Create a subplot with the custom Smith chart projection.
-    plt.subplot(1, 1, 1, projection="smith")
-    
-    # Plot a couple of complex reflection coefficients.
-    plt.plot([0.5 + 0.3j, -0.2 - 0.1j], 'o', datatype=S_PARAMETER,
-            label="Reflection Coefficients")
-    
+    # array of reflection coefficients
+    S = [0.5 + 0.3j, -0.2 - 0.1j]
+
+    # Create a subplot that will use the Smith projection.
+    plt.figure(figsize=(6,6))
+    plt.subplot(1, 1, 1, projection="smith", grid_major_color_x='red', grid_major_color_y='blue')
+
+    # Plot the reflection (scattering) coefficients
+    plt.plot(S, ls='', markersize=10, datatype=S_PARAMETER)
+
+    plt.title('Plotting 0.5 + 0.3j and -0.2 - 0.1j')
     plt.show()
+
+.. image:: https://raw.githubusercontent.com/scottprahl/pysmithchart/main/docs/readme_fig1.svg
+   :alt: Colored Smith Chart
 
 **Example 2: Plotting Impedance Data**
 
@@ -102,18 +110,21 @@ Here we plot a set of normalized impedance values on the Smith chart:
 .. code-block:: python
 
     import matplotlib.pyplot as plt
-    from pysmithchart import Z_PARAMETER
+    import pysmithchart
 
     # Sample impedance data (normalized)
     ZL = [30 + 30j, 50 + 50j, 100 + 100j]
 
-    # Create a Smith chart subplot.
-    plt.subplot(1, 1, 1, projection="smith")
+    # Create a subplot that will use the Smith projection and include the minor grid
+    plt.figure(figsize=(6,6))
+    plt.subplot(1, 1, 1, projection="smith", axes_impedance=200, grid_minor_enable=True)
     
-    # Plot impedance data using a blue line with circle markers.
-    plt.plot(ZL, "b-o")  # default datatype is Z_PARAMETER
-    
+    plt.plot(ZL, "b-o", markersize=10)   # default datatype is Z_PARAMETER
+    plt.title('Plotting Impedances Assuming Z₀=200Ω')
     plt.show()
+
+.. image:: https://raw.githubusercontent.com/scottprahl/pysmithchart/main/docs/readme_fig2.svg
+   :alt: Colored Smith Chart
 
 **Example 3: Advanced Plot Customization**
 
@@ -122,19 +133,19 @@ Customize grid styles, marker behavior, and apply interpolation:
 .. code-block:: python
 
     import matplotlib.pyplot as plt
-    from pysmithchart import Z_PARAMETER
+    import pysmithchart
 
     ZL = [40 + 20j, 60 + 80j, 90 + 30j]
-    
-    plt.subplot(1, 1, 1, projection="smith", axes_impedance=200)
 
-    plt.plot([40 + 20j, 60 + 80j, 90 + 30j],
-            linestyle='--', marker='s', markersize=8,
-            interpolate=2, markerhack=True, rotate_marker=True,
-            )
+    plt.figure(figsize=(6,6))
+    plt.subplot(1, 1, 1, projection="smith")
 
-    plt.title('Interpolated data and custom markers')
+    plt.plot(ZL, markersize=16, ls='--', markerhack=True, rotate_marker=True)
+    plt.title('Custom markers')    plt.savefig("readme_fig3.svg", format='svg')
     plt.show()
+
+.. image:: https://raw.githubusercontent.com/scottprahl/pysmithchart/main/docs/readme_fig3.svg
+   :alt: Custom Markers
 
 Documentation
 -------------
