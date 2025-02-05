@@ -148,7 +148,8 @@ Customize grid styles, marker behavior, and apply interpolation:
     plt.subplot(1, 1, 1, projection="smith")
 
     plt.plot(ZL, markersize=16, ls='--', markerhack=True, rotate_marker=True)
-    plt.title('Custom markers')    plt.savefig("readme_fig3.svg", format='svg')
+    plt.title('Custom markers')
+    plt.savefig("readme_fig3.svg", format='svg')
     plt.show()
 
 .. image:: https://raw.githubusercontent.com/scottprahl/pysmithchart/main/docs/readme_fig3.svg
