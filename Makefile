@@ -8,7 +8,7 @@ default:
 
 html:
 	$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
-#	open docs/_build/index.html
+	open docs/_build/index.html
 
 notecheck:
 	make clean
@@ -18,7 +18,9 @@ notecheck:
 rstcheck:
 	-rstcheck README.rst
 	-rstcheck CHANGELOG.rst
-#	-rstcheck docs/index.rst
+	-rstcheck docs/index.rst
+#	-rstcheck docs/changelog.rst
+	-rstcheck --ignore-directives docs/pysmithchart.rst
 
 lint:
 	-pylint pysmithchart/__init__.py
@@ -43,10 +45,10 @@ rcheck:
 	make rstcheck
 	pyroma -d .
 	check-manifest
-#	make notecheck
-#	make html
 	make test
 	python -m build
+	make html
+#	make notecheck
 
 test:
 	pytest -v tests/test_xy_to_z.py
