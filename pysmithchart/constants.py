@@ -1,6 +1,5 @@
 """
-Constants and Default Parameters for Smith Chart Plotting
-===========================================================
+Constants and Default Parameters for Smith Chart Plotting.
 
 This module provides parameter type definitions and a comprehensive set of
 constants used for configuring Smith Chart plots with matplotlib. These settings
@@ -48,7 +47,7 @@ Smith Chart Default Parameters (``SC_DEFAULT_PARAMS``)
 --------------------------------------------------------
 
 Axes Settings:
-    
+
 - ``axes.xlabel.rotation`` (int): Rotation angle for x-axis labels (default: 90).
 - ``axes.xlabel.fancybox`` (dict): Parameters for the label background box.
 - ``axes.impedance`` (int): Reference impedance for normalization (default: 50).
@@ -59,12 +58,12 @@ Axes Settings:
 - ``axes.ylabel.correction`` (tuple): Correction for y-axis label positioning.
 
 Grid Settings:
-    
+
 - ``grid.zorder`` (int): Z-order for grid lines (default: 1).
 - ``grid.locator.precision`` (int): Number of significant decimals per decade (default: 2).
 
 Major Grid:
-    
+
 - ``grid.major.enable`` (bool): Enable the major grid.
 - ``grid.major.linestyle`` (str): Line style.
 - ``grid.major.linewidth`` (int): Line width.
@@ -75,7 +74,7 @@ Major Grid:
 - ``grid.major.fancy.threshold`` (tuple): Threshold for fancy grid styling.
 
 Minor Grid:
-    
+
 - ``grid.minor.enable`` (bool): Enable the minor grid.
 - ``grid.minor.capstyle`` (str): Cap style for dash segments.
 - ``grid.minor.dashes`` (list): Dash style pattern.
@@ -88,7 +87,7 @@ Minor Grid:
 - ``grid.minor.fancy.threshold`` (int): Threshold for switching to the next divider.
 
 Plot Settings:
-    
+
 - ``plot.zorder`` (int): Z-order for plot lines.
 - ``plot.marker.default`` (str): Default marker for line points.
 - ``plot.marker.start`` (str): Marker for the first point (requires marker hack).
@@ -99,13 +98,13 @@ Plot Settings:
 - ``plot.default.interpolation`` (int): Number of interpolated steps between points.
 
 Symbol Settings:
-    
+
 - ``symbol.infinity`` (str): Symbol for infinity. The trailing space prevents label cutoff.
 - ``symbol.infinity.correction`` (int): Size correction for the infinity symbol.
 - ``symbol.ohm`` (str): Symbol for the resistance unit (ohm).
 
 Additional Parameter:
-    
+
 - ``init.updaterc`` (bool): Flag indicating whether to update matplotlib's rc parameters.
 """
 
