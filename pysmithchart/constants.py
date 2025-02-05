@@ -1,94 +1,112 @@
 """
-Constants and Default Parameters for Smith Chart Plotting.
+Constants and Default Parameters for Smith Chart Plotting
+===========================================================
 
 This module provides parameter type definitions and a comprehensive set of
-constants used for configuring Smith Chart plots with matplotlib. These
-settings include defaults for plot styling, gridlines, axes, and symbol
-representations, as well as numerical tolerances.
+constants used for configuring Smith Chart plots with matplotlib. These settings
+include defaults for plot styling, gridlines, axes, and symbol representations,
+as well as numerical tolerances.
 
-Parameter Types:
-    S_PARAMETER: indicates scattering parameters (e.g. Γ).
-    Z_PARAMETER: indicates impedance parameters.
-    Y_PARAMETER: indicates admittance parameters.
+Parameter Types
+---------------
+- ``S_PARAMETER``: Indicates scattering parameters (e.g. Γ).
+- ``Z_PARAMETER``: Indicates impedance parameters.
+- ``Y_PARAMETER``: Indicates admittance parameters.
 
-Numerical Constants:
-    SC_EPSILON: Tolerance for numerical comparisons (1e-7).
-    SC_INFINITY: Value representing "infinity" (1e9).
-    SC_NEAR_INFINITY: 90% of SC_INFINITY.
-    SC_TWICE_INFINITY: Twice SC_INFINITY.
+Numerical Constants
+-------------------
+- ``SC_EPSILON``: Tolerance for numerical comparisons (1e-7).
+- ``SC_INFINITY``: Value representing "infinity" (1e9).
+- ``SC_NEAR_INFINITY``: 90% of ``SC_INFINITY``.
+- ``SC_TWICE_INFINITY``: Twice ``SC_INFINITY``.
 
-Matplotlib Default Parameters (RC_DEFAULT_PARAMS):
-    axes.axisbelow        : True
-    font.size             : 12
-    legend.fontsize       : 12
-    legend.fancybox       : False
-    legend.markerscale    : 1
-    legend.numpoints      : 3
-    legend.shadow         : False
-    lines.linestyle       : "-"
-    lines.linewidth       : 2
-    lines.markeredgewidth : 1
-    lines.markersize      : 7
-    xtick.labelsize       : 12
-    xtick.major.pad       : 0
-    ytick.labelsize       : 12
-    ytick.major.pad       : 4
+Matplotlib Default Parameters (``RC_DEFAULT_PARAMS``)
+------------------------------------------------------
+The default parameters used to configure matplotlib are defined in the dictionary below:
 
-Smith Chart Default Parameters (SC_DEFAULT_PARAMS):
+.. code-block:: python
+
+    {
+        "axes.axisbelow": True,
+        "font.size": 12,
+        "legend.fontsize": 12,
+        "legend.fancybox": False,
+        "legend.markerscale": 1,
+        "legend.numpoints": 3,
+        "legend.shadow": False,
+        "lines.linestyle": "-",
+        "lines.linewidth": 2,
+        "lines.markeredgewidth": 1,
+        "lines.markersize": 5,
+        "xtick.labelsize": 10,
+        "xtick.major.pad": 0,
+        "ytick.labelsize": 10,
+        "ytick.major.pad": 4,
+    }
+
+Smith Chart Default Parameters (``SC_DEFAULT_PARAMS``)
+--------------------------------------------------------
 
 Axes Settings:
-    axes.xlabel.rotation (int): Rotation angle for x-axis labels (default: 90).
-    axes.xlabel.fancybox (dict): Parameters for the label background box.
-    axes.impedance (int): Reference impedance for normalization (default: 50).
-    axes.radius (float): Radius of the plotting area (default: 0.43).
-    axes.normalize (bool): If True, normalize the chart to the reference impedance.
-    axes.normalize.label (bool): If True, display a normalization label.
-    axes.normalize.label.position (complex): Position of the normalization label.
-    axes.ylabel.correction (tuple): Correction for y-axis label positioning.
+    
+- ``axes.xlabel.rotation`` (int): Rotation angle for x-axis labels (default: 90).
+- ``axes.xlabel.fancybox`` (dict): Parameters for the label background box.
+- ``axes.impedance`` (int): Reference impedance for normalization (default: 50).
+- ``axes.radius`` (float): Radius of the plotting area (default: 0.43).
+- ``axes.normalize`` (bool): If True, normalize the chart to the reference impedance.
+- ``axes.normalize.label`` (bool): If True, display a normalization label.
+- ``axes.normalize.label.position`` (complex): Position of the normalization label.
+- ``axes.ylabel.correction`` (tuple): Correction for y-axis label positioning.
 
 Grid Settings:
-    grid.zorder (int): Z-order for grid lines (default: 1).
-    grid.locator.precision (int): Number of significant decimals per decade (default: 2).
+    
+- ``grid.zorder`` (int): Z-order for grid lines (default: 1).
+- ``grid.locator.precision`` (int): Number of significant decimals per decade (default: 2).
 
 Major Grid:
-    grid.major.enable (bool): Enable the major grid.
-    grid.major.linestyle (str): Line style.
-    grid.major.linewidth (int): Line width.
-    grid.major.color (str): Color of grid lines (also set for color.x and color.y).
-    grid.major.xmaxn (int): Maximum intervals on the real axis.
-    grid.major.ymaxn (int): Maximum intervals on the imaginary axis.
-    grid.major.fancy (bool): Use fancy grid drawing.
-    grid.major.fancy.threshold (tuple): Threshold for fancy grid styling.
+    
+- ``grid.major.enable`` (bool): Enable the major grid.
+- ``grid.major.linestyle`` (str): Line style.
+- ``grid.major.linewidth`` (int): Line width.
+- ``grid.major.color`` (str): Color of grid lines (also set for color.x and color.y).
+- ``grid.major.xmaxn`` (int): Maximum intervals on the real axis.
+- ``grid.major.ymaxn`` (int): Maximum intervals on the imaginary axis.
+- ``grid.major.fancy`` (bool): Use fancy grid drawing.
+- ``grid.major.fancy.threshold`` (tuple): Threshold for fancy grid styling.
 
 Minor Grid:
-    grid.minor.enable (bool): Enable the minor grid.
-    grid.minor.capstyle (str): Cap style for dash segments.
-    grid.minor.dashes (list): Dash style pattern.
-    grid.minor.linewidth (float): Line width.
-    grid.minor.color (str): Color for grid lines (also set for color.x and color.y).
-    grid.minor.xauto (int): Automatic interval count for the real axis.
-    grid.minor.yauto (int): Automatic interval count for the imaginary axis.
-    grid.minor.fancy (bool): Use fancy minor grid styling.
-    grid.minor.fancy.dividers (list): Dividers for the fancy grid.
-    grid.minor.fancy.threshold (int): Threshold for switching to the next divider.
+    
+- ``grid.minor.enable`` (bool): Enable the minor grid.
+- ``grid.minor.capstyle`` (str): Cap style for dash segments.
+- ``grid.minor.dashes`` (list): Dash style pattern.
+- ``grid.minor.linewidth`` (float): Line width.
+- ``grid.minor.color`` (str): Color for grid lines (also set for color.x and color.y).
+- ``grid.minor.xauto`` (int): Automatic interval count for the real axis.
+- ``grid.minor.yauto`` (int): Automatic interval count for the imaginary axis.
+- ``grid.minor.fancy`` (bool): Use fancy minor grid styling.
+- ``grid.minor.fancy.dividers`` (list): Dividers for the fancy grid.
+- ``grid.minor.fancy.threshold`` (int): Threshold for switching to the next divider.
 
 Plot Settings:
-    plot.zorder (int): Z-order for plot lines.
-    plot.marker.default (str): Default marker for line points.
-    plot.marker.start (str): Marker for the first point (requires marker hack).
-    plot.marker.end (str): Marker for the last point (requires marker hack).
-    plot.marker.hack (bool): Enable the marker hack that uses code injection.
-    plot.marker.rotate (bool): Rotate the end marker in the direction of the line.
-    plot.default.datatype: Default datatype for plots (S, Z, or Y parameter).
-    plot.default.interpolation (int): Number of interpolated steps between points.
+    
+- ``plot.zorder`` (int): Z-order for plot lines.
+- ``plot.marker.default`` (str): Default marker for line points.
+- ``plot.marker.start`` (str): Marker for the first point (requires marker hack).
+- ``plot.marker.end`` (str): Marker for the last point (requires marker hack).
+- ``plot.marker.hack`` (bool): Enable the marker hack that uses code injection.
+- ``plot.marker.rotate`` (bool): Rotate the end marker in the direction of the line.
+- ``plot.default.datatype``: Default datatype for plots (S, Z, or Y parameter).
+- ``plot.default.interpolation`` (int): Number of interpolated steps between points.
 
 Symbol Settings:
-    symbol.infinity (str): Symbol for infinity. The trailing space prevents label cutoff.
-    symbol.infinity.correction (int): Size correction for the infinity symbol.
-    symbol.ohm (str): Symbol for the resistance unit (ohm).
+    
+- ``symbol.infinity`` (str): Symbol for infinity. The trailing space prevents label cutoff.
+- ``symbol.infinity.correction`` (int): Size correction for the infinity symbol.
+- ``symbol.ohm`` (str): Symbol for the resistance unit (ohm).
 
 Additional Parameter:
-    init.updaterc (bool): Flag indicating whether to update matplotlib's rc parameters.
+    
+- ``init.updaterc`` (bool): Flag indicating whether to update matplotlib's rc parameters.
 """
 
 # =============================================================================
